@@ -37,23 +37,23 @@ class OntomapStartingKG4FUNClassProcessor:
 
     def __call__(self):
         pbar = self.get_pbar(
-            self.dataset.items(),
+            enumerate(self.dataset.items()),
             total=len(self.dataset),
             desc="Processing classes",
         )
         processed_ontology = list()
-        for qid, info in pbar:
+        for idx, (qid, info) in pbar:
             class_processed_info = {
-                OntologyFields.NAME: qid,
-                OntologyFields.IRI: f"https://www.wikidata.org/wiki/{qid}",
-                OntologyFields.LABEL: info.get(ClassFields.LABEL, ""),
-                OntologyFields.COMMENT: info.get(ClassFields.DESCRIPTION, ""),
-                OntologyFields.SYNONYMS: list(),
-                OntologyFields.CHILDRENS: list(),
-                OntologyFields.PARENTS: list(),
+                qid: {
+                    OntologyFields.IDX: f"cls_{idx}",
+                    OntologyFields.NAME: qid,
+                    OntologyFields.IRI: f"https://www.wikidata.org/wiki/{qid}",
+                    OntologyFields.LABEL: info.get(ClassFields.LABEL, ""),
+                    OntologyFields.COMMENT: info.get(ClassFields.DESCRIPTION, ""),
+                    OntologyFields.SYNONYMS: list(),
+                    OntologyFields.CHILDRENS: list(),
+                    OntologyFields.PARENTS: list(),
+                }
             }
             processed_ontology.append(class_processed_info)
         self.save(processed_ontology)
-
-
-    

@@ -9,3 +9,4 @@ class OntologyFields(StrEnum):
     PARENTS = "parents"
     SYNONYMS = "synonyms"
     COMMENT = "comment"
+    IDX = "idx"

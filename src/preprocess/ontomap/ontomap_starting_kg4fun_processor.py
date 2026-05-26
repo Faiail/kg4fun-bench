@@ -14,8 +14,6 @@ class OntomapStartingKG4FUNProcessor:
         self._init_general()
         print("Init class processor")
         self._init_class_processor()
-        print("Init relation processor")
-        self._init_rel_processor()
 
     def _init_general(self):
         general_parameters = self.parameters.get(ParameterKeys.GENERAL, dict())
@@ -32,6 +30,7 @@ class OntomapStartingKG4FUNProcessor:
 
     def __call__(self):
         self.class_processor()
+        self._init_rel_processor()
         self.rel_processor()
         # load both ontologies
         classes_file_path = f"{self.class_processor.out_dir}/processed_classes.json"

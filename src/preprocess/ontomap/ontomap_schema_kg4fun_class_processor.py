@@ -14,13 +14,15 @@ class OntomapSchemaKG4FUNClassProcessor(OntomapStartingKG4FUNClassProcessor):
         processed_ontology = list()
         for info in pbar:
             class_processed_info = {
-                OntologyFields.NAME: info.get(ClassFields.IDX, ""),
-                OntologyFields.IRI: "",
-                OntologyFields.LABEL: info.get(ClassFields.LABEL, ""),
-                OntologyFields.COMMENT: info.get(ClassFields.DESCRIPTION, ""),
-                OntologyFields.SYNONYMS: list(),
-                OntologyFields.CHILDRENS: list(),
-                OntologyFields.PARENTS: list(),
+                f"cls_{info.get(ClassFields.IDX)}": {
+                    OntologyFields.NAME: info.get(ClassFields.IDX, ""),
+                    OntologyFields.IRI: "",
+                    OntologyFields.LABEL: info.get(ClassFields.LABEL, ""),
+                    OntologyFields.COMMENT: info.get(ClassFields.DESCRIPTION, ""),
+                    OntologyFields.SYNONYMS: list(),
+                    OntologyFields.CHILDRENS: list(),
+                    OntologyFields.PARENTS: list(),
+                }
             }
             processed_ontology.append(class_processed_info)
         self.save(processed_ontology)

@@ -11,5 +11,9 @@ rel:
     out_dir: *local_outdir
     pbar: *pbar
   data:
-    name: data/raw/kg4fun/dataset1/edges/edge_info.json
+    name: data/interim/kg4fun/dataset1/input_kg/processed_classes.json
+    node_types: data/raw/kg4fun/dataset1/node_types.json
+    edge_types: data/raw/kg4fun/dataset1/edges/edge_types.json
+    edge_type_info: data/raw/kg4fun/dataset1/edges/edge_info.json
+
     
