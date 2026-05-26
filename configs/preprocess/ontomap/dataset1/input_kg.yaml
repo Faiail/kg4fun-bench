@@ -1,0 +1,15 @@
+general:
+  out_dir: data/processed/kg4fun/dataset1/input_kg
+class:
+  general:
+    out_dir: &local_outdir data/interim/kg4fun/dataset1/input_kg
+    pbar: &pbar True
+  data:
+    name: data/raw/kg4fun/dataset1/node_type_info.json
+rel:
+  general:
+    out_dir: *local_outdir
+    pbar: *pbar
+  data:
+    name: data/raw/kg4fun/dataset1/edges/edge_info.json
+    

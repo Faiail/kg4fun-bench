@@ -2,7 +2,7 @@ from src.utils import load_json, save_json
 from src.utils import ParameterKeys
 from tqdm import tqdm
 from .ontology_fields import OntologyFields
-from .kf4fun_fields import ClassFields
+from .kg4fun_fields import ClassFields
 import os
 
 

@@ -1,7 +1,7 @@
 from .ontomap_starting_kg4fun_class_processor import OntomapStartingKG4FUNClassProcessor
 from src.utils import save_json
 from .ontology_fields import OntologyFields
-from .kf4fun_fields import ClassFields
+from .kg4fun_fields import ClassFields
 
 
 class OntomapStartingKG4FUNRelProcessor(OntomapStartingKG4FUNClassProcessor):

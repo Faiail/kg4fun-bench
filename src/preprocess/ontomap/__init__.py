@@ -1,1 +1,2 @@
-from .ontomap_starting_kg4fun_processor import OntomapKG4FUNProcessor
+from .ontomap_starting_kg4fun_processor import OntomapStartingKG4FUNProcessor
+from .ontomap_schema_kg4fun_processor import OntomapSchemaKG4FUNProcessor

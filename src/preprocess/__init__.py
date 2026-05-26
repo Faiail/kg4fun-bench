@@ -1,4 +1,4 @@
-from .ontomap import OntomapKG4FUNProcessor
+from .ontomap import *
 
 def preprocess_fn(parameters, cls):
     globals()[cls](parameters)()
