@@ -5,3 +5,6 @@ uv run main.py preprocess --parameters configs/preprocess/ontomap/dataset1/input
 
 echo "Processing dataset1 Schema"
 uv run main.py preprocess --parameters configs/preprocess/ontomap/dataset1/schema.yaml --cls OntomapSchemaKG4FUNProcessor
+
+echo "Processing dataset1 Alignment"
+uv run main.py preprocess --parameters configs/preprocess/ontomap/dataset1/alignment.yaml --cls OntomapKG4FUNAlignmentProcessor
