@@ -1,0 +1,63 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · ICV (In-Context Vector) Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: icv
+#  Models  : LLaMA7BAdaICV | LLaMA7BBertICV |
+#            FalconAdaICV   | FalconBertICV  |
+#            VicunaAdaICV   | VicunaBertICV  |
+#            MPTAdaICV      | MPTBertICV
+#  Encoders: label | label-children | label-parent
+#            (mapped from the rag encoder catalog)
+#
+#  Naming convention: <LLM><Retriever>ICV
+#    Ada  retriever → pre-computed OpenAI Ada embeddings
+#    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/icv.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: experiments/outputs/icv
+  pbar: true
+
+approach: icv
+
+# ── Model ──────────────────────────────────────────────────────────────────
+model:
+  name: LLaMA7BBertICV
+  params:
+    # LLM generation settings
+    max_token_length: 1
+    tokenizer_max_length: 500
+    num_beams: 1
+    device: cuda
+    truncation: true
+    top_p: 0.95
+    temperature: 0.8
+    batch_size: 8
+    padding: max_length
+    # Retriever settings
+    top_k: 5
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# ICV shares the rag encoder catalog
+# Choose encoder_id among: label | label-children | label-parent
+encoder:
+  approach: rag
+  encoder_id: label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+    - kg4fun
+  tasks: null
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  llm_confidence_th: 0.7

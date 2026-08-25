@@ -18,6 +18,10 @@ from src.models.ontomap.ontology.bioml import (
     SNOMEDNCITPharmOMDataset,
 )
 from src.models.ontomap.ontology.commonkg import NellDbpediaOMDataset, YagoWikidataOMDataset
+from src.models.ontomap.ontology.funneling import (
+    KG4FunDataset1OMDataset,
+    KG4FunDataset2OMDataset,
+)
 from src.models.ontomap.ontology.mse import (
     MaterialInformationEMMOOMDataset,
     MaterialInformationMatOntoMDataset,
@@ -47,8 +51,17 @@ ontology_matching = {
     ],
     "mse": [
         MaterialInformationEMMOOMDataset,
-        MaterialInformationMatOntoMDataset
+        MaterialInformationMatOntoMDataset,
+    ],
+    "kg4fun": [
+        KG4FunDataset1OMDataset,
+        KG4FunDataset2OMDataset,
+    ],
+    "funneling": [
+        KG4FunDataset1OMDataset,
+        KG4FunDataset2OMDataset,
     ],
 }
 
 __all__ = ["ontology_matching"]
+

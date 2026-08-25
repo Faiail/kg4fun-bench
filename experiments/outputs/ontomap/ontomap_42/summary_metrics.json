@@ -1,0 +1,62 @@
+{
+    "config": {
+        "general": {
+            "root_dir": "data/processed",
+            "out_dir": "experiments/outputs/ontomap",
+            "pbar": true
+        },
+        "approach": "lightweight",
+        "model": {
+            "name": "SimpleFuzzySM",
+            "params": {
+                "fuzzy_sm_threshold": 0.9
+            }
+        },
+        "encoder": {
+            "approach": "lightweight",
+            "encoder_id": "label"
+        },
+        "dataset": {
+            "tracks": [
+                "kg4fun"
+            ],
+            "tasks": null,
+            "load_from_json": false
+        },
+        "evaluation": {
+            "do_evaluation": true,
+            "llm_confidence_th": 0.7
+        },
+        "config_name": "ontomap",
+        "seed": 42
+    },
+    "approach": "lightweight",
+    "model": "SimpleFuzzySM",
+    "encoder": "label",
+    "tasks": {
+        "kg4fun/dataset1": {
+            "response-time": 178.82397508621216,
+            "predictions-count": 482,
+            "evaluation-results": {
+                "intersection": 163,
+                "precision": 33.81742738589212,
+                "recall": 0.3612268415920575,
+                "f-score": 0.7148182256720608,
+                "predictions-len": 482,
+                "reference-len": 45124
+            }
+        },
+        "kg4fun/dataset2": {
+            "response-time": 4.105041742324829,
+            "predictions-count": 139,
+            "evaluation-results": {
+                "intersection": 24,
+                "precision": 17.26618705035971,
+                "recall": 0.3475238922675934,
+                "f-score": 0.681334279630944,
+                "predictions-len": 139,
+                "reference-len": 6906
+            }
+        }
+    }
+}

@@ -1,0 +1,2431 @@
+{
+    "model": "SimpleFuzzySM",
+    "approach": "lightweight",
+    "encoder-id": "label",
+    "dataset-info": {
+        "track": "kg4fun",
+        "ontology-name": "dataset1"
+    },
+    "response-time": 178.82397508621216,
+    "predictions-count": 482,
+    "evaluation-results": {
+        "intersection": 163,
+        "precision": 33.81742738589212,
+        "recall": 0.3612268415920575,
+        "f-score": 0.7148182256720608,
+        "predictions-len": 482,
+        "reference-len": 45124
+    },
+    "generated-output": [
+        {
+            "source": "Q2746660",
+            "target": "cls_86",
+            "score": 1.0
+        },
+        {
+            "source": "Q8795",
+            "target": "cls_24",
+            "score": 1.0
+        },
+        {
+            "source": "Q9135",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "Q341",
+            "target": "cls_229",
+            "score": 1.0
+        },
+        {
+            "source": "Q3966",
+            "target": "cls_335",
+            "score": 1.0
+        },
+        {
+            "source": "Q1224345",
+            "target": "rel_11535",
+            "score": 0.9777777777777777
+        },
+        {
+            "source": "Q4071928",
+            "target": "cls_57",
+            "score": 1.0
+        },
+        {
+            "source": "Q166142",
+            "target": "rel_7460",
+            "score": 0.9166666666666665
+        },
+        {
+            "source": "Q193424",
+            "target": "cls_180",
+            "score": 1.0
+        },
+        {
+            "source": "Q846636",
+            "target": "cls_389",
+            "score": 1.0
+        },
+        {
+            "source": "Q11288",
+            "target": "cls_153",
+            "score": 1.0
+        },
+        {
+            "source": "Q920890",
+            "target": "cls_1",
+            "score": 1.0
+        },
+        {
+            "source": "Q15836568",
+            "target": "cls_48",
+            "score": 1.0
+        },
+        {
+            "source": "Q1254335",
+            "target": "cls_2",
+            "score": 1.0
+        },
+        {
+            "source": "Q203087",
+            "target": "cls_248",
+            "score": 1.0
+        },
+        {
+            "source": "Q4825885",
+            "target": "cls_353",
+            "score": 1.0
+        },
+        {
+            "source": "Q28640",
+            "target": "cls_3",
+            "score": 1.0
+        },
+        {
+            "source": "Q4164871",
+            "target": "cls_67",
+            "score": 1.0
+        },
+        {
+            "source": "Q815823",
+            "target": "cls_5",
+            "score": 1.0
+        },
+        {
+            "source": "Q2169973",
+            "target": "cls_6",
+            "score": 1.0
+        },
+        {
+            "source": "Q4830453",
+            "target": "cls_68",
+            "score": 1.0
+        },
+        {
+            "source": "Q11371",
+            "target": "cls_93",
+            "score": 1.0
+        },
+        {
+            "source": "Q66221",
+            "target": "cls_8",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "Q4925178",
+            "target": "cls_10",
+            "score": 1.0
+        },
+        {
+            "source": "Q55936932",
+            "target": "cls_11",
+            "score": 1.0
+        },
+        {
+            "source": "Q37045",
+            "target": "cls_12",
+            "score": 1.0
+        },
+        {
+            "source": "Q235557",
+            "target": "cls_25",
+            "score": 1.0
+        },
+        {
+            "source": "Q506883",
+            "target": "cls_22",
+            "score": 1.0
+        },
+        {
+            "source": "Q1058914",
+            "target": "cls_244",
+            "score": 1.0
+        },
+        {
+            "source": "Q4485156",
+            "target": "cls_15",
+            "score": 1.0
+        },
+        {
+            "source": "Q11016",
+            "target": "cls_16",
+            "score": 1.0
+        },
+        {
+            "source": "Q1780543",
+            "target": "cls_275",
+            "score": 1.0
+        },
+        {
+            "source": "Q9143",
+            "target": "cls_18",
+            "score": 1.0
+        },
+        {
+            "source": "Q4897819",
+            "target": "cls_21",
+            "score": 1.0
+        },
+        {
+            "source": "Q1707847",
+            "target": "cls_21",
+            "score": 1.0
+        },
+        {
+            "source": "Q214339",
+            "target": "cls_21",
+            "score": 1.0
+        },
+        {
+            "source": "Q151885",
+            "target": "cls_23",
+            "score": 1.0
+        },
+        {
+            "source": "Q1969448",
+            "target": "cls_247",
+            "score": 1.0
+        },
+        {
+            "source": "Q24034552",
+            "target": "cls_397",
+            "score": 1.0
+        },
+        {
+            "source": "Q1144899",
+            "target": "cls_152",
+            "score": 1.0
+        },
+        {
+            "source": "Q317623",
+            "target": "cls_26",
+            "score": 1.0
+        },
+        {
+            "source": "Q2680559",
+            "target": "rel_1975",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "Q24651263",
+            "target": "cls_27",
+            "score": 1.0
+        },
+        {
+            "source": "Q101244",
+            "target": "cls_30",
+            "score": 1.0
+        },
+        {
+            "source": "Q17155032",
+            "target": "cls_32",
+            "score": 1.0
+        },
+        {
+            "source": "Q1514415",
+            "target": "cls_33",
+            "score": 1.0
+        },
+        {
+            "source": "Q326717",
+            "target": "cls_34",
+            "score": 1.0
+        },
+        {
+            "source": "Q11488158",
+            "target": "cls_36",
+            "score": 1.0
+        },
+        {
+            "source": "Q163740",
+            "target": "cls_37",
+            "score": 1.0
+        },
+        {
+            "source": "Q756230",
+            "target": "cls_200",
+            "score": 1.0
+        },
+        {
+            "source": "Q2101564",
+            "target": "cls_40",
+            "score": 1.0
+        },
+        {
+            "source": "Q47574",
+            "target": "cls_42",
+            "score": 1.0
+        },
+        {
+            "source": "Q7351621",
+            "target": "cls_72",
+            "score": 1.0
+        },
+        {
+            "source": "Q264965",
+            "target": "cls_43",
+            "score": 1.0
+        },
+        {
+            "source": "Q27493",
+            "target": "cls_44",
+            "score": 1.0
+        },
+        {
+            "source": "Q11862829",
+            "target": "cls_46",
+            "score": 1.0
+        },
+        {
+            "source": "Q1665984",
+            "target": "cls_45",
+            "score": 1.0
+        },
+        {
+            "source": "Q986008",
+            "target": "cls_47",
+            "score": 1.0
+        },
+        {
+            "source": "Q270791",
+            "target": "cls_49",
+            "score": 1.0
+        },
+        {
+            "source": "Q774228",
+            "target": "cls_50",
+            "score": 1.0
+        },
+        {
+            "source": "Q8148",
+            "target": "cls_51",
+            "score": 1.0
+        },
+        {
+            "source": "Q595523",
+            "target": "cls_53",
+            "score": 1.0
+        },
+        {
+            "source": "Q627436",
+            "target": "cls_337",
+            "score": 1.0
+        },
+        {
+            "source": "Q906278",
+            "target": "cls_55",
+            "score": 1.0
+        },
+        {
+            "source": "Q2465832",
+            "target": "cls_157",
+            "score": 1.0
+        },
+        {
+            "source": "Q19845322",
+            "target": "cls_241",
+            "score": 1.0
+        },
+        {
+            "source": "Q3244670",
+            "target": "cls_59",
+            "score": 0.9361702127659575
+        },
+        {
+            "source": "Q431028",
+            "target": "cls_78",
+            "score": 0.92
+        },
+        {
+            "source": "Q1755411",
+            "target": "cls_60",
+            "score": 1.0
+        },
+        {
+            "source": "Q1668024",
+            "target": "cls_62",
+            "score": 1.0
+        },
+        {
+            "source": "Q7096284",
+            "target": "rel_22814",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "Q579287",
+            "target": "cls_66",
+            "score": 1.0
+        },
+        {
+            "source": "Q543151",
+            "target": "cls_70",
+            "score": 1.0
+        },
+        {
+            "source": "Q845739",
+            "target": "cls_73",
+            "score": 1.0
+        },
+        {
+            "source": "Q1029123",
+            "target": "cls_75",
+            "score": 1.0
+        },
+        {
+            "source": "Q5421990",
+            "target": "cls_78",
+            "score": 1.0
+        },
+        {
+            "source": "Q3405599",
+            "target": "cls_79",
+            "score": 1.0
+        },
+        {
+            "source": "Q11210",
+            "target": "cls_81",
+            "score": 1.0
+        },
+        {
+            "source": "Q602884",
+            "target": "cls_82",
+            "score": 1.0
+        },
+        {
+            "source": "Q188267",
+            "target": "cls_74",
+            "score": 1.0
+        },
+        {
+            "source": "Q577764",
+            "target": "cls_84",
+            "score": 1.0
+        },
+        {
+            "source": "Q1047251",
+            "target": "cls_85",
+            "score": 1.0
+        },
+        {
+            "source": "Q132364",
+            "target": "cls_204",
+            "score": 1.0
+        },
+        {
+            "source": "Q16935517",
+            "target": "cls_142",
+            "score": 1.0
+        },
+        {
+            "source": "Q165194",
+            "target": "cls_117",
+            "score": 1.0
+        },
+        {
+            "source": "Q957589",
+            "target": "cls_402",
+            "score": 1.0
+        },
+        {
+            "source": "Q2634565",
+            "target": "cls_91",
+            "score": 1.0
+        },
+        {
+            "source": "Q1328899",
+            "target": "cls_109",
+            "score": 1.0
+        },
+        {
+            "source": "Q853614",
+            "target": "cls_96",
+            "score": 1.0
+        },
+        {
+            "source": "Q15900647",
+            "target": "cls_97",
+            "score": 1.0
+        },
+        {
+            "source": "Q43229",
+            "target": "cls_98",
+            "score": 1.0
+        },
+        {
+            "source": "Q290378",
+            "target": "cls_102",
+            "score": 1.0
+        },
+        {
+            "source": "Q23008367",
+            "target": "cls_100",
+            "score": 1.0
+        },
+        {
+            "source": "Q1799072",
+            "target": "cls_108",
+            "score": 1.0
+        },
+        {
+            "source": "Q12718609",
+            "target": "rel_18500",
+            "score": 0.9714285714285714
+        },
+        {
+            "source": "Q3932296",
+            "target": "cls_111",
+            "score": 1.0
+        },
+        {
+            "source": "Q6313217",
+            "target": "cls_174",
+            "score": 1.0
+        },
+        {
+            "source": "Q2674461",
+            "target": "cls_233",
+            "score": 1.0
+        },
+        {
+            "source": "Q1330336",
+            "target": "cls_122",
+            "score": 1.0
+        },
+        {
+            "source": "Q2401749",
+            "target": "cls_123",
+            "score": 0.9803921568627451
+        },
+        {
+            "source": "Q681263",
+            "target": "cls_126",
+            "score": 1.0
+        },
+        {
+            "source": "Q121182",
+            "target": "cls_127",
+            "score": 1.0
+        },
+        {
+            "source": "Q20819677",
+            "target": "cls_128",
+            "score": 1.0
+        },
+        {
+            "source": "Q208469",
+            "target": "cls_131",
+            "score": 1.0
+        },
+        {
+            "source": "Q2020153",
+            "target": "cls_137",
+            "score": 1.0
+        },
+        {
+            "source": "Q327333",
+            "target": "cls_139",
+            "score": 1.0
+        },
+        {
+            "source": "Q5514336",
+            "target": "cls_143",
+            "score": 1.0
+        },
+        {
+            "source": "Q29077376",
+            "target": "cls_144",
+            "score": 1.0
+        },
+        {
+            "source": "Q241317",
+            "target": "cls_188",
+            "score": 1.0
+        },
+        {
+            "source": "Q271680",
+            "target": "cls_148",
+            "score": 1.0
+        },
+        {
+            "source": "Q1441762",
+            "target": "cls_155",
+            "score": 1.0
+        },
+        {
+            "source": "Q312466",
+            "target": "cls_158",
+            "score": 1.0
+        },
+        {
+            "source": "Q355020",
+            "target": "cls_160",
+            "score": 1.0
+        },
+        {
+            "source": "Q187661",
+            "target": "cls_163",
+            "score": 1.0
+        },
+        {
+            "source": "Q210588",
+            "target": "cls_165",
+            "score": 1.0
+        },
+        {
+            "source": "Q3943414",
+            "target": "cls_166",
+            "score": 1.0
+        },
+        {
+            "source": "Q758871",
+            "target": "cls_168",
+            "score": 1.0
+        },
+        {
+            "source": "Q17342348",
+            "target": "cls_170",
+            "score": 1.0
+        },
+        {
+            "source": "Q2824642",
+            "target": "cls_173",
+            "score": 1.0
+        },
+        {
+            "source": "Q671832",
+            "target": "cls_176",
+            "score": 1.0
+        },
+        {
+            "source": "Q174989",
+            "target": "cls_177",
+            "score": 1.0
+        },
+        {
+            "source": "Q170584",
+            "target": "cls_318",
+            "score": 1.0
+        },
+        {
+            "source": "Q81163",
+            "target": "cls_185",
+            "score": 1.0
+        },
+        {
+            "source": "Q213283",
+            "target": "rel_19264",
+            "score": 0.9714285714285714
+        },
+        {
+            "source": "Q54445847",
+            "target": "cls_196",
+            "score": 1.0
+        },
+        {
+            "source": "Q595851",
+            "target": "cls_199",
+            "score": 1.0
+        },
+        {
+            "source": "Q7063032",
+            "target": "cls_207",
+            "score": 1.0
+        },
+        {
+            "source": "Q1914636",
+            "target": "cls_208",
+            "score": 1.0
+        },
+        {
+            "source": "Q959962",
+            "target": "cls_209",
+            "score": 1.0
+        },
+        {
+            "source": "Q240831",
+            "target": "cls_210",
+            "score": 1.0
+        },
+        {
+            "source": "Q1978718",
+            "target": "cls_213",
+            "score": 1.0
+        },
+        {
+            "source": "Q13442814",
+            "target": "cls_214",
+            "score": 1.0
+        },
+        {
+            "source": "Q184759",
+            "target": "cls_215",
+            "score": 1.0
+        },
+        {
+            "source": "Q500669",
+            "target": "cls_217",
+            "score": 1.0
+        },
+        {
+            "source": "Q5155040",
+            "target": "cls_184",
+            "score": 1.0
+        },
+        {
+            "source": "Q1151067",
+            "target": "cls_223",
+            "score": 1.0
+        },
+        {
+            "source": "Q716676",
+            "target": "cls_225",
+            "score": 0.9714285714285714
+        },
+        {
+            "source": "Q5227393",
+            "target": "cls_230",
+            "score": 1.0
+        },
+        {
+            "source": "Q167270",
+            "target": "cls_234",
+            "score": 1.0
+        },
+        {
+            "source": "Q36161",
+            "target": "cls_237",
+            "score": 1.0
+        },
+        {
+            "source": "Q1391125",
+            "target": "cls_246",
+            "score": 1.0
+        },
+        {
+            "source": "Q954187",
+            "target": "cls_253",
+            "score": 1.0
+        },
+        {
+            "source": "Q31855",
+            "target": "cls_289",
+            "score": 1.0
+        },
+        {
+            "source": "Q24451526",
+            "target": "cls_436",
+            "score": 1.0
+        },
+        {
+            "source": "Q1331985",
+            "target": "cls_360",
+            "score": 1.0
+        },
+        {
+            "source": "Q7692348",
+            "target": "cls_266",
+            "score": 1.0
+        },
+        {
+            "source": "Q7554305",
+            "target": "rel_1548",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "Q5753107",
+            "target": "cls_277",
+            "score": 1.0
+        },
+        {
+            "source": "Q2719417",
+            "target": "cls_278",
+            "score": 1.0
+        },
+        {
+            "source": "Q340169",
+            "target": "cls_284",
+            "score": 0.926829268292683
+        },
+        {
+            "source": "Q4120211",
+            "target": "cls_292",
+            "score": 1.0
+        },
+        {
+            "source": "Q9067653",
+            "target": "cls_295",
+            "score": 1.0
+        },
+        {
+            "source": "Q80071",
+            "target": "cls_300",
+            "score": 1.0
+        },
+        {
+            "source": "Q2372244",
+            "target": "cls_300",
+            "score": 1.0
+        },
+        {
+            "source": "Q41401699",
+            "target": "cls_304",
+            "score": 1.0
+        },
+        {
+            "source": "Q874048",
+            "target": "cls_305",
+            "score": 1.0
+        },
+        {
+            "source": "Q21065240",
+            "target": "cls_310",
+            "score": 1.0
+        },
+        {
+            "source": "Q4972100",
+            "target": "cls_313",
+            "score": 1.0
+        },
+        {
+            "source": "Q193395",
+            "target": "cls_317",
+            "score": 1.0
+        },
+        {
+            "source": "Q17028492",
+            "target": "cls_322",
+            "score": 1.0
+        },
+        {
+            "source": "Q6055843",
+            "target": "cls_323",
+            "score": 1.0
+        },
+        {
+            "source": "Q268592",
+            "target": "cls_324",
+            "score": 1.0
+        },
+        {
+            "source": "Q1047113",
+            "target": "rel_21867",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "Q21157865",
+            "target": "rel_11296",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "Q2526961",
+            "target": "rel_26067",
+            "score": 0.972972972972973
+        },
+        {
+            "source": "Q26085352",
+            "target": "cls_329",
+            "score": 1.0
+        },
+        {
+            "source": "Q325944",
+            "target": "cls_331",
+            "score": 1.0
+        },
+        {
+            "source": "Q12609526",
+            "target": "cls_18",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "Q42573997",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "Q1363963",
+            "target": "cls_356",
+            "score": 1.0
+        },
+        {
+            "source": "Q356674",
+            "target": "cls_363",
+            "score": 1.0
+        },
+        {
+            "source": "Q1043076",
+            "target": "cls_369",
+            "score": 1.0
+        },
+        {
+            "source": "Q58778",
+            "target": "cls_373",
+            "score": 1.0
+        },
+        {
+            "source": "Q474157",
+            "target": "cls_374",
+            "score": 1.0
+        },
+        {
+            "source": "Q11028",
+            "target": "cls_390",
+            "score": 1.0
+        },
+        {
+            "source": "Q29175",
+            "target": "rel_15",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "Q186408",
+            "target": "cls_400",
+            "score": 1.0
+        },
+        {
+            "source": "Q6545185",
+            "target": "cls_404",
+            "score": 1.0
+        },
+        {
+            "source": "Q207977",
+            "target": "cls_410",
+            "score": 1.0
+        },
+        {
+            "source": "Q351507",
+            "target": "cls_433",
+            "score": 1.0
+        },
+        {
+            "source": "Q42574058",
+            "target": "rel_11528",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "Q10843872",
+            "target": "cls_375",
+            "score": 1.0
+        },
+        {
+            "source": "215_P156_215",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P1889_16",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "18_P737_110",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "74_P737_110",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "321_P737_321",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "74_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "110_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "18_P747_149",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "18_P747_110",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "194_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "215_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "321_P737_110",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "321_P747_321",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "321_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "74_P747_18",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "392_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "110_P747_110",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "321_P156_321",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P747_18",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "74_P126_18",
+            "target": "rel_478",
+            "score": 0.96
+        },
+        {
+            "source": "321_P31_16",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "336_P31_16",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P1557_215",
+            "target": "rel_1256",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "194_P1557_18",
+            "target": "rel_1256",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "110_P4428_110",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "110_P4428_74",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "110_P4428_18",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "392_P1557_18",
+            "target": "rel_1256",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "274_P4428_149",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "274_P4428_74",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "321_P4428_18",
+            "target": "rel_462",
+            "score": 0.9696969696969697
+        },
+        {
+            "source": "74_P279_18",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P279_235",
+            "target": "rel_2219",
+            "score": 0.9302325581395349
+        },
+        {
+            "source": "339_P279_235",
+            "target": "rel_2219",
+            "score": 0.9302325581395349
+        },
+        {
+            "source": "149_P279_18",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P138_321",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P138_18",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P138_18",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "392_P138_18",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P279_18",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "336_P279_16",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "392_P279_18",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "274_P1547_274",
+            "target": "rel_800",
+            "score": 0.9444444444444444
+        },
+        {
+            "source": "18_P178_18",
+            "target": "rel_505",
+            "score": 0.9
+        },
+        {
+            "source": "149_P178_18",
+            "target": "rel_505",
+            "score": 0.9
+        },
+        {
+            "source": "18_P144_149",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "18_P144_110",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "74_P144_149",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "194_P144_194",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "321_P144_321",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "18_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "74_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "110_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "141_P2283_18",
+            "target": "rel_205",
+            "score": 0.9
+        },
+        {
+            "source": "215_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "16_P2283_16",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "194_P941_194",
+            "target": "rel_2076",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P2283_110",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "149_P1366_73",
+            "target": "rel_1121",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "149_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P2283_18",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "215_P2283_18",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "274_P144_274",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "274_P2283_18",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "194_P921_194",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "194_P921_16",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "321_P921_16",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "392_P1462_16",
+            "target": "rel_7",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "336_P2283_16",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "18_P747_18",
+            "target": "rel_1238",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "215_P1889_215",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "274_P1889_274",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "18_P1889_18",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "149_P144_149",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P737_149",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "18_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "18_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P156_16",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P31_321",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "110_P156_274",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P156_110",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "141_P400_18",
+            "target": "rel_352",
+            "score": 0.9583333333333335
+        },
+        {
+            "source": "274_P156_274",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "74_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P156_73",
+            "target": "rel_4891",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "110_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P8956_321",
+            "target": "rel_602",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "274_P8956_274",
+            "target": "rel_602",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "110_P8956_18",
+            "target": "rel_602",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "428_P8956_274",
+            "target": "rel_602",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "18_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P1366_16",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P138_18",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P138_16",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P31_417",
+            "target": "rel_5523",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P279_215",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P737_110",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "141_P400_321",
+            "target": "rel_352",
+            "score": 0.9583333333333335
+        },
+        {
+            "source": "336_P452_16",
+            "target": "cls_324",
+            "score": 1.0
+        },
+        {
+            "source": "274_P737_18",
+            "target": "rel_994",
+            "score": 0.96
+        },
+        {
+            "source": "215_P144_215",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "74_P31_18",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "74_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "110_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "274_P1072_149",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "149_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "274_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "321_P1072_18",
+            "target": "rel_1092",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "149_P31_18",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P1535_321",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P1535_274",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P279_18",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P279_16",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P1535_110",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "336_P1535_321",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P1535_110",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "274_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P4969_149",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "18_P4969_18",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "336_P461_16",
+            "target": "rel_350",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P31_110",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P452_16",
+            "target": "cls_324",
+            "score": 1.0
+        },
+        {
+            "source": "149_P138_18",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P1889_110",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "336_P138_16",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P4969_74",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "110_P4969_110",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "215_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P452_16",
+            "target": "cls_324",
+            "score": 1.0
+        },
+        {
+            "source": "74_P361_110",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "274_P361_274",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "194_P121_18",
+            "target": "rel_9545",
+            "score": 0.96
+        },
+        {
+            "source": "18_P126_18",
+            "target": "rel_478",
+            "score": 0.96
+        },
+        {
+            "source": "149_P126_18",
+            "target": "rel_478",
+            "score": 0.96
+        },
+        {
+            "source": "215_P126_18",
+            "target": "rel_478",
+            "score": 0.96
+        },
+        {
+            "source": "16_P921_16",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "110_P1365_110",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "18_P1889_110",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "18_P1889_73",
+            "target": "rel_1966",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P1889_110",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "74_P1889_73",
+            "target": "rel_1966",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "274_P921_110",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "110_P1889_73",
+            "target": "rel_1966",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P1889_110",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "215_P4969_215",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "215_P4969_194",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "149_P1889_73",
+            "target": "rel_1966",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P1889_18",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "149_P4969_74",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "149_P1889_18",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "274_P1889_110",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "336_P921_16",
+            "target": "rel_5920",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "149_P4969_18",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "336_P1889_16",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "339_P1889_16",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "110_P1366_110",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "428_P144_102",
+            "target": "rel_5380",
+            "score": 0.9387755102040817
+        },
+        {
+            "source": "392_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "428_P144_18",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "428_P144_16",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "321_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P361_110",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "336_P361_16",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "428_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "392_P2283_18",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "428_P2283_16",
+            "target": "rel_2307",
+            "score": 1.0
+        },
+        {
+            "source": "74_P178_18",
+            "target": "rel_505",
+            "score": 0.9
+        },
+        {
+            "source": "274_P807_274",
+            "target": "rel_26135",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "18_P31_18",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P31_16",
+            "target": "rel_38",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "321_P279_321",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P138_149",
+            "target": "rel_320",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P156_73",
+            "target": "rel_4891",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "149_P156_18",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "149_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "336_P156_16",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P1269_16",
+            "target": "rel_455",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P279_149",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P941_18",
+            "target": "rel_2076",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P1535_321",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P1535_274",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P1535_321",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P1535_274",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P1535_274",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P1535_321",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "321_P1535_110",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "321_P1535_18",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "428_P1535_110",
+            "target": "rel_65",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P156_110",
+            "target": "rel_4",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P1552_18",
+            "target": "rel_327",
+            "score": 0.9714285714285714
+        },
+        {
+            "source": "74_P1889_18",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "321_P1889_18",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "18_P1365_149",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "18_P1365_110",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "74_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "110_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "215_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "274_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "110_P366_110",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "194_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "321_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "392_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "428_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "16_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "18_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "74_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "110_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "215_P361_215",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "274_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "321_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "336_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "392_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "428_P306_321",
+            "target": "cls_424",
+            "score": 1.0
+        },
+        {
+            "source": "321_P10695_321",
+            "target": "rel_9660",
+            "score": 0.96
+        },
+        {
+            "source": "428_P3712_38",
+            "target": "rel_90",
+            "score": 0.9
+        },
+        {
+            "source": "110_P1073_18",
+            "target": "rel_11528",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "18_P4969_149",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "18_P1365_18",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "74_P4969_149",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "18_P4969_74",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "321_P4969_321",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "110_P144_110",
+            "target": "rel_13",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "74_P4969_18",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "392_P4969_194",
+            "target": "rel_506",
+            "score": 0.9655172413793103
+        },
+        {
+            "source": "215_P1366_215",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P1365_215",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "110_P1366_311",
+            "target": "rel_1482",
+            "score": 0.9545454545454546
+        },
+        {
+            "source": "18_P1366_110",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P1366_73",
+            "target": "rel_1121",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "321_P1366_321",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "74_P1366_73",
+            "target": "rel_1121",
+            "score": 0.9090909090909091
+        },
+        {
+            "source": "74_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "194_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "215_P1366_18",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "336_P1366_16",
+            "target": "rel_171",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "18_P277_110",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "74_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "110_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "274_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "321_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "392_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "428_P277_18",
+            "target": "rel_23",
+            "score": 0.96
+        },
+        {
+            "source": "215_P1269_215",
+            "target": "rel_455",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "339_P1269_235",
+            "target": "rel_21857",
+            "score": 0.9189189189189189
+        },
+        {
+            "source": "215_P1269_18",
+            "target": "rel_455",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "336_P1269_16",
+            "target": "rel_455",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "339_P1269_16",
+            "target": "rel_455",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "149_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "16_P461_16",
+            "target": "rel_350",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "16_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P279_16",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "428_P279_16",
+            "target": "rel_436",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "149_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "321_P1889_321",
+            "target": "rel_30",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "321_P1365_321",
+            "target": "rel_717",
+            "score": 1.0
+        },
+        {
+            "source": "74_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "215_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "274_P366_18",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "16_P361_16",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "336_P366_16",
+            "target": "rel_67",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P361_321",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "18_P361_110",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "110_P361_110",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "194_P361_18",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "321_P361_110",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "74_P941_18",
+            "target": "rel_2076",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P941_18",
+            "target": "rel_2076",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "428_P361_16",
+            "target": "rel_3",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "149_P941_18",
+            "target": "rel_2076",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "110_P1547_110",
+            "target": "rel_800",
+            "score": 0.9444444444444444
+        },
+        {
+            "source": "110_P1547_18",
+            "target": "rel_800",
+            "score": 0.9444444444444444
+        },
+        {
+            "source": "274_P1547_110",
+            "target": "rel_800",
+            "score": 0.9444444444444444
+        },
+        {
+            "source": "321_P1547_18",
+            "target": "rel_800",
+            "score": 0.9444444444444444
+        }
+    ]
+}

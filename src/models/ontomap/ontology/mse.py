@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+import configparser
 import os.path
 import re
 from typing import Any, List
+
+if not hasattr(configparser, "SafeConfigParser"):
+    configparser.SafeConfigParser = configparser.ConfigParser
 
 import ontospy
 

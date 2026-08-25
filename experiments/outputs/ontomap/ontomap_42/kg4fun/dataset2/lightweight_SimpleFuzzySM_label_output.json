@@ -1,0 +1,716 @@
+{
+    "model": "SimpleFuzzySM",
+    "approach": "lightweight",
+    "encoder-id": "label",
+    "dataset-info": {
+        "track": "kg4fun",
+        "ontology-name": "dataset2"
+    },
+    "response-time": 4.105041742324829,
+    "predictions-count": 139,
+    "evaluation-results": {
+        "intersection": 24,
+        "precision": 17.26618705035971,
+        "recall": 0.3475238922675934,
+        "f-score": 0.681334279630944,
+        "predictions-len": 139,
+        "reference-len": 6906
+    },
+    "generated-output": [
+        {
+            "source": "Q19967801",
+            "target": "cls_37",
+            "score": 1.0
+        },
+        {
+            "source": "Q1137109",
+            "target": "cls_23",
+            "score": 1.0
+        },
+        {
+            "source": "Q6368",
+            "target": "cls_9",
+            "score": 1.0
+        },
+        {
+            "source": "Q484170",
+            "target": "cls_86",
+            "score": 1.0
+        },
+        {
+            "source": "Q16970",
+            "target": "cls_22",
+            "score": 1.0
+        },
+        {
+            "source": "Q6881511",
+            "target": "cls_6",
+            "score": 1.0
+        },
+        {
+            "source": "Q786820",
+            "target": "cls_43",
+            "score": 0.9130434782608696
+        },
+        {
+            "source": "Q18534278",
+            "target": "cls_34",
+            "score": 1.0
+        },
+        {
+            "source": "Q747883",
+            "target": "cls_35",
+            "score": 1.0
+        },
+        {
+            "source": "Q3341285",
+            "target": "cls_36",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "Q7058673",
+            "target": "cls_40",
+            "score": 1.0
+        },
+        {
+            "source": "Q755673",
+            "target": "cls_44",
+            "score": 1.0
+        },
+        {
+            "source": "Q470427",
+            "target": "cls_45",
+            "score": 1.0
+        },
+        {
+            "source": "Q13741",
+            "target": "cls_46",
+            "score": 1.0
+        },
+        {
+            "source": "Q15632617",
+            "target": "cls_67",
+            "score": 1.0
+        },
+        {
+            "source": "Q2426135",
+            "target": "cls_57",
+            "score": 1.0
+        },
+        {
+            "source": "Q4671277",
+            "target": "cls_58",
+            "score": 1.0
+        },
+        {
+            "source": "Q1440300",
+            "target": "cls_60",
+            "score": 1.0
+        },
+        {
+            "source": "Q47913",
+            "target": "cls_80",
+            "score": 1.0
+        },
+        {
+            "source": "Q18388277",
+            "target": "cls_89",
+            "score": 1.0
+        },
+        {
+            "source": "Q13419255",
+            "target": "cls_64",
+            "score": 1.0
+        },
+        {
+            "source": "Q128207",
+            "target": "cls_68",
+            "score": 1.0
+        },
+        {
+            "source": "Q147538",
+            "target": "cls_71",
+            "score": 1.0
+        },
+        {
+            "source": "Q1368898",
+            "target": "cls_78",
+            "score": 1.0
+        },
+        {
+            "source": "Q185698",
+            "target": "cls_83",
+            "score": 1.0
+        },
+        {
+            "source": "Q18087876",
+            "target": "cls_84",
+            "score": 1.0
+        },
+        {
+            "source": "Q181247",
+            "target": "cls_95",
+            "score": 1.0
+        },
+        {
+            "source": "Q121359",
+            "target": "cls_25",
+            "score": 0.9032258064516128
+        },
+        {
+            "source": "Q594593",
+            "target": "cls_25",
+            "score": 1.0
+        },
+        {
+            "source": "Q1817119",
+            "target": "cls_25",
+            "score": 0.9714285714285714
+        },
+        {
+            "source": "19_P112_79",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "19_P112_49",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "49_P112_79",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "79_P112_79",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "19_P112_19",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "49_P112_49",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "19_P800_79",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "79_P112_49",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "49_P112_19",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "19_P800_49",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "49_P800_79",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "79_P112_19",
+            "target": "rel_501",
+            "score": 0.9473684210526316
+        },
+        {
+            "source": "79_P800_79",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "19_P800_19",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "49_P800_49",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "79_P800_49",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "49_P800_19",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "19_P127_49",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "79_P800_19",
+            "target": "rel_87",
+            "score": 0.9565217391304348
+        },
+        {
+            "source": "28_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P127_28",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "94_P127_94",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "39_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "49_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P127_19",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "28_P127_28",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P178_39",
+            "target": "rel_113",
+            "score": 0.9
+        },
+        {
+            "source": "19_P178_28",
+            "target": "rel_113",
+            "score": 0.9
+        },
+        {
+            "source": "19_P178_19",
+            "target": "rel_113",
+            "score": 0.9
+        },
+        {
+            "source": "94_P178_52",
+            "target": "rel_113",
+            "score": 0.9
+        },
+        {
+            "source": "49_P144_49",
+            "target": "rel_174",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "94_P2789_94",
+            "target": "rel_1873",
+            "score": 0.96
+        },
+        {
+            "source": "49_P553_49",
+            "target": "rel_2297",
+            "score": 0.9411764705882352
+        },
+        {
+            "source": "49_P1889_49",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P3931_79",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "19_P3931_49",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "49_P3931_79",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "79_P3931_79",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "19_P3931_19",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "49_P3931_49",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "79_P3931_49",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "49_P3931_19",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "49_P287_79",
+            "target": "rel_392",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "19_P4969_7",
+            "target": "rel_41",
+            "score": 0.9032258064516128
+        },
+        {
+            "source": "79_P3931_19",
+            "target": "rel_502",
+            "score": 0.967741935483871
+        },
+        {
+            "source": "49_P287_49",
+            "target": "rel_392",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "49_P287_19",
+            "target": "rel_392",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "19_P123_79",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "19_P123_49",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "49_P123_79",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "19_P123_39",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "19_P123_28",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "49_P123_49",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "79_P123_79",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "19_P123_19",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "49_P123_39",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "79_P123_49",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "49_P123_19",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "79_P123_39",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "79_P123_19",
+            "target": "rel_1",
+            "score": 0.9
+        },
+        {
+            "source": "39_P1889_39",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P361_19",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "19_P1889_94",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P1889_79",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "49_P1889_94",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "49_P1889_79",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "94_P1889_94",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "79_P1889_79",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "94_P1889_79",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "79_P1889_49",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "49_P1889_19",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "94_P1889_49",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "79_P1889_19",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "94_P1889_19",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P127_79",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "49_P127_28",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "79_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "94_P127_52",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "79_P127_28",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "94_P127_39",
+            "target": "rel_282",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "39_P1830_94",
+            "target": "rel_22",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "39_P1830_39",
+            "target": "rel_22",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "49_P361_49",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "19_P1889_19",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P1889_49",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "79_P1889_94",
+            "target": "rel_64",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P1269_79",
+            "target": "rel_2527",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P1269_49",
+            "target": "rel_2527",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "19_P1269_19",
+            "target": "rel_2527",
+            "score": 0.9333333333333332
+        },
+        {
+            "source": "28_P807_39",
+            "target": "rel_2636",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "28_P807_28",
+            "target": "rel_2636",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "39_P807_39",
+            "target": "rel_2636",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "39_P807_28",
+            "target": "rel_2636",
+            "score": 0.962962962962963
+        },
+        {
+            "source": "19_P1366_19",
+            "target": "rel_379",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "19_P1366_79",
+            "target": "rel_379",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "19_P1366_49",
+            "target": "rel_379",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "39_P1366_39",
+            "target": "rel_379",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "39_P7888_39",
+            "target": "rel_1019",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "28_P7888_28",
+            "target": "rel_1019",
+            "score": 0.9523809523809522
+        },
+        {
+            "source": "19_P361_79",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "19_P361_49",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "49_P361_79",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "94_P361_94",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "79_P361_79",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "79_P361_49",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "49_P361_19",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "79_P361_19",
+            "target": "rel_6",
+            "score": 0.923076923076923
+        },
+        {
+            "source": "52_P138_52",
+            "target": "rel_19",
+            "score": 0.9523809523809522
+        }
+    ]
+}

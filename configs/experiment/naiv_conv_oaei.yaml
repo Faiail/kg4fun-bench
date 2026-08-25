@@ -1,0 +1,65 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · Naïve Conversational OAEI Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: naiv-conv-oaei
+#  Models  : FlanT5XL | FlanT5XXL | LLaMA7B | LLaMA13B |
+#            Wizard13B | Mistral7B | ChatGPT | GPT4
+#  Encoders: iri-label | iri-label-description |
+#            iri-label-children | iri-label-parent
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/naiv_conv_oaei.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: experiments/outputs/naiv_conv_oaei
+  pbar: true
+
+approach: naiv-conv-oaei
+
+# ── Model ──────────────────────────────────────────────────────────────────
+# Encoder-decoder (T5-family):
+#   FlanT5XL  → google/flan-t5-xl
+#   FlanT5XXL → google/flan-t5-xxl
+# Decoder-only open-source LLMs (GPU required):
+#   LLaMA7B   → meta-llama/Llama-2-7b-hf
+#   LLaMA13B  → meta-llama/Llama-2-13b-hf
+#   Wizard13B → WizardLM/WizardLM-13B-V1.2
+#   Mistral7B → mistralai/Mistral-7B-v0.1
+# OpenAI models (OPENAI_KEY env var required):
+#   ChatGPT   → gpt-3.5-turbo-16k-0613
+#   GPT4      → gpt-4-32k-0314
+model:
+  name: FlanT5XL
+  params:
+    max_token_length: 5000
+    tokenizer_max_length: 4096
+    num_beams: 1
+    device: cuda
+    truncation: true
+    top_p: 0.95
+    temperature: 0.8
+    batch_size: 8
+    padding: max_length
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# Choose encoder_id among:
+#   iri-label | iri-label-description | iri-label-children | iri-label-parent
+encoder:
+  approach: naiv-conv-oaei
+  encoder_id: iri-label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+    - kg4fun
+  tasks: null
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  llm_confidence_th: 0.7
