@@ -28,7 +28,7 @@ approach: icv
 
 # ── Model ──────────────────────────────────────────────────────────────────
 model:
-  name: LLaMA7BBertICV
+  name: FalconBertICV
   params:
     # LLM generation settings
     max_token_length: 1

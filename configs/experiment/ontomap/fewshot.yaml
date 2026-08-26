@@ -30,7 +30,7 @@ approach: fewshot
 
 # ── Model ──────────────────────────────────────────────────────────────────
 model:
-  name: MistralAdaFewShot
+  name: MistralBertFewShot
   params:
     # LLM generation settings
     max_token_length: 1

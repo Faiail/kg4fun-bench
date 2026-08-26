@@ -197,11 +197,11 @@ class LLaMA2DecoderLLMArch(BaseLLMArch):
         if padding_side_left_llms(self.path):
             self.tokenizer = self.tokenizer.from_pretrained(
                 self.path,
-                token=os.environ["HUGGINGFACE_ACCESS_TOKEN"],
+                token=os.environ.get("HUGGINGFACE_ACCESS_TOKEN", None),
                 padding_side="left",
             )
         else:
-            self.tokenizer = self.tokenizer.from_pretrained(self.path, token=os.environ["HUGGINGFACE_ACCESS_TOKEN"])
+            self.tokenizer = self.tokenizer.from_pretrained(self.path, token=os.environ.get("HUGGINGFACE_ACCESS_TOKEN", None))
         if "falcon" not in self.path:
             self.tokenizer.eos_token = "<\s>"
         self.tokenizer.pad_token = self.tokenizer.eos_token
@@ -211,9 +211,9 @@ class LLaMA2DecoderLLMArch(BaseLLMArch):
         if self.kwargs["device"] != "cpu":
             self.model = self.model.from_pretrained(
                 self.path,
-                load_in_8bit=True,
-                device_map="balanced",
-                token=os.environ["HUGGINGFACE_ACCESS_TOKEN"],
+                # load_in_8bit=True,
+                device_map="cuda:0",
+                token=os.environ.get("HUGGINGFACE_ACCESS_TOKEN", None),
             )
         else:
             self.model = self.model.from_pretrained(self.path, token=os.environ["HUGGINGFACE_ACCESS_TOKEN"])

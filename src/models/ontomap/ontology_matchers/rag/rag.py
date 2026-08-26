@@ -100,8 +100,8 @@ class RAG(BaseOMModel):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.Retrieval = self.Retrieval(**self.kwargs["retriever-config"])
-        self.LLM = self.LLM(**self.kwargs["llm-config"])
+        self.Retrieval = self.Retrieval(**self.kwargs.get("retriever-config", self.kwargs))
+        self.LLM = self.LLM(**self.kwargs.get("llm-config", self.kwargs))
 
     def __str__(self):
         return "RAG"
@@ -157,7 +157,7 @@ class RAG(BaseOMModel):
         dataset = self.build_llm_encoder(input_data=input_data, llm_inputs=llm_inputs)
         dataloader = DataLoader(
             dataset,
-            batch_size=self.kwargs["llm-config"]["batch_size"],
+            batch_size=self.kwargs.get("llm-config", self.kwargs)["batch_size"],
             shuffle=False,
             collate_fn=dataset.collate_fn,
         )
