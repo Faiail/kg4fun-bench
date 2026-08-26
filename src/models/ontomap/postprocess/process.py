@@ -96,7 +96,7 @@ def confidence_score_based_filtering(
     return filtered_predicts
 
 
-def postprocess_heuristic(predicts: List, topk_confidence_ratio: int = 3, topk_confidence_score: int = 1) -> [List, Dict]:
+def postprocess_heuristic(predicts: List, topk_confidence_ratio: int = 3, topk_confidence_score: int = 1) -> tuple[List, Dict]:
     ir_outputs = predicts[0]["ir-outputs"]
     llm_outputs = predicts[1]["llm-output"]
 
@@ -129,7 +129,7 @@ def postprocess_heuristic(predicts: List, topk_confidence_ratio: int = 3, topk_c
     return filtered_predicts, configs
 
 
-def postprocess_hybrid(predicts: List, ir_score_threshold: float = 0.9, llm_confidence_th: float = 0.7) -> [List, Dict]:
+def postprocess_hybrid(predicts: List, ir_score_threshold: float = 0.9, llm_confidence_th: float = 0.7) -> tuple[List, Dict]:
     ir_outputs = predicts[0]["ir-outputs"]
     llm_outputs = predicts[1]["llm-output"]
     ir_cleaned_outputs_id = []
