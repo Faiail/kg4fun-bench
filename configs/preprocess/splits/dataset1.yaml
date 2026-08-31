@@ -1,0 +1,9 @@
+general:
+  out_dir: data/processed/kg4fun/dataset1/inductive_splits
+  pbar: True
+  train_ratio: 0.7
+  val_ratio: 0.1
+
+data:
+  data_dir: data/raw/kg4fun/dataset1
+
