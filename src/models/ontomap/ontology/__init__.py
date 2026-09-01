@@ -23,6 +23,8 @@ from src.models.ontomap.ontology.funneling import (
     KG4FunDataset2OMDataset,
     KG4FunDataset1Setting1TestOMDataset,
     KG4FunDataset1Setting2TestOMDataset,
+    KG4FunDataset2Setting1TestOMDataset,
+    KG4FunDataset2Setting2TestOMDataset,
 )
 from src.models.ontomap.ontology.mse import (
     MaterialInformationEMMOOMDataset,
@@ -60,12 +62,16 @@ ontology_matching = {
         KG4FunDataset2OMDataset,
         KG4FunDataset1Setting1TestOMDataset,
         KG4FunDataset1Setting2TestOMDataset,
+    KG4FunDataset2Setting1TestOMDataset,
+    KG4FunDataset2Setting2TestOMDataset,
     ],
     "funneling": [
         KG4FunDataset1OMDataset,
         KG4FunDataset2OMDataset,
         KG4FunDataset1Setting1TestOMDataset,
         KG4FunDataset1Setting2TestOMDataset,
+    KG4FunDataset2Setting1TestOMDataset,
+    KG4FunDataset2Setting2TestOMDataset,
     ],
 }
 

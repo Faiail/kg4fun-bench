@@ -1,0 +1,18 @@
+general:
+  out_dir: data/processed/kg4fun/dataset2_setting2_test/input_kg
+class:
+  general:
+    out_dir: &local_outdir data/interim/kg4fun/dataset2_setting2_test/input_kg
+    pbar: &pbar True
+  data:
+    name: data/raw/kg4fun/dataset2_setting2_test/node_type_info.json
+rel:
+  general:
+    out_dir: *local_outdir
+    pbar: *pbar
+  data:
+    name: data/interim/kg4fun/dataset2_setting2_test/input_kg/processed_classes.json
+    node_types: data/raw/kg4fun/dataset2_setting2_test/node_types.json
+    edge_types: data/raw/kg4fun/dataset2_setting2_test/edges/edge_types.json
+    edge_type_info: data/raw/kg4fun/dataset2_setting2_test/edges/edge_info.json
+
