@@ -1,0 +1,12 @@
+general:
+  out_dir: data/processed/kg4fun/dataset1_setting2_test/alignment
+  pbar: True
+ontology:
+  input_kg: data/processed/kg4fun/dataset1_setting2_test/input_kg/processed_ontology.json
+  schema: data/processed/kg4fun/dataset1_setting2_test/schema/processed_ontology.json
+alignment:
+  node_types: data/raw/kg4fun/dataset1_setting2_test/node_types.json
+  connected_components: data/raw/kg4fun/dataset1_setting2_test/edges/connected_components.json
+  num_class_negative: 0
+  num_rel_negative: 0
+

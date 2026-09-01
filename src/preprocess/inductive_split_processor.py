@@ -136,36 +136,75 @@ class InductiveSplitProcessor:
                 test_node_types.add(e["edge_type"]["head_cls"])
                 test_node_types.add(e["edge_type"]["tail_cls"])
                 
-        print("Creating schemas for Setting 1 and Setting 2...")
-        setting1_dir = os.path.join(self.out_dir, "setting1")
-        os.makedirs(setting1_dir, exist_ok=True)
+        import shutil
         
-        save_json(self.filter_schema(train_edge_types, train_node_types), os.path.join(setting1_dir, "train_schema.json"))
-        save_json({"edge_types": self.global_edge_types, "node_types": self.global_node_types}, os.path.join(setting1_dir, "val_schema.json"))
-        save_json({"edge_types": self.global_edge_types, "node_types": self.global_node_types}, os.path.join(setting1_dir, "test_schema.json"))
+        print("Creating schemas and full raw directories for Setting 1 and Setting 2...")
         
-        setting2_dir = os.path.join(self.out_dir, "setting2")
-        os.makedirs(setting2_dir, exist_ok=True)
-        
-        save_json(self.filter_schema(train_edge_types, train_node_types), os.path.join(setting2_dir, "train_schema.json"))
-        save_json(self.filter_schema(val_edge_types, val_node_types), os.path.join(setting2_dir, "val_schema.json"))
-        save_json(self.filter_schema(test_edge_types, test_node_types), os.path.join(setting2_dir, "test_schema.json"))
+        # Helper to export a full raw dataset directory
+        def export_raw_split(split_name, nodes_subset, edges_subset, edge_types_subset, node_types_subset):
+            split_dir = os.path.join(self.out_dir, split_name)
+            edges_dir = os.path.join(split_dir, "edges")
+            partition_dir = os.path.join(edges_dir, "partition")
+            os.makedirs(partition_dir, exist_ok=True)
+            
+            # Filter schema
+            schema = self.filter_schema(edge_types_subset, node_types_subset)
+            
+            # Copy untouched info files and folders
+            for fname in ["node_type_info.json", "node_info.json"]:
+                src = os.path.join(self.data_dir, fname)
+                if os.path.exists(src):
+                    shutil.copy2(src, os.path.join(split_dir, fname))
+            
+            for dname in ["node_types", "edge_types"]:
+                src = os.path.join(self.data_dir, dname)
+                if os.path.isdir(src):
+                    shutil.copytree(src, os.path.join(split_dir, dname), dirs_exist_ok=True)
+                    
+            src_edge_info = os.path.join(self.data_dir, "edges", "edge_info.json")
+            if os.path.exists(src_edge_info):
+                shutil.copy2(src_edge_info, os.path.join(edges_dir, "edge_info.json"))
+                
+            # Save filtered schemas
+            save_json(schema["node_types"], os.path.join(split_dir, "node_types.json"))
+            save_json(schema["edge_types"], os.path.join(edges_dir, "edge_types.json"))
+            
+            # Save nodes and edges
+            save_json([n for n in self.nodes if n["qid"] in nodes_subset], os.path.join(split_dir, "nodes.json"))
+            save_json(edges_subset, os.path.join(partition_dir, "part_0.json"))
+            
+            # Filter connected_components and mapping based on the schemas
+            # (Only keeping components that have at least one edge type in the filtered schema)
+            src_cc = os.path.join(self.data_dir, "edges", "connected_components.json")
+            if os.path.exists(src_cc):
+                cc = load_json(src_cc)
+                filtered_cc = []
+                for comp in cc:
+                    valid_ets = [et for et in comp.get("edge_types", []) if tuple(et) in edge_types_subset]
+                    if valid_ets:
+                        comp_copy = comp.copy()
+                        comp_copy["edge_types"] = valid_ets
+                        filtered_cc.append(comp_copy)
+                save_json(filtered_cc, os.path.join(edges_dir, "connected_components.json"))
+                
+            src_mapping = os.path.join(self.data_dir, "edges", "edge_component_mapping.json")
+            if os.path.exists(src_mapping):
+                mapping = load_json(src_mapping)
+                filtered_mapping = [m for m in mapping if tuple(m["edge_type"]) in edge_types_subset]
+                save_json(filtered_mapping, os.path.join(edges_dir, "edge_component_mapping.json"))
 
-        print("Saving graph partitions...")
-        graph_out = os.path.join(self.out_dir, "graphs")
-        os.makedirs(graph_out, exist_ok=True)
+        # For Setting 1, val/test get the global schema
+        global_et = set((et["pid"], et["head_cls"], et["tail_cls"]) for et in self.global_edge_types)
+        global_nt = set(info["cls_idx"] for qid, info in self.global_node_types.items())
         
-        save_json(train_edges, os.path.join(graph_out, "train_edges.json"))
-        save_json(val_edges, os.path.join(graph_out, "val_edges.json"))
-        save_json(test_edges, os.path.join(graph_out, "test_edges.json"))
+        # Export Setting 1
+        export_raw_split("dataset1_setting1_train", train_nodes, train_edges, train_edge_types, train_node_types)
+        export_raw_split("dataset1_setting1_val", val_nodes, val_edges, global_et, global_nt)
+        export_raw_split("dataset1_setting1_test", test_nodes, test_edges, global_et, global_nt)
         
-        train_n = [n for n in self.nodes if n["qid"] in train_nodes]
-        val_n = [n for n in self.nodes if n["qid"] in val_nodes]
-        test_n = [n for n in self.nodes if n["qid"] in test_nodes]
+        # Export Setting 2
+        export_raw_split("dataset1_setting2_train", train_nodes, train_edges, train_edge_types, train_node_types)
+        export_raw_split("dataset1_setting2_val", val_nodes, val_edges, val_edge_types, val_node_types)
+        export_raw_split("dataset1_setting2_test", test_nodes, test_edges, test_edge_types, test_node_types)
         
-        save_json(train_n, os.path.join(graph_out, "train_nodes.json"))
-        save_json(val_n, os.path.join(graph_out, "val_nodes.json"))
-        save_json(test_n, os.path.join(graph_out, "test_nodes.json"))
-        
-        print("Done! Inductive splits generated.")
-
+        print("Done! Full raw directory splits generated.")
