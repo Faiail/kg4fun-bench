@@ -1,16 +1,14 @@
 import os
-import json
-import glob
 import random
 import shutil
 import networkx as nx
 from tqdm import tqdm
+
 from src.utils import load_json, save_json
 from src.utils import ParameterKeys
 from src.preprocess.ontomap.kg4fun_fields import ClassFields, RelFields
 
-
-class InductiveSplitProcessor:
+class HybridSplitProcessor:
     def __init__(self, parameters: dict):
         self.parameters = parameters
         self.init()
@@ -24,63 +22,65 @@ class InductiveSplitProcessor:
     def _init_general(self):
         general_parameters = self.parameters.get(ParameterKeys.GENERAL, dict())
         self.out_dir = general_parameters.get(
-            ParameterKeys.OUT_DIR, f"data/processed/kg4fun/inductive_splits"
+            ParameterKeys.OUT_DIR, f"data/processed/kg4fun/hybrid_splits"
         )
         os.makedirs(self.out_dir, exist_ok=True)
         self.pbar = general_parameters.get(ParameterKeys.PBAR, True)
-        # 70% train, 10% val, 20% test by default
         self.train_ratio = general_parameters.get(ParameterKeys.TRAIN_RATIO, 0.7)
         self.val_ratio = general_parameters.get(ParameterKeys.VAL_RATIO, 0.1)
 
     def _init_data(self):
         dataset_parameters = self.parameters.get(ParameterKeys.DATA, dict())
-        self.data_dir = dataset_parameters.get(ParameterKeys.DATA_DIR, f"data/raw/kg4fun/dataset1")
+        self.data_dir = dataset_parameters.get(ParameterKeys.DATA_DIR, "./")
 
-        # Load global schema
         self.global_node_types = load_json(os.path.join(self.data_dir, f"{ParameterKeys.NODE_TYPES}.json"))
         self.global_edge_types = load_json(os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_TYPES}.json"))
         
-        # Load nodes
         print("Loading nodes...")
         self.nodes = load_json(os.path.join(self.data_dir, f"{ParameterKeys.NODES}.json"))
         
-        # Load edges
         print("Loading edges from partitions...")
+        import glob
         edge_files = glob.glob(
             os.path.join(self.data_dir, ParameterKeys.EDGES, ParameterKeys.PARTITION, "part_*.json")
         )
         self.all_edges = []
-        
         iter_files = tqdm(edge_files, desc="Loading edge partitions") if self.pbar else edge_files
         for ef in iter_files:
             self.all_edges.extend(load_json(ef))
             
         print(f"Total edges loaded: {len(self.all_edges)}")
 
-    def _grow_island(self, G, target_size, unassigned):
+    def _grow_island(self, G, target_size, unassigned, valid_subset=None):
         import collections
         island = set()
-        while len(island) < target_size and unassigned:
-            start_node = next(iter(unassigned))
+        candidates = set(unassigned) if valid_subset is None else unassigned.intersection(valid_subset)
+        if not candidates:
+            return island
+            
+        while len(island) < target_size and candidates:
+            # Pop an arbitrary element efficiently from the set
+            start_node = next(iter(candidates))
             queue = collections.deque([start_node])
             unassigned.remove(start_node)
+            candidates.remove(start_node)
             island.add(start_node)
             
             while queue and len(island) < target_size:
                 node = queue.popleft()
-                neighbors = [n for n in G.neighbors(node) if n in unassigned]
+                neighbors = [n for n in G.neighbors(node) if n in candidates]
                 random.shuffle(neighbors)
                 
                 for neighbor in neighbors:
                     if len(island) >= target_size:
                         break
                     unassigned.remove(neighbor)
+                    candidates.remove(neighbor)
                     island.add(neighbor)
                     queue.append(neighbor)
         return island
 
     def filter_schema(self, target_node_types):
-        # Only keep edge types where both head and tail are in the target node types
         filtered_edge_types = [
             et for et in self.global_edge_types 
             if et[ParameterKeys.HEAD_CLS] in target_node_types and et[ParameterKeys.TAIL_CLS] in target_node_types
@@ -96,30 +96,36 @@ class InductiveSplitProcessor:
             ParameterKeys.NODE_TYPES: filtered_node_types
         }
 
-    def _export_split(self, split_name, target_schema_nodes):
+    def _export_split(self, split_name, target_schema_nodes, target_instance_qids):
         split_dir = os.path.join(self.out_dir, split_name)
         edges_dir = os.path.join(split_dir, ParameterKeys.EDGES)
         partition_dir = os.path.join(edges_dir, ParameterKeys.PARTITION)
         os.makedirs(partition_dir, exist_ok=True)
         
-        # 1. Filter Schema
-        schema = self.filter_schema(target_schema_nodes)
+        # 1. Schema
+        # If target_schema_nodes is None, it means we use the global schema (for val/test)
+        if target_schema_nodes is None:
+            schema = {
+                ParameterKeys.EDGE_TYPES: self.global_edge_types,
+                ParameterKeys.NODE_TYPES: self.global_node_types
+            }
+            target_schema_nodes = set(info[ParameterKeys.CLS_IDX] for info in self.global_node_types.values())
+        else:
+            schema = self.filter_schema(target_schema_nodes)
+            
         valid_pids = {et[ParameterKeys.PID] for et in schema[ParameterKeys.EDGE_TYPES]}
         
         # 2. Filter input graph
-        # Nodes
-        nodes_subset = [n for n in self.nodes if n[ParameterKeys.CLS_IDX] in target_schema_nodes]
-        valid_qids = {n[ParameterKeys.QID] for n in nodes_subset}
+        nodes_subset = [n for n in self.nodes if n[ParameterKeys.QID] in target_instance_qids]
         
-        # Edges
         edges_subset = [
             e for e in self.all_edges 
-            if e[ParameterKeys.HEAD_QID] in valid_qids and e[ParameterKeys.TAIL_QID] in valid_qids
+            if e[ParameterKeys.HEAD_QID] in target_instance_qids and e[ParameterKeys.TAIL_QID] in target_instance_qids
                and e[ParameterKeys.EDGE_TYPE][ParameterKeys.HEAD_CLS] in target_schema_nodes
                and e[ParameterKeys.EDGE_TYPE][ParameterKeys.TAIL_CLS] in target_schema_nodes
         ]
         
-        # Save filtered schemas
+        # Save schemas
         save_json(schema[ParameterKeys.NODE_TYPES], os.path.join(split_dir, f"{ParameterKeys.NODE_TYPES}.json"))
         save_json(schema[ParameterKeys.EDGE_TYPES], os.path.join(edges_dir, f"{ParameterKeys.EDGE_TYPES}.json"))
         
@@ -137,7 +143,7 @@ class InductiveSplitProcessor:
         src_ni = os.path.join(self.data_dir, f"{ParameterKeys.NODE_INFO}.json")
         if os.path.exists(src_ni):
             ni = load_json(src_ni)
-            filtered_ni = {k: v for k, v in ni.items() if k in valid_qids}
+            filtered_ni = {k: v for k, v in ni.items() if k in target_instance_qids}
             save_json(filtered_ni, os.path.join(split_dir, f"{ParameterKeys.NODE_INFO}.json"))
         
         src_edge_info = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_INFO}.json")
@@ -178,7 +184,7 @@ class InductiveSplitProcessor:
                         except Exception:
                             pass
         
-        # Connected components and mappings (filtered by keeping components that have valid edge types)
+        # Connected components and mappings
         src_cc = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.CONNECTED_COMPONENTS}.json")
         if os.path.exists(src_cc):
             cc = load_json(src_cc)
@@ -201,34 +207,61 @@ class InductiveSplitProcessor:
     def __call__(self):
         print("Building undirected SCHEMA graph for partitioning...")
         schema_graph = nx.Graph()
-        
         for qid, info in self.global_node_types.items():
             schema_graph.add_node(info[ParameterKeys.CLS_IDX])
-            
         for et in self.global_edge_types:
             schema_graph.add_edge(et[ParameterKeys.HEAD_CLS], et[ParameterKeys.TAIL_CLS])
             
         total_schema_nodes = len(schema_graph.nodes())
         print(f"Total schema nodes: {total_schema_nodes}")
         
-        unassigned = set(schema_graph.nodes())
-        train_target = int(self.train_ratio * total_schema_nodes)
-        val_target = int(self.val_ratio * total_schema_nodes)
+        unassigned_schema = set(schema_graph.nodes())
+        train_schema_target = int(self.train_ratio * total_schema_nodes)
         
-        print("Assigning schema nodes to islands (Train/Val/Test)...")
-        train_schema_nodes = self._grow_island(schema_graph, train_target, unassigned)
-        val_schema_nodes = self._grow_island(schema_graph, val_target, unassigned)
-        test_schema_nodes = unassigned # the rest
+        print("Assigning SCHEMA nodes to train island...")
+        train_schema_nodes = self._grow_island(schema_graph, train_schema_target, unassigned_schema)
+        # We don't need to partition the rest of the schema, because val/test use the WHOLE schema.
+
+        print("Building undirected INSTANCE graph for partitioning...")
+        instance_graph = nx.Graph()
+        for n in self.nodes:
+            instance_graph.add_node(n[ParameterKeys.QID], cls_idx=n[ParameterKeys.CLS_IDX])
         
-        print(f"Schema Nodes assigned - Train: {len(train_schema_nodes)}, Val: {len(val_schema_nodes)}, Test: {len(test_schema_nodes)}")
+        iter_edges2 = tqdm(self.all_edges, desc="Adding edges to instance graph") if self.pbar else self.all_edges
+        for e in iter_edges2:
+            instance_graph.add_edge(e[ParameterKeys.HEAD_QID], e[ParameterKeys.TAIL_QID])
+            
+        total_instance_nodes = len(instance_graph.nodes())
+        print(f"Total instance nodes: {total_instance_nodes}")
         
-        print("Exporting train split...")
-        self._export_split("train", train_schema_nodes)
+        # Partition instance graph
+        # Train instances must ONLY be selected from base instances (those whose class is in train_schema_nodes)
+        base_instances = {n for n, attr in instance_graph.nodes(data=True) if attr["cls_idx"] in train_schema_nodes}
         
-        print("Exporting val split...")
-        self._export_split("val", val_schema_nodes)
+        unassigned_instances = set(instance_graph.nodes())
+        train_instance_target = int(self.train_ratio * total_instance_nodes)
+        val_instance_target = int(self.val_ratio * total_instance_nodes)
         
-        print("Exporting test split...")
-        self._export_split("test", test_schema_nodes)
+        print("Growing TRAIN instance island (restricted to train schema classes)...")
+        # Ensure we only pick from base_instances for Train
+        train_instance_qids = self._grow_island(instance_graph, train_instance_target, unassigned_instances, valid_subset=base_instances)
         
-        print("Done! Inductive splits generated from schema graph.")
+        print("Growing VAL instance island (can include remaining base + new instances)...")
+        # Val can pick from ANY remaining unassigned instances
+        val_instance_qids = self._grow_island(instance_graph, val_instance_target, unassigned_instances)
+        
+        print("Assigning remaining to TEST instance island...")
+        test_instance_qids = unassigned_instances
+        
+        print(f"Instance Nodes assigned - Train: {len(train_instance_qids)}, Val: {len(val_instance_qids)}, Test: {len(test_instance_qids)}")
+        
+        print("Exporting train split (subset schema)...")
+        self._export_split("train", train_schema_nodes, train_instance_qids)
+        
+        print("Exporting val split (global schema)...")
+        self._export_split("val", None, val_instance_qids)
+        
+        print("Exporting test split (global schema)...")
+        self._export_split("test", None, test_instance_qids)
+        
+        print("Done! Hybrid splits generated.")
