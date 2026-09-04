@@ -2,12 +2,12 @@ import os
 import json
 import glob
 import random
-from collections import defaultdict
+import shutil
 import networkx as nx
 from tqdm import tqdm
-
 from src.utils import load_json, save_json
 from src.utils import ParameterKeys
+from src.preprocess.ontomap.kg4fun_fields import ClassFields, RelFields
 
 
 class InductiveSplitProcessor:
@@ -24,47 +24,38 @@ class InductiveSplitProcessor:
     def _init_general(self):
         general_parameters = self.parameters.get(ParameterKeys.GENERAL, dict())
         self.out_dir = general_parameters.get(
-            ParameterKeys.OUT_DIR, "data/processed/kg4fun/inductive_splits"
+            ParameterKeys.OUT_DIR, f"data/processed/kg4fun/inductive_splits"
         )
         os.makedirs(self.out_dir, exist_ok=True)
         self.pbar = general_parameters.get(ParameterKeys.PBAR, True)
         # 70% train, 10% val, 20% test by default
-        self.train_ratio = general_parameters.get("train_ratio", 0.7)
-        self.val_ratio = general_parameters.get("val_ratio", 0.1)
+        self.train_ratio = general_parameters.get(ParameterKeys.TRAIN_RATIO, 0.7)
+        self.val_ratio = general_parameters.get(ParameterKeys.VAL_RATIO, 0.1)
 
     def _init_data(self):
         dataset_parameters = self.parameters.get(ParameterKeys.DATA, dict())
-        self.data_dir = dataset_parameters.get("data_dir", "data/raw/kg4fun/dataset1")
+        self.data_dir = dataset_parameters.get(ParameterKeys.DATA_DIR, f"data/raw/kg4fun/dataset1")
 
+        # Load global schema
+        self.global_node_types = load_json(os.path.join(self.data_dir, f"{ParameterKeys.NODE_TYPES}.json"))
+        self.global_edge_types = load_json(os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_TYPES}.json"))
+        
         # Load nodes
         print("Loading nodes...")
-        self.nodes = load_json(os.path.join(self.data_dir, "nodes.json"))
-        self.node_qids = {n["qid"] for n in self.nodes}
-
+        self.nodes = load_json(os.path.join(self.data_dir, f"{ParameterKeys.NODES}.json"))
+        
         # Load edges
         print("Loading edges from partitions...")
         edge_files = glob.glob(
-            os.path.join(self.data_dir, "edges", "partition", "part_*.json")
+            os.path.join(self.data_dir, ParameterKeys.EDGES, ParameterKeys.PARTITION, "part_*.json")
         )
         self.all_edges = []
-
-        iter_files = (
-            tqdm(edge_files, desc="Loading edge partitions")
-            if self.pbar
-            else edge_files
-        )
+        
+        iter_files = tqdm(edge_files, desc="Loading edge partitions") if self.pbar else edge_files
         for ef in iter_files:
             self.all_edges.extend(load_json(ef))
-
+            
         print(f"Total edges loaded: {len(self.all_edges)}")
-
-        # Load global schema
-        self.global_node_types = load_json(
-            os.path.join(self.data_dir, "node_types.json")
-        )
-        self.global_edge_types = load_json(
-            os.path.join(self.data_dir, "edges", "edge_types.json")
-        )
 
     def _grow_island(self, G, target_size, unassigned):
         island = set()
@@ -73,284 +64,170 @@ class InductiveSplitProcessor:
             queue = [start_node]
             unassigned.remove(start_node)
             island.add(start_node)
-
+            
             while queue and len(island) < target_size:
-                curr = queue.pop(0)
-                neighbors = list(G.neighbors(curr))
+                node = queue.pop(0)
+                neighbors = [n for n in G.neighbors(node) if n in unassigned]
                 random.shuffle(neighbors)
+                
                 for neighbor in neighbors:
-                    if neighbor in unassigned:
-                        unassigned.remove(neighbor)
-                        island.add(neighbor)
-                        queue.append(neighbor)
-                        if len(island) >= target_size:
-                            break
+                    if len(island) >= target_size:
+                        break
+                    unassigned.remove(neighbor)
+                    island.add(neighbor)
+                    queue.append(neighbor)
         return island
 
-    def filter_schema(self, target_edge_types, target_node_types):
+    def filter_schema(self, target_node_types):
+        # Only keep edge types where both head and tail are in the target node types
+        filtered_edge_types = [
+            et for et in self.global_edge_types 
+            if et[ParameterKeys.HEAD_CLS] in target_node_types and et[ParameterKeys.TAIL_CLS] in target_node_types
+        ]
+        
+        filtered_node_types = {
+            qid: info for qid, info in self.global_node_types.items() 
+            if info[ParameterKeys.CLS_IDX] in target_node_types
+        }
+        
         return {
-            "edge_types": [
-                et
-                for et in self.global_edge_types
-                if (et["pid"], et["head_cls"], et["tail_cls"]) in target_edge_types
-            ],
-            "node_types": {
-                qid: info
-                for qid, info in self.global_node_types.items()
-                if info["cls_idx"] in target_node_types
-            },
+            ParameterKeys.EDGE_TYPES: filtered_edge_types,
+            ParameterKeys.NODE_TYPES: filtered_node_types
         }
 
+    def _export_split(self, split_name, target_schema_nodes):
+        split_dir = os.path.join(self.out_dir, split_name)
+        edges_dir = os.path.join(split_dir, ParameterKeys.EDGES)
+        partition_dir = os.path.join(edges_dir, ParameterKeys.PARTITION)
+        os.makedirs(partition_dir, exist_ok=True)
+        
+        # 1. Filter Schema
+        schema = self.filter_schema(target_schema_nodes)
+        valid_pids = {et[ParameterKeys.PID] for et in schema[ParameterKeys.EDGE_TYPES]}
+        
+        # 2. Filter input graph
+        # Nodes
+        nodes_subset = [n for n in self.nodes if n[ParameterKeys.CLS_IDX] in target_schema_nodes]
+        valid_qids = {n[ParameterKeys.QID] for n in nodes_subset}
+        
+        # Edges
+        edges_subset = [
+            e for e in self.all_edges 
+            if e[ParameterKeys.HEAD_QID] in valid_qids and e[ParameterKeys.TAIL_QID] in valid_qids
+               and e[ParameterKeys.EDGE_TYPE][ParameterKeys.HEAD_CLS] in target_schema_nodes
+               and e[ParameterKeys.EDGE_TYPE][ParameterKeys.TAIL_CLS] in target_schema_nodes
+        ]
+        
+        # Save filtered schemas
+        save_json(schema[ParameterKeys.NODE_TYPES], os.path.join(split_dir, f"{ParameterKeys.NODE_TYPES}.json"))
+        save_json(schema[ParameterKeys.EDGE_TYPES], os.path.join(edges_dir, f"{ParameterKeys.EDGE_TYPES}.json"))
+        
+        # Save nodes and edges
+        save_json(nodes_subset, os.path.join(split_dir, f"{ParameterKeys.NODES}.json"))
+        save_json(edges_subset, os.path.join(partition_dir, f"{ParameterKeys.PART_0}.json"))
+        
+        # 3. Filter other information files
+        src_nti = os.path.join(self.data_dir, f"{ParameterKeys.NODE_TYPE_INFO}.json")
+        if os.path.exists(src_nti):
+            nti = load_json(src_nti)
+            filtered_nti = {k: v for k, v in nti.items() if k in schema[ParameterKeys.NODE_TYPES]}
+            save_json(filtered_nti, os.path.join(split_dir, f"{ParameterKeys.NODE_TYPE_INFO}.json"))
+
+        src_ni = os.path.join(self.data_dir, f"{ParameterKeys.NODE_INFO}.json")
+        if os.path.exists(src_ni):
+            ni = load_json(src_ni)
+            filtered_ni = {k: v for k, v in ni.items() if k in valid_qids}
+            save_json(filtered_ni, os.path.join(split_dir, f"{ParameterKeys.NODE_INFO}.json"))
+        
+        src_edge_info = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_INFO}.json")
+        if os.path.exists(src_edge_info):
+            ei = load_json(src_edge_info)
+            filtered_ei = {k: v for k, v in ei.items() if k in valid_pids}
+            save_json(filtered_ei, os.path.join(edges_dir, f"{ParameterKeys.EDGE_INFO}.json"))
+
+        # Filter node_types summarizations
+        src_nt_dir = os.path.join(self.data_dir, ParameterKeys.NODE_TYPES)
+        if os.path.isdir(src_nt_dir):
+            shutil.copytree(src_nt_dir, os.path.join(split_dir, ParameterKeys.NODE_TYPES), dirs_exist_ok=True)
+            for root, _, files in os.walk(os.path.join(split_dir, ParameterKeys.NODE_TYPES)):
+                for file in files:
+                    if file.endswith(".json"):
+                        path = os.path.join(root, file)
+                        try:
+                            data = load_json(path)
+                            if isinstance(data, list) and len(data) > 0 and ClassFields.IDX in data[0]:
+                                filtered_data = [d for d in data if d[ClassFields.IDX] in target_schema_nodes]
+                                save_json(filtered_data, path)
+                        except Exception:
+                            pass
+
+        # Filter edge_types summarizations
+        src_et_dir = os.path.join(self.data_dir, ParameterKeys.EDGE_TYPES)
+        if os.path.isdir(src_et_dir):
+            shutil.copytree(src_et_dir, os.path.join(split_dir, ParameterKeys.EDGE_TYPES), dirs_exist_ok=True)
+            for root, _, files in os.walk(os.path.join(split_dir, ParameterKeys.EDGE_TYPES)):
+                for file in files:
+                    if file.endswith(".json"):
+                        path = os.path.join(root, file)
+                        try:
+                            data = load_json(path)
+                            if isinstance(data, list) and len(data) > 0 and RelFields.PID in data[0]:
+                                filtered_data = [d for d in data if d[RelFields.PID] in valid_pids]
+                                save_json(filtered_data, path)
+                        except Exception:
+                            pass
+        
+        # Connected components and mappings (filtered by keeping components that have valid edge types)
+        src_cc = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.CONNECTED_COMPONENTS}.json")
+        if os.path.exists(src_cc):
+            cc = load_json(src_cc)
+            filtered_cc = []
+            for comp in cc:
+                valid_ets = [et for et in comp.get(ParameterKeys.EDGE_TYPES, []) if et[0] in valid_pids]
+                if valid_ets:
+                    comp_copy = comp.copy()
+                    comp_copy[ParameterKeys.EDGE_TYPES] = valid_ets
+                    filtered_cc.append(comp_copy)
+            save_json(filtered_cc, os.path.join(edges_dir, f"{ParameterKeys.CONNECTED_COMPONENTS}.json"))
+            
+        src_mapping = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_COMPONENT_MAPPING}.json")
+        if os.path.exists(src_mapping):
+            mapping = load_json(src_mapping)
+            filtered_mapping = [m for m in mapping if m[ParameterKeys.EDGE_TYPE][0] in valid_pids]
+            save_json(filtered_mapping, os.path.join(edges_dir, f"{ParameterKeys.EDGE_COMPONENT_MAPPING}.json"))
+
+
     def __call__(self):
-        print("Building undirected graph for partitioning...")
-        G = nx.Graph()
-
-        iter_edges = (
-            tqdm(self.all_edges, desc="Building graph") if self.pbar else self.all_edges
-        )
-        for e in iter_edges:
-            G.add_edge(e["head_qid"], e["tail_qid"])
-
-        total_nodes = len(G.nodes())
-        unassigned = set(G.nodes())
-
-        train_target = int(self.train_ratio * total_nodes)
-        val_target = int(self.val_ratio * total_nodes)
-
-        print("Assigning nodes to islands (Train/Val/Test)...")
-        train_nodes = self._grow_island(G, train_target, unassigned)
-        val_nodes = self._grow_island(G, val_target, unassigned)
-        test_nodes = unassigned  # the rest
-
-        # Include isolated nodes that weren't in any edge
-        isolated = list(self.node_qids - set(G.nodes()))
-        random.shuffle(isolated)
-
-        idx1 = int(self.train_ratio * len(isolated))
-        idx2 = int((self.train_ratio + self.val_ratio) * len(isolated))
-        train_nodes.update(isolated[:idx1])
-        val_nodes.update(isolated[idx1:idx2])
-        test_nodes.update(isolated[idx2:])
-
-        print(
-            f"Nodes assigned - Train: {len(train_nodes)}, Val: {len(val_nodes)}, Test: {len(test_nodes)}"
-        )
-
-        print("Extracting independent islands (filtering edges)...")
-        train_edges, val_edges, test_edges = [], [], []
-        train_edge_types, val_edge_types, test_edge_types = set(), set(), set()
-
-        # Initialize node types from the nodes themselves (covers isolated nodes)
-        train_node_types = set(
-            n["cls_idx"] for n in self.nodes if n["qid"] in train_nodes
-        )
-        val_node_types = set(n["cls_idx"] for n in self.nodes if n["qid"] in val_nodes)
-        test_node_types = set(
-            n["cls_idx"] for n in self.nodes if n["qid"] in test_nodes
-        )
-
-        iter_edges2 = (
-            tqdm(self.all_edges, desc="Filtering edges")
-            if self.pbar
-            else self.all_edges
-        )
-        for e in iter_edges2:
-            u, v = e["head_qid"], e["tail_qid"]
-            if u in train_nodes and v in train_nodes:
-                train_edges.append(e)
-                train_edge_types.add(
-                    (
-                        e["edge_type"]["pid"],
-                        e["edge_type"]["head_cls"],
-                        e["edge_type"]["tail_cls"],
-                    )
-                )
-                train_node_types.add(e["edge_type"]["head_cls"])
-                train_node_types.add(e["edge_type"]["tail_cls"])
-            elif u in val_nodes and v in val_nodes:
-                val_edges.append(e)
-                val_edge_types.add(
-                    (
-                        e["edge_type"]["pid"],
-                        e["edge_type"]["head_cls"],
-                        e["edge_type"]["tail_cls"],
-                    )
-                )
-                val_node_types.add(e["edge_type"]["head_cls"])
-                val_node_types.add(e["edge_type"]["tail_cls"])
-            elif u in test_nodes and v in test_nodes:
-                test_edges.append(e)
-                test_edge_types.add(
-                    (
-                        e["edge_type"]["pid"],
-                        e["edge_type"]["head_cls"],
-                        e["edge_type"]["tail_cls"],
-                    )
-                )
-                test_node_types.add(e["edge_type"]["head_cls"])
-                test_node_types.add(e["edge_type"]["tail_cls"])
-
-        import shutil
-
-        # Helper to export a full raw dataset directory
-        def export_raw_split(
-            split_name, nodes_subset, edges_subset, edge_types_subset, node_types_subset
-        ):
-            split_dir = os.path.join(self.out_dir, split_name)
-            edges_dir = os.path.join(split_dir, "edges")
-            partition_dir = os.path.join(edges_dir, "partition")
-            os.makedirs(partition_dir, exist_ok=True)
-
-            schema = self.filter_schema(edge_types_subset, node_types_subset)
-
-            # Filter node_type_info.json
-            src_nti = os.path.join(self.data_dir, "node_type_info.json")
-            if os.path.exists(src_nti):
-                nti = load_json(src_nti)
-                filtered_nti = {
-                    k: v for k, v in nti.items() if k in schema["node_types"]
-                }
-                save_json(filtered_nti, os.path.join(split_dir, "node_type_info.json"))
-
-            src_ni = os.path.join(self.data_dir, "node_info.json")
-            if os.path.exists(src_ni):
-                shutil.copy2(src_ni, os.path.join(split_dir, "node_info.json"))
-
-            # Filter edge_info.json
-            src_edge_info = os.path.join(self.data_dir, "edges", "edge_info.json")
-            if os.path.exists(src_edge_info):
-                ei = load_json(src_edge_info)
-                valid_pids = {et["pid"] for et in schema["edge_types"]}
-                filtered_ei = {k: v for k, v in ei.items() if k in valid_pids}
-                save_json(filtered_ei, os.path.join(edges_dir, "edge_info.json"))
-
-            # Filter node_types/summarization/.../node_type_info.json
-            src_nt_dir = os.path.join(self.data_dir, "node_types")
-            if os.path.isdir(src_nt_dir):
-                shutil.copytree(
-                    src_nt_dir,
-                    os.path.join(split_dir, "node_types"),
-                    dirs_exist_ok=True,
-                )
-                for root, _, files in os.walk(os.path.join(split_dir, "node_types")):
-                    for file in files:
-                        if file.endswith(".json"):
-                            path = os.path.join(root, file)
-                            try:
-                                data = load_json(path)
-                                if (
-                                    isinstance(data, list)
-                                    and len(data) > 0
-                                    and "idx" in data[0]
-                                ):
-                                    filtered_data = [
-                                        d for d in data if d["idx"] in node_types_subset
-                                    ]
-                                    save_json(filtered_data, path)
-                            except:
-                                pass
-
-            # Copy edge_types/summarization/... blindly (since alignment filters via component_id)
-            src_et_dir = os.path.join(self.data_dir, "edge_types")
-            if os.path.isdir(src_et_dir):
-                shutil.copytree(
-                    src_et_dir,
-                    os.path.join(split_dir, "edge_types"),
-                    dirs_exist_ok=True,
-                )
-
-            # Save filtered schemas
-            save_json(schema["node_types"], os.path.join(split_dir, "node_types.json"))
-            save_json(schema["edge_types"], os.path.join(edges_dir, "edge_types.json"))
-
-            # Save nodes and edges
-            save_json(
-                [n for n in self.nodes if n["qid"] in nodes_subset],
-                os.path.join(split_dir, "nodes.json"),
-            )
-            save_json(edges_subset, os.path.join(partition_dir, "part_0.json"))
-
-            # Filter connected_components and mapping based on the schemas
-            src_cc = os.path.join(self.data_dir, "edges", "connected_components.json")
-            if os.path.exists(src_cc):
-                cc = load_json(src_cc)
-                filtered_cc = []
-                for comp in cc:
-                    valid_ets = [
-                        et
-                        for et in comp.get("edge_types", [])
-                        if tuple(et) in edge_types_subset
-                    ]
-                    if valid_ets:
-                        comp_copy = comp.copy()
-                        comp_copy["edge_types"] = valid_ets
-                        filtered_cc.append(comp_copy)
-                save_json(
-                    filtered_cc, os.path.join(edges_dir, "connected_components.json")
-                )
-
-            src_mapping = os.path.join(
-                self.data_dir, "edges", "edge_component_mapping.json"
-            )
-            if os.path.exists(src_mapping):
-                mapping = load_json(src_mapping)
-                filtered_mapping = [
-                    m for m in mapping if tuple(m["edge_type"]) in edge_types_subset
-                ]
-                save_json(
-                    filtered_mapping,
-                    os.path.join(edges_dir, "edge_component_mapping.json"),
-                )
-
-        # For Setting 1, val/test get the global schema
-        global_et = set(
-            (et["pid"], et["head_cls"], et["tail_cls"]) for et in self.global_edge_types
-        )
-        global_nt = set(info["cls_idx"] for qid, info in self.global_node_types.items())
-
-        # Extract the base dataset name (e.g. 'dataset1', 'dataset2') from the input directory path
-        dataset_name = os.path.basename(os.path.normpath(self.data_dir))
-
-        # Export Setting 1
-        export_raw_split(
-            f"{dataset_name}_setting1_train",
-            train_nodes,
-            train_edges,
-            train_edge_types,
-            train_node_types,
-        )
-        export_raw_split(
-            f"{dataset_name}_setting1_val", val_nodes, val_edges, global_et, global_nt
-        )
-        export_raw_split(
-            f"{dataset_name}_setting1_test",
-            test_nodes,
-            test_edges,
-            global_et,
-            global_nt,
-        )
-
-        # Export Setting 2
-        export_raw_split(
-            f"{dataset_name}_setting2_train",
-            train_nodes,
-            train_edges,
-            train_edge_types,
-            train_node_types,
-        )
-        export_raw_split(
-            f"{dataset_name}_setting2_val",
-            val_nodes,
-            val_edges,
-            val_edge_types,
-            val_node_types,
-        )
-        export_raw_split(
-            f"{dataset_name}_setting2_test",
-            test_nodes,
-            test_edges,
-            test_edge_types,
-            test_node_types,
-        )
-
-        print("Done! Full raw directory splits generated.")
+        print("Building undirected SCHEMA graph for partitioning...")
+        schema_graph = nx.Graph()
+        
+        for qid, info in self.global_node_types.items():
+            schema_graph.add_node(info[ParameterKeys.CLS_IDX])
+            
+        for et in self.global_edge_types:
+            schema_graph.add_edge(et[ParameterKeys.HEAD_CLS], et[ParameterKeys.TAIL_CLS])
+            
+        total_schema_nodes = len(schema_graph.nodes())
+        print(f"Total schema nodes: {total_schema_nodes}")
+        
+        unassigned = set(schema_graph.nodes())
+        train_target = int(self.train_ratio * total_schema_nodes)
+        val_target = int(self.val_ratio * total_schema_nodes)
+        
+        print("Assigning schema nodes to islands (Train/Val/Test)...")
+        train_schema_nodes = self._grow_island(schema_graph, train_target, unassigned)
+        val_schema_nodes = self._grow_island(schema_graph, val_target, unassigned)
+        test_schema_nodes = unassigned # the rest
+        
+        print(f"Schema Nodes assigned - Train: {len(train_schema_nodes)}, Val: {len(val_schema_nodes)}, Test: {len(test_schema_nodes)}")
+        
+        print("Exporting train split...")
+        self._export_split("train", train_schema_nodes)
+        
+        print("Exporting val split...")
+        self._export_split("val", val_schema_nodes)
+        
+        print("Exporting test split...")
+        self._export_split("test", test_schema_nodes)
+        
+        print("Done! Inductive splits generated from schema graph.")

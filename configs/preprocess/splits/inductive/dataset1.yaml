@@ -1,5 +1,5 @@
 general:
-  out_dir: data/raw/kg4fun
+  out_dir: data/raw/kg4fun/dataset1/splits/inductive
   pbar: True
   train_ratio: 0.7
   val_ratio: 0.1
