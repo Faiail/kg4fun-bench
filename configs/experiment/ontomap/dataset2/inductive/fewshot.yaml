@@ -1,36 +1,36 @@
 # ───────────────────────────────────────────────────────────────────────────
-#  OntoMap · RAG (Retrieval-Augmented Generation) Experiment Config
+#  OntoMap · Few-Shot Experiment Config
 #  Run class: OntomapRun
 #
-#  Approach: rag
-#  Models  : LLaMA7BAdaRAG | LLaMA7BBertRAG |
-#            MistralAdaRAG | MistralBertRAG |
-#            FalconAdaRAG  | FalconBertRAG  |
-#            VicunaAdaRAG  | VicunaBertRAG  |
-#            MPTAdaRAG     | MPTBertRAG     |
-#            MambaLLMAdaRAG | MambaLLMBertRAG |
-#            ChatGPTOpenAIAdaRAG
+#  Approach: fewshot
+#  Models  : LLaMA7BAdaFewShot  | LLaMA7BBertFewShot  |
+#            MistralAdaFewShot  | MistralBertFewShot  |
+#            FalconAdaFewShot   | FalconBertFewShot   |
+#            VicunaAdaFewShot   | VicunaBertFewShot   |
+#            MPTAdaFewShot      | MPTBertFewShot      |
+#            MambaLLMAdaFewShot | MambaLLMBertFewShot |
+#            ChatGPTOpenAIAdaFewShot
 #  Encoders: label | label-children | label-parent
 #
-#  Naming convention: <LLM><Retriever>RAG
+#  Naming convention: <LLM><Retriever>FewShot
 #    Ada  retriever → pre-computed OpenAI Ada embeddings
 #    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
 #
 #  Usage:
-#    kg4fun experiment --parameters configs/experiment/rag.yaml \
+#    kg4fun experiment --parameters configs/experiment/fewshot.yaml \
 #                      --cls OntomapRun --seed 42
 # ───────────────────────────────────────────────────────────────────────────
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/rag
+  out_dir: models/dataset2/inductive/fewshot
   pbar: true
 
-approach: rag
+approach: fewshot
 
 # ── Model ──────────────────────────────────────────────────────────────────
 model:
-  name: MistralBertRAG
+  name: MistralBertFewShot
   params:
     # LLM generation settings
     max_token_length: 1
@@ -44,22 +44,25 @@ model:
     padding: max_length
     # Retriever settings
     top_k: 5
+    # Number of few-shot examples prepended to each prompt
+    nshots: 3
 
 # ── Encoder ────────────────────────────────────────────────────────────────
+# FewShot encoders share the rag encoder catalog
 # Choose encoder_id among: label | label-children | label-parent
 encoder:
-  approach: rag
+  approach: fewshot
   encoder_id: label
 
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null
+  - kg4fun
+  tasks:
+  - dataset2_inductive_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────
 evaluation:
   do_evaluation: true
-  # Probability threshold above which the LLM "yes" answer is accepted
   llm_confidence_th: 0.7

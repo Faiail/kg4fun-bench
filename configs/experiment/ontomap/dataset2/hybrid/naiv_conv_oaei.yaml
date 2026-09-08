@@ -1,45 +1,66 @@
 # ───────────────────────────────────────────────────────────────────────────
-#  OntoMap · Lightweight (Fuzzy String Matching) Experiment Config
+#  OntoMap · Naïve Conversational OAEI Experiment Config
 #  Run class: OntomapRun
 #
-#  Approach: lightweight
-#  Models  : SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
-#  Encoders: label | label-description | label-children | label-parent
+#  Approach: naiv-conv-oaei
+#  Models  : FlanT5XL | FlanT5XXL | LLaMA7B | LLaMA13B |
+#            Wizard13B | Mistral7B | ChatGPT | GPT4
+#  Encoders: iri-label | iri-label-description |
+#            iri-label-children | iri-label-parent
 #
 #  Usage:
-#    kg4fun experiment --parameters configs/experiment/lightweight.yaml \
+#    kg4fun experiment --parameters configs/experiment/naiv_conv_oaei.yaml \
 #                      --cls OntomapRun --seed 42
 # ───────────────────────────────────────────────────────────────────────────
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/lightweight
+  out_dir: models/dataset2/hybrid/naiv_conv_oaei
   pbar: true
 
-approach: lightweight
+approach: naiv-conv-oaei
 
 # ── Model ──────────────────────────────────────────────────────────────────
-# Choose one among: SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
+# Encoder-decoder (T5-family):
+#   FlanT5XL  → google/flan-t5-xl
+#   FlanT5XXL → google/flan-t5-xxl
+# Decoder-only open-source LLMs (GPU required):
+#   LLaMA7B   → meta-llama/Llama-2-7b-hf
+#   LLaMA13B  → meta-llama/Llama-2-13b-hf
+#   Wizard13B → WizardLM/WizardLM-13B-V1.2
+#   Mistral7B → mistralai/Mistral-7B-v0.1
+# OpenAI models (OPENAI_KEY env var required):
+#   ChatGPT   → gpt-3.5-turbo-16k-0613
+#   GPT4      → gpt-4-32k-0314
 model:
-  name: SimpleFuzzySM
+  name: FlanT5XL
   params:
-    # Similarity threshold in [0, 1] – pairs below this are discarded
-    fuzzy_sm_threshold: 0.9
+    max_token_length: 5000
+    tokenizer_max_length: 4096
+    num_beams: 1
+    device: cuda
+    truncation: true
+    top_p: 0.95
+    temperature: 0.8
+    batch_size: 8
+    padding: max_length
 
 # ── Encoder ────────────────────────────────────────────────────────────────
-# Choose encoder_id among: label | label-description | label-children | label-parent
+# Choose encoder_id among:
+#   iri-label | iri-label-description | iri-label-children | iri-label-parent
 encoder:
-  approach: lightweight
-  encoder_id: label
+  approach: naiv-conv-oaei
+  encoder_id: iri-label
 
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null          # null → run all tasks in the selected tracks
+  - kg4fun
+  tasks:
+  - dataset2_hybrid_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────
 evaluation:
   do_evaluation: true
-  llm_confidence_th: 0.7   # not used by lightweight; kept for consistency
+  llm_confidence_th: 0.7

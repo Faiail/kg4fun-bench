@@ -1,64 +1,54 @@
 # ───────────────────────────────────────────────────────────────────────────
-#  OntoMap · Few-Shot Experiment Config
+#  OntoMap · Retrieval Experiment Config
 #  Run class: OntomapRun
 #
-#  Approach: fewshot
-#  Models  : LLaMA7BAdaFewShot  | LLaMA7BBertFewShot  |
-#            MistralAdaFewShot  | MistralBertFewShot  |
-#            FalconAdaFewShot   | FalconBertFewShot   |
-#            VicunaAdaFewShot   | VicunaBertFewShot   |
-#            MPTAdaFewShot      | MPTBertFewShot      |
-#            MambaLLMAdaFewShot | MambaLLMBertFewShot |
-#            ChatGPTOpenAIAdaFewShot
-#  Encoders: label | label-children | label-parent
-#
-#  Naming convention: <LLM><Retriever>FewShot
-#    Ada  retriever → pre-computed OpenAI Ada embeddings
-#    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#  Approach: retrieval
+#  Models  : BM25Retrieval | TFIDFRetrieval | BERTRetrieval |
+#            SpecterBERTRetrieval | FlanT5XLRetrieval | FlanT5XXLRetrieval |
+#            SVMBERTRetrieval | AdaRetrieval
+#  Encoders: label | label-description | label-children | label-parent
+#            (mapped from the lightweight encoder catalog)
 #
 #  Usage:
-#    kg4fun experiment --parameters configs/experiment/fewshot.yaml \
+#    kg4fun experiment --parameters configs/experiment/retrieval.yaml \
 #                      --cls OntomapRun --seed 42
 # ───────────────────────────────────────────────────────────────────────────
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/fewshot
+  out_dir: models/dataset2/hybrid/retrieval
   pbar: true
+  device: cuda
 
-approach: fewshot
+approach: retrieval
 
 # ── Model ──────────────────────────────────────────────────────────────────
+# Lexical models (no GPU needed): BM25Retrieval | TFIDFRetrieval
+# Neural bi-encoders (GPU recommended):
+#   BERTRetrieval        → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#   SpecterBERTRetrieval → allenai/specter_plus_plus
+#   FlanT5XLRetrieval    → google/flan-t5-xl
+#   FlanT5XXLRetrieval   → google/flan-t5-xxl
+#   SVMBERTRetrieval     → sentence-transformers/multi-qa-mpnet-base-dot-v1 + SVM head
+#   AdaRetrieval         → pre-computed OpenAI Ada embeddings (requires local assets)
 model:
-  name: MistralBertFewShot
+  name: BERTRetrieval
   params:
-    # LLM generation settings
-    max_token_length: 1
-    tokenizer_max_length: 500
-    num_beams: 1
+    top_k: 5          # number of candidates to retrieve per source entity
     device: cuda
-    truncation: true
-    top_p: 0.95
-    temperature: 0.8
-    batch_size: 8
-    padding: max_length
-    # Retriever settings
-    top_k: 5
-    # Number of few-shot examples prepended to each prompt
-    nshots: 3
 
 # ── Encoder ────────────────────────────────────────────────────────────────
-# FewShot encoders share the rag encoder catalog
-# Choose encoder_id among: label | label-children | label-parent
+# Retrieval encoders share the lightweight catalog for text preparation
 encoder:
-  approach: fewshot
+  approach: lightweight
   encoder_id: label
 
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null
+  - kg4fun
+  tasks:
+  - dataset2_hybrid_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────

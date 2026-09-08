@@ -1,42 +1,38 @@
 # ───────────────────────────────────────────────────────────────────────────
-#  OntoMap · Naïve Conversational OAEI Experiment Config
+#  OntoMap · ICV (In-Context Vector) Experiment Config
 #  Run class: OntomapRun
 #
-#  Approach: naiv-conv-oaei
-#  Models  : FlanT5XL | FlanT5XXL | LLaMA7B | LLaMA13B |
-#            Wizard13B | Mistral7B | ChatGPT | GPT4
-#  Encoders: iri-label | iri-label-description |
-#            iri-label-children | iri-label-parent
+#  Approach: icv
+#  Models  : LLaMA7BAdaICV | LLaMA7BBertICV |
+#            FalconAdaICV   | FalconBertICV  |
+#            VicunaAdaICV   | VicunaBertICV  |
+#            MPTAdaICV      | MPTBertICV
+#  Encoders: label | label-children | label-parent
+#            (mapped from the rag encoder catalog)
+#
+#  Naming convention: <LLM><Retriever>ICV
+#    Ada  retriever → pre-computed OpenAI Ada embeddings
+#    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
 #
 #  Usage:
-#    kg4fun experiment --parameters configs/experiment/naiv_conv_oaei.yaml \
+#    kg4fun experiment --parameters configs/experiment/icv.yaml \
 #                      --cls OntomapRun --seed 42
 # ───────────────────────────────────────────────────────────────────────────
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/naiv_conv_oaei
+  out_dir: models/dataset2/inductive/icv
   pbar: true
 
-approach: naiv-conv-oaei
+approach: icv
 
 # ── Model ──────────────────────────────────────────────────────────────────
-# Encoder-decoder (T5-family):
-#   FlanT5XL  → google/flan-t5-xl
-#   FlanT5XXL → google/flan-t5-xxl
-# Decoder-only open-source LLMs (GPU required):
-#   LLaMA7B   → meta-llama/Llama-2-7b-hf
-#   LLaMA13B  → meta-llama/Llama-2-13b-hf
-#   Wizard13B → WizardLM/WizardLM-13B-V1.2
-#   Mistral7B → mistralai/Mistral-7B-v0.1
-# OpenAI models (OPENAI_KEY env var required):
-#   ChatGPT   → gpt-3.5-turbo-16k-0613
-#   GPT4      → gpt-4-32k-0314
 model:
-  name: FlanT5XL
+  name: FalconBertICV
   params:
-    max_token_length: 5000
-    tokenizer_max_length: 4096
+    # LLM generation settings
+    max_token_length: 1
+    tokenizer_max_length: 500
     num_beams: 1
     device: cuda
     truncation: true
@@ -44,19 +40,22 @@ model:
     temperature: 0.8
     batch_size: 8
     padding: max_length
+    # Retriever settings
+    top_k: 5
 
 # ── Encoder ────────────────────────────────────────────────────────────────
-# Choose encoder_id among:
-#   iri-label | iri-label-description | iri-label-children | iri-label-parent
+# ICV shares the rag encoder catalog
+# Choose encoder_id among: label | label-children | label-parent
 encoder:
-  approach: naiv-conv-oaei
-  encoder_id: iri-label
+  approach: rag
+  encoder_id: label
 
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null
+  - kg4fun
+  tasks:
+  - dataset2_inductive_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────

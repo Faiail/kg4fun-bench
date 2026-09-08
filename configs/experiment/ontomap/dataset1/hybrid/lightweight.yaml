@@ -1,44 +1,33 @@
 # ───────────────────────────────────────────────────────────────────────────
-#  OntoMap · Retrieval Experiment Config
+#  OntoMap · Lightweight (Fuzzy String Matching) Experiment Config
 #  Run class: OntomapRun
 #
-#  Approach: retrieval
-#  Models  : BM25Retrieval | TFIDFRetrieval | BERTRetrieval |
-#            SpecterBERTRetrieval | FlanT5XLRetrieval | FlanT5XXLRetrieval |
-#            SVMBERTRetrieval | AdaRetrieval
+#  Approach: lightweight
+#  Models  : SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
 #  Encoders: label | label-description | label-children | label-parent
-#            (mapped from the lightweight encoder catalog)
 #
 #  Usage:
-#    kg4fun experiment --parameters configs/experiment/retrieval.yaml \
+#    kg4fun experiment --parameters configs/experiment/lightweight.yaml \
 #                      --cls OntomapRun --seed 42
 # ───────────────────────────────────────────────────────────────────────────
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/retrieval
+  out_dir: models/dataset1/hybrid/lightweight
   pbar: true
-  device: cuda
 
-approach: retrieval
+approach: lightweight
 
 # ── Model ──────────────────────────────────────────────────────────────────
-# Lexical models (no GPU needed): BM25Retrieval | TFIDFRetrieval
-# Neural bi-encoders (GPU recommended):
-#   BERTRetrieval        → sentence-transformers/multi-qa-mpnet-base-dot-v1
-#   SpecterBERTRetrieval → allenai/specter_plus_plus
-#   FlanT5XLRetrieval    → google/flan-t5-xl
-#   FlanT5XXLRetrieval   → google/flan-t5-xxl
-#   SVMBERTRetrieval     → sentence-transformers/multi-qa-mpnet-base-dot-v1 + SVM head
-#   AdaRetrieval         → pre-computed OpenAI Ada embeddings (requires local assets)
+# Choose one among: SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
 model:
-  name: BERTRetrieval
+  name: SimpleFuzzySM
   params:
-    top_k: 5          # number of candidates to retrieve per source entity
-    device: cuda
+    # Similarity threshold in [0, 1] – pairs below this are discarded
+    fuzzy_sm_threshold: 0.9
 
 # ── Encoder ────────────────────────────────────────────────────────────────
-# Retrieval encoders share the lightweight catalog for text preparation
+# Choose encoder_id among: label | label-description | label-children | label-parent
 encoder:
   approach: lightweight
   encoder_id: label
@@ -46,11 +35,12 @@ encoder:
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null
+  - kg4fun
+  tasks:
+  - dataset1_hybrid_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────
 evaluation:
   do_evaluation: true
-  llm_confidence_th: 0.7
+  llm_confidence_th: 0.7   # not used by lightweight; kept for consistency

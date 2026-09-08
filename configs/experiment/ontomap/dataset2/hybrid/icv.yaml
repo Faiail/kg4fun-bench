@@ -21,7 +21,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: experiments/outputs/icv
+  out_dir: models/dataset2/hybrid/icv
   pbar: true
 
 approach: icv
@@ -53,8 +53,9 @@ encoder:
 # ── Dataset ────────────────────────────────────────────────────────────────
 dataset:
   tracks:
-    - kg4fun
-  tasks: null
+  - kg4fun
+  tasks:
+  - dataset2_hybrid_test
   load_from_json: false
 
 # ── Evaluation ─────────────────────────────────────────────────────────────
