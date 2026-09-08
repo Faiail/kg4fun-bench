@@ -21,10 +21,10 @@ from src.models.ontomap.ontology.commonkg import NellDbpediaOMDataset, YagoWikid
 from src.models.ontomap.ontology.funneling import (
     KG4FunDataset1OMDataset,
     KG4FunDataset2OMDataset,
-    KG4FunDataset1Setting1TestOMDataset,
-    KG4FunDataset1Setting2TestOMDataset,
-    KG4FunDataset2Setting1TestOMDataset,
-    KG4FunDataset2Setting2TestOMDataset,
+    KG4FunDataset1HybridTestOMDataset,
+    KG4FunDataset1InductiveTestOMDataset,
+    KG4FunDataset2HybridTestOMDataset,
+    KG4FunDataset2InductiveTestOMDataset,
 )
 from src.models.ontomap.ontology.mse import (
     MaterialInformationEMMOOMDataset,
@@ -60,18 +60,18 @@ ontology_matching = {
     "kg4fun": [
         KG4FunDataset1OMDataset,
         KG4FunDataset2OMDataset,
-        KG4FunDataset1Setting1TestOMDataset,
-        KG4FunDataset1Setting2TestOMDataset,
-    KG4FunDataset2Setting1TestOMDataset,
-    KG4FunDataset2Setting2TestOMDataset,
+        KG4FunDataset1HybridTestOMDataset,
+        KG4FunDataset1InductiveTestOMDataset,
+    KG4FunDataset2HybridTestOMDataset,
+    KG4FunDataset2InductiveTestOMDataset,
     ],
     "funneling": [
         KG4FunDataset1OMDataset,
         KG4FunDataset2OMDataset,
-        KG4FunDataset1Setting1TestOMDataset,
-        KG4FunDataset1Setting2TestOMDataset,
-    KG4FunDataset2Setting1TestOMDataset,
-    KG4FunDataset2Setting2TestOMDataset,
+        KG4FunDataset1HybridTestOMDataset,
+        KG4FunDataset1InductiveTestOMDataset,
+    KG4FunDataset2HybridTestOMDataset,
+    KG4FunDataset2InductiveTestOMDataset,
     ],
 }
 

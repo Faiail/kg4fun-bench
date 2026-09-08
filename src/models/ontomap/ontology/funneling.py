@@ -40,9 +40,9 @@ class KG4FunDataset2OMDataset(KG4FunOMDataset):
     working_dir = os.path.join(track, ontology_name)
 
 
-class KG4FunDataset1Setting1TestOMDataset(KG4FunOMDataset):
+class KG4FunDataset1HybridTestOMDataset(KG4FunOMDataset):
     track = track
-    ontology_name = "dataset1_setting1_test"
+    ontology_name = "dataset1_hybrid_test"
     source_ontology = KG4FunOntology(
         ontology_file_name="input_kg/processed_ontology.json"
     )
@@ -55,9 +55,9 @@ class KG4FunDataset1Setting1TestOMDataset(KG4FunOMDataset):
     working_dir = os.path.join(track, ontology_name)
 
 
-class KG4FunDataset1Setting2TestOMDataset(KG4FunOMDataset):
+class KG4FunDataset1InductiveTestOMDataset(KG4FunOMDataset):
     track = track
-    ontology_name = "dataset1_setting2_test"
+    ontology_name = "dataset1_inductive_test"
     source_ontology = KG4FunOntology(
         ontology_file_name="input_kg/processed_ontology.json"
     )
@@ -68,9 +68,9 @@ class KG4FunDataset1Setting2TestOMDataset(KG4FunOMDataset):
         reference_file_name="alignment/alignment.json"
     )
     working_dir = os.path.join(track, ontology_name)
-class KG4FunDataset2Setting1TestOMDataset(KG4FunOMDataset):
+class KG4FunDataset2HybridTestOMDataset(KG4FunOMDataset):
     track = track
-    ontology_name = "dataset2_setting1_test"
+    ontology_name = "dataset2_hybrid_test"
     source_ontology = KG4FunOntology(
         ontology_file_name="input_kg/processed_ontology.json"
     )
@@ -81,9 +81,9 @@ class KG4FunDataset2Setting1TestOMDataset(KG4FunOMDataset):
         reference_file_name="alignment/alignment.json"
     )
 
-class KG4FunDataset2Setting2TestOMDataset(KG4FunOMDataset):
+class KG4FunDataset2InductiveTestOMDataset(KG4FunOMDataset):
     track = track
-    ontology_name = "dataset2_setting2_test"
+    ontology_name = "dataset2_inductive_test"
     source_ontology = KG4FunOntology(
         ontology_file_name="input_kg/processed_ontology.json"
     )
