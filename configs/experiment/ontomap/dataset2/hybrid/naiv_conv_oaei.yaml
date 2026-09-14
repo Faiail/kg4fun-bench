@@ -33,7 +33,7 @@ approach: naiv-conv-oaei
 #   ChatGPT   → gpt-3.5-turbo-16k-0613
 #   GPT4      → gpt-4-32k-0314
 model:
-  name: FlanT5XL
+  name: Mistral7B
   params:
     max_token_length: 5000
     tokenizer_max_length: 4096

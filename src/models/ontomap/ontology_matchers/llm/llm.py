@@ -78,9 +78,21 @@ class BaseLLMArch(LLM):
 
     def load_model(self) -> None:
         if self.kwargs["device"] != "cpu":
-            self.model = self.model.from_pretrained(
-                self.path, load_in_8bit=True, device_map="balanced"
-            )
+            try:
+                from transformers import BitsAndBytesConfig
+                quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+                self.model = self.model.from_pretrained(
+                    self.path, quantization_config=quantization_config, device_map="balanced"
+                )
+            except ImportError:
+                self.model = self.model.from_pretrained(
+                    self.path, load_in_8bit=True, device_map="balanced"
+                )
+            except Exception as e:
+                # Fallback if load_in_8bit is completely rejected by the class
+                self.model = self.model.from_pretrained(
+                    self.path, device_map="balanced"
+                )
         else:
             super().load_model()
 

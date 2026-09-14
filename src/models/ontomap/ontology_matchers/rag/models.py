@@ -191,12 +191,21 @@ class Mamba3BSSMLLM(RAGBasedDecoderLLMArch):
 
     def load_model(self) -> None:
         if self.kwargs["device"] != "cpu":
-            self.model = self.model.from_pretrained(
-                self.path,
-                load_in_8bit=True,
-                device_map="balanced",
-                trust_remote_code=True,
-            )
+            try:
+                from transformers import BitsAndBytesConfig
+                quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+                self.model = self.model.from_pretrained(
+                    self.path,
+                    quantization_config=quantization_config,
+                    device_map="balanced",
+                    trust_remote_code=True,
+                )
+            except Exception:
+                self.model = self.model.from_pretrained(
+                    self.path,
+                    device_map="balanced",
+                    trust_remote_code=True,
+                )
         else:
             self.model = self.model.from_pretrained(self.path, trust_remote_code=True)
             self.model.to(self.kwargs["device"])

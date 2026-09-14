@@ -27,6 +27,14 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["preprocess", "--parameters", "configs/preprocess/splits/dataset1.yaml", "--cls", "InductiveSplitProcessor"]
+        },
+        {
+            "name": "Ontomap Experiment Launch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/ontomap/dataset1/hybrid/naiv_conv_oaei.yaml", "--cls", "OntomapRun", "--seed", "42"]
         }
     ]
 }

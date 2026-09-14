@@ -25,6 +25,8 @@ def evaluator_module(track: str, approach: str, predicts: List, references: Any,
         predicts = process.eval_preprocess_ir_outputs(predicts=predicts)
     elif approach in ["rag" , "icv", "fewshot"]:
         predicts, configs = process.postprocess_hybrid(predicts=predicts, llm_confidence_th=llm_confidence_th)
+    elif approach == "naiv-conv-oaei":
+        predicts = process.postprocess_naiv_conv_oaei(predicts=predicts)
     results = evaluator(track=track, predicts=predicts, references=references, llm_confidence_th=llm_confidence_th)
     if approach in ["rag" , "icv", "fewshot"]:
         results = {**results, **configs}

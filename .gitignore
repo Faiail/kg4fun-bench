@@ -191,3 +191,4 @@ cython_debug/
 .pypirc
 
 /reports/figures/
+/models/

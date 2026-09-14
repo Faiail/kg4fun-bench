@@ -33,28 +33,36 @@ class NaiveConvOAEIEncoder(BaseEncoder):
     prompt_template: str = """<Problem Definition>
 In this task, we are given two ontologies in the form of {items_in_owl}, which consist of IRI and classes.
 
+<Objective>
+Our objective is to provide ontology mapping for the provided ontologies based on their semantic similarities.
+
+For a class in the ontology-1, which class in ontology-2 is the best match?
+List matches per line.
+
 <Ontologies-1>
 {source}
 
 <Ontologies-2>
 {target}
-
-<Objective>
-Our objective is to provide ontology mapping for the provided ontologies based on their semantic similarities.
-
-For a class in the ontology-1, which class in ontology-2 is the best match?
-
-List matches per line.
 """
 
     def parse(self, **kwargs) -> Any:
         source_onto, target_onto = kwargs["source"], kwargs["target"]
+        
+        # Hard limit the number of nodes included to prevent completely exceeding the LLM context 
+        # and chopping off Ontologies-2 completely. Max 150 each should fit safely in ~4k tokens.
+        max_items = 150
+        
         source_text = ""
-        for source in source_onto:
+        for i, source in enumerate(source_onto):
+            if i >= max_items: break
             source_text += self.get_owl_items(owl=source)
+            
         target_text = ""
-        for target in target_onto:
+        for i, target in enumerate(target_onto):
+            if i >= max_items: break
             target_text += self.get_owl_items(owl=target)
+            
         prompt_sample = self.get_prefilled_prompt()
         prompt_sample = prompt_sample.replace("{source}", source_text)
         prompt_sample = prompt_sample.replace("{target}", target_text)

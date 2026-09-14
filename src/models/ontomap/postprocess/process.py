@@ -214,3 +214,37 @@ def postprocess_hybrid(predicts: List, ir_score_threshold: float = 0.9, llm_conf
         "ir-score-th": ir_score_threshold,
     }
     return final_predict, configs
+
+import re
+def postprocess_naiv_conv_oaei(predicts: list) -> list:
+    """
+    Parses the raw text output from the Naive Conversational OAEI approach.
+    Since naiv-conv-oaei feeds all ontology classes at once and expects a multi-line string output,
+    we must regex parse the source-target pairs out of the LLM's response.
+    """
+    parsed_predicts = []
+    if not predicts:
+        return parsed_predicts
+    
+    # In naiv_conv_oaei, the entire response is typically in the first element
+    output_str = str(predicts[0])
+    
+    for line in output_str.split('\n'):
+        # Look for entities starting with Q or P followed by digits
+        matches = re.findall(r'\b([QP]\d+)\b', line)
+        if len(matches) >= 2:
+            src = matches[0]
+            tgt = matches[1]
+            
+            # Normalize target to match the reference format ("cls_Q..." or "rel_P...")
+            if tgt.startswith('Q'):
+                tgt_norm = f"cls_{tgt}"
+            else:
+                tgt_norm = f"rel_{tgt}"
+                
+            parsed_predicts.append({
+                "source": src,
+                "target": tgt_norm,
+                "score": 1.0
+            })
+    return parsed_predicts
