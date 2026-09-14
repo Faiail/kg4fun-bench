@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import warnings
+warnings.filterwarnings("ignore")
 from pathlib import Path
 import time
 from typing import Any, Dict, List
