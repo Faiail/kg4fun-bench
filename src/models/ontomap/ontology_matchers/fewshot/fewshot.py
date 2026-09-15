@@ -56,7 +56,15 @@ class FewShot(RAG):
         positive_example_no = math.floor(self.positive_ratio * self.n_shots)
         negative_example_no = self.n_shots - positive_example_no
 
-        positive_examples = random.sample(reference, positive_example_no)
+        valid_references = []
+        for ref in reference:
+            if ref['source'] in input_data['source-onto-iri2index'] and ref['target'] in input_data['target-onto-iri2index']:
+                valid_references.append(ref)
+                
+        # Sample safely from valid references
+        actual_sample_size = min(positive_example_no, len(valid_references))
+        positive_examples = random.sample(valid_references, actual_sample_size)
+        
         random_positive_examples = []
         for positive_example in positive_examples:
             source_iri, target_iri = positive_example['source'], positive_example['target']

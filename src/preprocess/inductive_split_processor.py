@@ -184,7 +184,7 @@ class InductiveSplitProcessor:
             cc = load_json(src_cc)
             filtered_cc = []
             for comp in cc:
-                valid_ets = [et for et in comp.get(ParameterKeys.EDGE_TYPES, []) if et[0] in valid_pids]
+                valid_ets = [et for et in comp.get(ParameterKeys.EDGE_TYPES, []) if et[1] in valid_pids]
                 if valid_ets:
                     comp_copy = comp.copy()
                     comp_copy[ParameterKeys.EDGE_TYPES] = valid_ets
@@ -194,7 +194,7 @@ class InductiveSplitProcessor:
         src_mapping = os.path.join(self.data_dir, ParameterKeys.EDGES, f"{ParameterKeys.EDGE_COMPONENT_MAPPING}.json")
         if os.path.exists(src_mapping):
             mapping = load_json(src_mapping)
-            filtered_mapping = [m for m in mapping if m[ParameterKeys.EDGE_TYPE][0] in valid_pids]
+            filtered_mapping = [m for m in mapping if m[ParameterKeys.EDGE_TYPE][1] in valid_pids]
             save_json(filtered_mapping, os.path.join(edges_dir, f"{ParameterKeys.EDGE_COMPONENT_MAPPING}.json"))
 
 

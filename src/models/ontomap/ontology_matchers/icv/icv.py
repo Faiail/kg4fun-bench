@@ -184,22 +184,25 @@ class ICV(RAG):
 
         random_negative_examples = []
         for ref in reference:
-            source_iri, target_iri = ref['source'], ref['target']
-            source = input_data['task-args']['source'][input_data['source-onto-iri2index'][source_iri]]['label']
-            target = input_data['task-args']['target'][input_data['target-onto-iri2index'][target_iri]]['label']
-            for neg_ref in reference:
-                try:
-                    neg_source_iri, neg_target_iri = neg_ref['source'], neg_ref['target']
-                    neg_source = input_data['task-args']['source'][input_data['source-onto-iri2index'][neg_source_iri]]['label']
-                    neg_target = input_data['task-args']['target'][input_data['target-onto-iri2index'][neg_target_iri]]['label']
-                    if minor_clean(neg_source) != minor_clean(source) and minor_clean(target) != minor_clean(
-                            neg_target) and minor_clean(neg_source) != minor_clean(neg_target):
-                        random_negative_examples.append([minor_clean(source), minor_clean(neg_target)])
-                        break
-                except Exception as err:
-                    print(f"ERROR OCCURED! {err}")
-            if len(random_negative_examples) == self.LLM.icv_num_k_shots:
-                break
+            try:
+                source_iri, target_iri = ref['source'], ref['target']
+                source = input_data['task-args']['source'][input_data['source-onto-iri2index'][source_iri]]['label']
+                target = input_data['task-args']['target'][input_data['target-onto-iri2index'][target_iri]]['label']
+                for neg_ref in reference:
+                    try:
+                        neg_source_iri, neg_target_iri = neg_ref['source'], neg_ref['target']
+                        neg_source = input_data['task-args']['source'][input_data['source-onto-iri2index'][neg_source_iri]]['label']
+                        neg_target = input_data['task-args']['target'][input_data['target-onto-iri2index'][neg_target_iri]]['label']
+                        if minor_clean(neg_source) != minor_clean(source) and minor_clean(target) != minor_clean(
+                                neg_target) and minor_clean(neg_source) != minor_clean(neg_target):
+                            random_negative_examples.append([minor_clean(source), minor_clean(neg_target)])
+                            break
+                    except Exception as err:
+                        pass
+                if len(random_negative_examples) == self.LLM.icv_num_k_shots:
+                    break
+            except Exception as err:
+                print(f"ERROR OCCURRED in negative generation! {err}")
 
         icv_examples = []
         for index, positive in enumerate(random_positive_examples):
