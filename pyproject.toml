@@ -41,10 +41,11 @@ dependencies = [
     "seaborn>=0.13.2",
     "sentence-transformers>=5.5.1",
     "sentencepiece>=0.2.1",
-    "torch>=2.12.0",
-    "torchmetrics>=1.9.0",
+    "torch>=2.5.0,<2.6.0",
+    "torchmetrics>=1.8.2",
+    "torchvision>=0.20.0,<0.21.0",
+    "transformers==4.57.1",
     "tqdm",
-    "transformers>=5.9.0",
     "typer",
 ]
 requires-python = "~=3.12.0"
@@ -61,4 +62,18 @@ extend-select = ["I"]  # Add import sorting
 [tool.ruff.lint.isort]
 known-first-party = ["src"]
 force-sort-within-sections = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu121" },
+]
+torchvision = [
+  { index = "pytorch-cu121" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
 
