@@ -1,0 +1,46 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · Lightweight (Fuzzy String Matching) Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: lightweight
+#  Models  : SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
+#  Encoders: label | label-description | label-children | label-parent
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/lightweight.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: models/dataset2/hybrid/lightweight
+  pbar: true
+
+approach: lightweight
+
+# ── Model ──────────────────────────────────────────────────────────────────
+# Choose one among: SimpleFuzzySM | WeightedFuzzySM | TokenSetFuzzySM
+model:
+  name: SimpleFuzzySM
+  params:
+    # Similarity threshold in [0, 1] – pairs below this are discarded
+    fuzzy_sm_threshold: 0.9
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# Choose encoder_id among: label | label-description | label-children | label-parent
+encoder:
+  approach: lightweight
+  encoder_id: label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+  - kg4fun
+  tasks:
+  - dataset2_hybrid_test
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  llm_confidence_th: 0.7   # not used by lightweight; kept for consistency

@@ -1,0 +1,68 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · Few-Shot Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: fewshot
+#  Models  : LLaMA7BAdaFewShot  | LLaMA7BBertFewShot  |
+#            MistralAdaFewShot  | MistralBertFewShot  |
+#            FalconAdaFewShot   | FalconBertFewShot   |
+#            VicunaAdaFewShot   | VicunaBertFewShot   |
+#            MPTAdaFewShot      | MPTBertFewShot      |
+#            MambaLLMAdaFewShot | MambaLLMBertFewShot |
+#            ChatGPTOpenAIAdaFewShot
+#  Encoders: label | label-children | label-parent
+#
+#  Naming convention: <LLM><Retriever>FewShot
+#    Ada  retriever → pre-computed OpenAI Ada embeddings
+#    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/fewshot.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: models/dataset1/inductive/fewshot
+  pbar: true
+
+approach: fewshot
+
+# ── Model ──────────────────────────────────────────────────────────────────
+model:
+  name: MistralBertFewShot
+  params:
+    # LLM generation settings
+    max_token_length: 1
+    tokenizer_max_length: 500
+    num_beams: 1
+    device: cuda
+    truncation: true
+    top_p: 0.95
+    temperature: 0.8
+    batch_size: 8
+    padding: max_length
+    # Retriever settings
+    top_k: 5
+    # Number of few-shot examples prepended to each prompt
+    nshots: 3
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# FewShot encoders share the rag encoder catalog
+# Choose encoder_id among: label | label-children | label-parent
+encoder:
+  approach: fewshot
+  encoder_id: label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+  - kg4fun
+  tasks:
+  - dataset1_inductive_test
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  llm_confidence_th: 0.7

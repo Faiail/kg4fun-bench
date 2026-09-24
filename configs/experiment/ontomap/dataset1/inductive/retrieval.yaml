@@ -1,0 +1,57 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · Retrieval Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: retrieval
+#  Models  : BM25Retrieval | TFIDFRetrieval | BERTRetrieval |
+#            SpecterBERTRetrieval | FlanT5XLRetrieval | FlanT5XXLRetrieval |
+#            SVMBERTRetrieval | AdaRetrieval
+#  Encoders: label | label-description | label-children | label-parent
+#            (mapped from the lightweight encoder catalog)
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/retrieval.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: models/dataset1/inductive/retrieval
+  pbar: true
+  device: cuda
+
+approach: retrieval
+
+# ── Model ──────────────────────────────────────────────────────────────────
+# Lexical models (no GPU needed): BM25Retrieval | TFIDFRetrieval
+# Neural bi-encoders (GPU recommended):
+#   BERTRetrieval        → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#   SpecterBERTRetrieval → allenai/specter_plus_plus
+#   FlanT5XLRetrieval    → google/flan-t5-xl
+#   FlanT5XXLRetrieval   → google/flan-t5-xxl
+#   SVMBERTRetrieval     → sentence-transformers/multi-qa-mpnet-base-dot-v1 + SVM head
+#   AdaRetrieval         → pre-computed OpenAI Ada embeddings (requires local assets)
+model:
+  name: BERTRetrieval
+  params:
+    top_k: 5          # number of candidates to retrieve per source entity
+    device: cuda
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# Retrieval encoders share the lightweight catalog for text preparation
+encoder:
+  approach: lightweight
+  encoder_id: label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+  - kg4fun
+  tasks:
+  - dataset1_inductive_test
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  llm_confidence_th: 0.7

@@ -1,0 +1,66 @@
+# ───────────────────────────────────────────────────────────────────────────
+#  OntoMap · RAG (Retrieval-Augmented Generation) Experiment Config
+#  Run class: OntomapRun
+#
+#  Approach: rag
+#  Models  : LLaMA7BAdaRAG | LLaMA7BBertRAG |
+#            MistralAdaRAG | MistralBertRAG |
+#            FalconAdaRAG  | FalconBertRAG  |
+#            VicunaAdaRAG  | VicunaBertRAG  |
+#            MPTAdaRAG     | MPTBertRAG     |
+#            MambaLLMAdaRAG | MambaLLMBertRAG |
+#            ChatGPTOpenAIAdaRAG
+#  Encoders: label | label-children | label-parent
+#
+#  Naming convention: <LLM><Retriever>RAG
+#    Ada  retriever → pre-computed OpenAI Ada embeddings
+#    Bert retriever → sentence-transformers/multi-qa-mpnet-base-dot-v1
+#
+#  Usage:
+#    kg4fun experiment --parameters configs/experiment/rag.yaml \
+#                      --cls OntomapRun --seed 42
+# ───────────────────────────────────────────────────────────────────────────
+
+general:
+  root_dir: data/processed
+  out_dir: models/dataset1/hybrid/rag
+  pbar: true
+
+approach: rag
+
+# ── Model ──────────────────────────────────────────────────────────────────
+model:
+  name: MistralBertRAG
+  params:
+    # LLM generation settings
+    max_token_length: 1
+    tokenizer_max_length: 500
+    num_beams: 1
+    device: cuda
+    truncation: true
+    top_p: 0.95
+    temperature: 0.8
+    batch_size: 8
+    padding: max_length
+    # Retriever settings
+    top_k: 5
+
+# ── Encoder ────────────────────────────────────────────────────────────────
+# Choose encoder_id among: label | label-children | label-parent
+encoder:
+  approach: rag
+  encoder_id: label
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+dataset:
+  tracks:
+  - kg4fun
+  tasks:
+  - dataset1_hybrid_test
+  load_from_json: false
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  do_evaluation: true
+  # Probability threshold above which the LLM "yes" answer is accepted
+  llm_confidence_th: 0.7
