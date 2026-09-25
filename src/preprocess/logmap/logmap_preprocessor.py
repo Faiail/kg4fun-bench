@@ -7,7 +7,7 @@ from src.utils import load_json, ParameterKeys
 from src.preprocess.ontomap.kg4fun_fields import ClassFields, RelFields
 
 
-class MeltPreprocessor:
+class LogMapPreprocessor:
     """
     Reads a raw split directory (e.g. data/raw/kg4fun/dataset1/splits/hybrid/test)
     and generates the standard MELT track structure:

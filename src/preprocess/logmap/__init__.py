@@ -1,1 +1,1 @@
-from .melt_preprocessor import MeltPreprocessor
+from .logmap_preprocessor import LogMapPreprocessor

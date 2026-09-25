@@ -1,4 +1,4 @@
 general:
   data_dir: "data/raw/kg4fun/dataset1/splits/hybrid/test"
-  out_dir: "data/processed/melt/kg4fun/dataset1_hybrid_test"
+  out_dir: "data/processed/logmap/kg4fun/dataset1_hybrid_test"
   pbar: true
