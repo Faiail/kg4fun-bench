@@ -228,5 +228,5 @@ class LLaMA2DecoderLLMArch(BaseLLMArch):
                 token=os.environ.get("HUGGINGFACE_ACCESS_TOKEN", None),
             )
         else:
-            self.model = self.model.from_pretrained(self.path, token=os.environ["HUGGINGFACE_ACCESS_TOKEN"])
+            self.model = self.model.from_pretrained(self.path)
             self.model.to(self.kwargs["device"])
