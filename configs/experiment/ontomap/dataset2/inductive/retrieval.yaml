@@ -16,7 +16,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset2/inductive/retrieval
+  out_dir: models/ontomap/dataset2/inductive/retrieval
   pbar: true
   device: cuda
 

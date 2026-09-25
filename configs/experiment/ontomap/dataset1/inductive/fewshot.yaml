@@ -23,7 +23,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset1/inductive/fewshot
+  out_dir: models/ontomap/dataset1/inductive/fewshot
   pbar: true
 
 approach: fewshot

@@ -23,7 +23,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset1/hybrid/fewshot
+  out_dir: models/ontomap/dataset1/hybrid/fewshot
   pbar: true
 
 approach: fewshot

@@ -13,7 +13,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset1/inductive/lightweight
+  out_dir: models/ontomap/dataset1/inductive/lightweight
   pbar: true
 
 approach: lightweight
