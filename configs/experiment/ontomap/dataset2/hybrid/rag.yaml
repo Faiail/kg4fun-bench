@@ -23,7 +23,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset2/hybrid/rag
+  out_dir: models/ontomap/dataset2/hybrid/rag
   pbar: true
 
 approach: rag

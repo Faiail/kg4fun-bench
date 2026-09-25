@@ -15,7 +15,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset1/hybrid/naiv_conv_oaei
+  out_dir: models/ontomap/dataset1/hybrid/naiv_conv_oaei
   pbar: true
 
 approach: naiv-conv-oaei

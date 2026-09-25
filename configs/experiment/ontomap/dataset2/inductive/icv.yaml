@@ -21,7 +21,7 @@
 
 general:
   root_dir: data/processed
-  out_dir: models/dataset2/inductive/icv
+  out_dir: models/ontomap/dataset2/inductive/icv
   pbar: true
 
 approach: icv
