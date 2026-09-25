@@ -1,0 +1,11 @@
+general:
+  pbar: True
+  out_dir: models/logmap/dataset1/hybrid
+  seed: 42
+  config_name: logmap
+model:
+  encoder: apis/logmap/logmap-matcher.jar
+data:
+  input_kg: data/processed/logmap/kg4fun/dataset1_hybrid_test/source.rdf
+  schema: data/processed/logmap/kg4fun/dataset1_hybrid_test/target.rdf
+  alignment: data/processed/logmap/kg4fun/dataset1_hybrid_test/reference.rdf
