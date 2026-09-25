@@ -1,0 +1,1 @@
+from .shared_text_model import SharedTextEncoder
