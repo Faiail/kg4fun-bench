@@ -2806,6 +2806,7 @@ dependencies = [
     { name = "sentence-transformers" },
     { name = "sentencepiece" },
     { name = "torch" },
+    { name = "torch-geometric" },
     { name = "torchmetrics" },
     { name = "torchvision" },
     { name = "tqdm" },
@@ -2841,6 +2842,7 @@ requires-dist = [
     { name = "sentence-transformers", specifier = ">=5.5.1" },
     { name = "sentencepiece", specifier = ">=0.2.1" },
     { name = "torch", specifier = ">=2.5.0,<2.6.0", index = "https://download.pytorch.org/whl/cu121" },
+    { name = "torch-geometric", specifier = ">=2.8.0.post1" },
     { name = "torchmetrics", specifier = ">=1.8.2" },
     { name = "torchvision", specifier = ">=0.20.0,<0.21.0", index = "https://download.pytorch.org/whl/cu121" },
     { name = "tqdm" },
@@ -3021,6 +3023,26 @@ dependencies = [
 wheels = [
     { url = "https://download-r2.pytorch.org/whl/cu121/torch-2.5.1%2Bcu121-cp312-cp312-linux_x86_64.whl", hash = "sha256:222be02548c2e74a21a8fbc8e5b8d2eef9f9faee865d70385d2eb1b9aabcbc76", upload-time = "2024-10-29T23:20:25Z" },
     { url = "https://download-r2.pytorch.org/whl/cu121/torch-2.5.1%2Bcu121-cp312-cp312-win_amd64.whl", hash = "sha256:473d76257636c66b22cbfac6f616d6b522ef3d3473c13decb1afda22a7b059eb", upload-time = "2024-10-29T23:20:59Z" },
+]
+
+[[package]]
+name = "torch-geometric"
+version = "2.8.0.post1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "fsspec" },
+    { name = "jinja2" },
+    { name = "numpy" },
+    { name = "psutil" },
+    { name = "pyparsing" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "xxhash" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/40/2c/bfcb404c448f7c347cea7b956d3c7e92d53e36c8db2010eb1bdc1b937bfb/torch_geometric-2.8.0.post1.tar.gz", hash = "sha256:2c0c81666ec10f2132f6b4e0b6c57fc813f2c9f6b57599d7b7a799c614c22fbd", size = 928666, upload-time = "2026-07-20T20:44:40.36Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/5c/edf74a71249ad19aa0390fb97ff021e2a5b04ce23252730014e1feac957e/torch_geometric-2.8.0.post1-py3-none-any.whl", hash = "sha256:5d9841cbfa64eadc425e445767127d103dd52fdc5890548c6364986c9bc78029", size = 1325397, upload-time = "2026-07-20T20:44:38.789Z" },
 ]
 
 [[package]]

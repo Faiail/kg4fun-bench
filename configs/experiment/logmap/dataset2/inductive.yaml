@@ -1,0 +1,11 @@
+general:
+  pbar: True
+  out_dir: models/logmap/dataset2/inductive
+  seed: 42
+  config_name: logmap
+model:
+  encoder: apis/logmap/logmap-matcher.jar
+data:
+  input_kg: data/processed/logmap/kg4fun/dataset2_inductive_test/source.rdf
+  schema: data/processed/logmap/kg4fun/dataset2_inductive_test/target.rdf
+  alignment: data/processed/logmap/kg4fun/dataset2_inductive_test/reference.rdf

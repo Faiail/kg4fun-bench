@@ -47,6 +47,7 @@ dependencies = [
     "transformers==4.57.1",
     "tqdm",
     "typer",
+    "torch-geometric>=2.8.0.post1",
 ]
 requires-python = "~=3.12.0"
 

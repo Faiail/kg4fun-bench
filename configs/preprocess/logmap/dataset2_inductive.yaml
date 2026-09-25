@@ -1,0 +1,4 @@
+general:
+  data_dir: "data/raw/kg4fun/dataset2/splits/inductive/test"
+  out_dir: "data/processed/logmap/kg4fun/dataset2_inductive_test"
+  pbar: true
