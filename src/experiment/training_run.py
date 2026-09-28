@@ -5,6 +5,7 @@ from src.scheduler import scheduler_registry
 import src.losses as loss_pkg
 import src.early_stop as early_stop_pkg
 import src.metrics as metrics_pkg
+from src.utils.general import save_json
 from torchmetrics import MetricCollection
 import torch.optim.lr_scheduler as schedulers
 from torch_geometric.seed import seed_everything
@@ -12,6 +13,7 @@ from .utils import ParameterKeys
 from torch.utils.data import Dataset, DataLoader
 import os
 import torch
+from tqdm import tqdm
 
 
 class TrainingRun(Run):
@@ -47,6 +49,9 @@ class TrainingRun(Run):
         os.makedirs(self.out_dir, exist_ok=True)
         self.pbar = general_parameters.get(ParameterKeys.PBAR, False)
         self.num_epochs = general_parameters.get(ParameterKeys.NUM_EPOCHS, 1)
+        self.num_warmup_epochs = general_parameters.get(ParameterKeys.WARMUP, 0)
+        self.metric_mult = general_parameters.get(ParameterKeys.METRIC_MULT, 1)
+        self.metric_to_watch = general_parameters.get(ParameterKeys.METRIC_TO_WATCH)
         self.device = general_parameters.get(ParameterKeys.DEVICE, "cpu")
         self.seed = general_parameters.get(ParameterKeys.SEED, None)
         seed_everything(self.seed)
@@ -133,12 +138,61 @@ class TrainingRun(Run):
             }
         )
 
+    def print_stats(
+        self,
+        epoch: int,
+        cumulated_loss: float,
+        phase: str,
+        metrics: dict = None,
+    ) -> None:
+        if cumulated_loss is not None:
+            print(
+                f"Epoch {epoch}/{self.num_epochs}: {phase} loss: {cumulated_loss:.4f}"
+            )
+        if metrics:
+            for k, v in metrics.items():
+                print(f"Epoch {epoch}/{self.num_epochs}: {phase} {k}: {v:.4f}")
+
+    def schedule(self, phase, **kwargs):
+        if not self.scheduler:
+            return
+        if phase == ParameterKeys.VAL and self.cosine_sched:
+            return
+        if phase == ParameterKeys.TRAIN and not self.cosine_sched:
+            return
+        self.scheduler.step(**kwargs)
+
+    def early_stop_callback(self, cumulated_loss: float) -> bool:
+        if not self.early_stop:
+            return False
+        self.early_stop(cumulated_loss, self.model)
+        return self.early_stop.early_stop
+
+    def get_bar(self, loader: DataLoader, desc: str = ""):
+        if not self.pbar:
+            return enumerate(loader)
+        return tqdm(
+            enumerate(loader),
+            total=len(loader),
+            desc=desc,
+        )
+
+    def update_bar(self, bar, loss, **kwargs):
+        if not self.pbar:
+            return
+        bar.set_postfix({ParameterKeys.LOSS: loss, **kwargs})
+
+    def model_warmup(self, epoch: int) -> None:
+        raise NotImplementedError()
+
     def train_epoch(self, epoch: int):
         raise NotImplementedError()
 
+    @torch.no_grad()
     def val_epoch(self, epoch: int):
         raise NotImplementedError()
 
+    @torch.no_grad()
     def test(self):
         raise NotImplementedError()
 
@@ -147,8 +201,12 @@ class TrainingRun(Run):
         self.model = self.model.to(self.device)
         for epoch in range(1, self.num_epochs + 1):
             self.train_epoch(epoch=epoch)
+            self.model_warmup()
             self.val_epoch(epoch=epoch)
             if self.trigger:
                 print(f"Early stopping at epoch {epoch}/{self.num_epochs}")
                 break
-        return self.test()
+        test_metrics, inference = self.test()
+        save_json(test_metrics, f"{self.out_dir}/test_metrics.json")
+        save_json(inference, f"{self.out_dir}/inferece.json")
+        

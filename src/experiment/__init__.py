@@ -3,7 +3,7 @@ from .ontomap_run import OntomapRun
 from .logmap_run import LogmapRun
 from .run import Run
 from .utils import ParameterKeys
-
+from .text_node_run import TextNodeRun
 
 def run_experiment(parameters: dict, cls: str, seed: int) -> None:
     parameters[ParameterKeys.SEED] = seed

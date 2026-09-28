@@ -10,6 +10,7 @@ class SharedTextEncoder(torch.nn.Module):
         bbone_hidden_size: int,
         final_hidden_size: int,
     ) -> None:
+        super().__init__()
         self.encoder = AutoModel.from_pretrained(**bbone_config)
         self.projector = torch.nn.Linear(bbone_hidden_size, final_hidden_size)
 
