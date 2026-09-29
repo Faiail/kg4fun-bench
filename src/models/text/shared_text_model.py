@@ -17,11 +17,15 @@ class SharedTextEncoder(torch.nn.Module):
         self.schema_hidden_size = final_hidden_size
 
     def encode(self, input_dict) -> torch.Tensor:
-        cls_token = self.encoder(**input_dict).last_hidden_state[:, 0]
+        output = self.encoder(**input_dict)
+        cls_token = (
+            output.pooler_output
+            if "pooler_output" in output
+            else output.last_hidden_state[:, 0]
+        )
         return self.layernorm(self.projector(cls_token))
 
     def forward(self, input: dict, target: dict) -> dict[str, torch.Tensor]:
         input_emb = self.encode(input)
         target_emb = self.encode(target)
         return {ReturnKeys.INPUT: input_emb, ReturnKeys.TARGET: target_emb}
-    
