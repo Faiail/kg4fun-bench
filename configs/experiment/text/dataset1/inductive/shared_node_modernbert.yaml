@@ -53,27 +53,30 @@ optimizer:
     lr: 1e-5
 early_stop:
   name: EarlyStopping
-  params:
+  config:
     verbose: True
     patience: 10
     path: model.pt
 scheduler:
   name: HuggingFaceCosineScheduler  
   config: 
-    num_warmup_steps: 1670
+    num_warmup_steps: 1769
 metrics:
   precision:
     name: Precision
     config:
+      num_classes: 2
       average: macro
-      task: &task binary
+      task: &task multiclass
   recall:
     name: Recall
     config:
+      num_classes: 2
       average: macro
       task: *task
   f1:
     name: F1Score
     config:
+      average: macro
       task: *task
       num_classes: 2

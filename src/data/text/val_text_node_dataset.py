@@ -9,15 +9,13 @@ class TextNodeValDataset(TextNodeDataset):
     def __init__(self, dataset: str, node_info: str, schema_info: str) -> None:
         super().__init__(dataset=dataset, node_info=node_info, schema_info=schema_info)
         self.cls2idx_kb = {
-            cls_name: idx
-            for (idx, cls_name) in enumerate(
-                [x[BatchKeys.CLS_IDX] for x in self.dataset]
-            )
+            cls_name: idx for (idx, cls_name) in enumerate(list(self.schema_info.keys()) + [-1])
         }
         self.idx2cls_kb = {idx: cls_name for (cls_name, idx) in self.cls2idx_kb.items()}
+        self.num_classes = len(list(self.cls2idx_kb.keys()))
 
     def __getitem__(self, idx):
-        raw_data = self.dataset[self.data_iterator[idx]]
+        raw_data = self.dataset[idx]
         input_qid = raw_data[BatchKeys.QID]
         target_class = raw_data[BatchKeys.CLS_IDX]
 
@@ -26,6 +24,7 @@ class TextNodeValDataset(TextNodeDataset):
         gt = self.cls2idx_kb[target_class]
 
         return {
+            BatchKeys.QID: input_qid,
             BatchKeys.INPUT_NODE: input_node_str,
             BatchKeys.GT: gt,
         }
@@ -55,6 +54,10 @@ class SchemaNodeDataset(Dataset):
         return len(self.kb)
 
     def __getitem__(self, index):
-        raw = self.schema_info[self.kb[index]]
-        schema_node_str = f"{TemplateKeys.LABEL}{raw.get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC}{raw.get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
-        return {BatchKeys.SCHEMA_NODE: schema_node_str}
+        target_class = self.kb[index]
+        if target_class == -1:
+            target_class_str = f"{TemplateKeys.LABEL}PruneNode | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
+        else:
+            raw = self.schema_info[target_class]
+            target_class_str = f"{TemplateKeys.LABEL} {raw.get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {raw.get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
+        return {BatchKeys.SCHEMA_NODE: target_class_str}

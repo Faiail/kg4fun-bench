@@ -172,7 +172,7 @@ class TrainingRun(Run):
         if not self.pbar:
             return enumerate(loader)
         return tqdm(
-            loader,
+            enumerate(loader),
             total=len(loader),
             desc=desc,
         )
@@ -201,7 +201,6 @@ class TrainingRun(Run):
         self.model = self.model.to(self.device)
         for epoch in range(1, self.num_epochs + 1):
             self.train_epoch(epoch=epoch)
-            self.model_warmup()
             self.val_epoch(epoch=epoch)
             if self.trigger:
                 print(f"Early stopping at epoch {epoch}/{self.num_epochs}")

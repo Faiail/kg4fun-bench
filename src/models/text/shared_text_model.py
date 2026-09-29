@@ -14,6 +14,7 @@ class SharedTextEncoder(torch.nn.Module):
         self.encoder = AutoModel.from_pretrained(**bbone_config)
         self.projector = torch.nn.Linear(bbone_hidden_size, final_hidden_size)
         self.layernorm = torch.nn.LayerNorm(final_hidden_size)
+        self.schema_hidden_size = final_hidden_size
 
     def encode(self, input_dict) -> torch.Tensor:
         cls_token = self.encoder(**input_dict).last_hidden_state[:, 0]
