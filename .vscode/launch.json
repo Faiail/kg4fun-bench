@@ -43,6 +43,14 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["experiment", "--parameters", "configs/experiment/logmap/dataset1/inductive.yaml", "--cls", "LogmapRun"]
+        },
+        {
+            "name": "TextRun Experiment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/dataset1/hybrid/shared_node_modernbert.yaml", "--cls", "TextNodeRun"]
         }
     ]
 }

@@ -172,7 +172,7 @@ class TrainingRun(Run):
         if not self.pbar:
             return enumerate(loader)
         return tqdm(
-            enumerate(loader),
+            loader,
             total=len(loader),
             desc=desc,
         )
