@@ -28,7 +28,7 @@ class TextNodeDataset(Dataset):
         input_node_str = f"{TemplateKeys.LABEL} {self.node_info[input_qid].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.node_info[input_qid].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
 
         if target_class == -1:
-            target_class_str = f"{TemplateKeys.LABEL}PruneNode | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
+            target_class_str = f"{TemplateKeys.LABEL} Prune Node | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
         else:
             target_class_str = f"{TemplateKeys.LABEL} {self.schema_info[target_class].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.schema_info[target_class].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
 
