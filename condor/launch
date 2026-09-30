@@ -1,11 +1,11 @@
 universe            =vanilla
-executable          =./condor/exe_parallel
+executable          =./condor/exe
 
 arguments           = $(ARGS)
 
-request_cpus        = 32
-request_memory      = 512GB
-request_gpus        = 4
+request_cpus        = 8
+request_memory      = 128GB
+request_gpus        = 1
 
 output              = $(OUT)
 error               = $(ERR)
