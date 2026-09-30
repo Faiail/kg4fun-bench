@@ -15,5 +15,6 @@ class BatchKeys(StrEnum):
     TAIL_QID = "tail_qid"
     TAIL_CLS = "tail_cls"
     EDGE_TYPE = "edge_type"
+    EDGE_TYPES = "edge_types"
     PID = "pid"
     COMPONENT_ID = "component_id"

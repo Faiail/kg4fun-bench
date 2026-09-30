@@ -22,14 +22,15 @@ class ValTextEdgeDataset(TextEdgeDataset):
         )
         self.cls2idx_kb = {
             cls_name: idx
-            for (idx, cls_name) in enumerate(list(self.dataset.keys()) + [-1, -1, -1])
+            for (idx, cls_name) in enumerate(set(self.dataset.values()) | {-1})
         }
         self.idx2cls_kb = {idx: cls_name for (cls_name, idx) in self.cls2idx_kb.items()}
+        self.num_classes = len(self.cls2idx_kb.keys())
 
     def __getitem__(self, index):
         raw_item = self.partitions[index]
         head_qid = raw_item[BatchKeys.HEAD_QID]
-        head_cls = raw_item[BatchKeys.HEAD_CLS]
+        head_cls = raw_item[BatchKeys.EDGE_TYPE][BatchKeys.HEAD_CLS]
         head_str = self._get_node_label_desc(head_qid)
         tail_qid = raw_item[BatchKeys.TAIL_QID]
         tail_cls = raw_item[BatchKeys.EDGE_TYPE][BatchKeys.TAIL_CLS]
@@ -45,14 +46,14 @@ class ValTextEdgeDataset(TextEdgeDataset):
 
     def _get_gt(self, head_cls: int, tail_cls: int, pid: str) -> int:
         if head_cls == -1 or tail_cls == -1:
-            return self.cls2idx_kb[[-1, -1, -1]]
-        return self.cls2idx_kb[[head_cls, pid, tail_cls]]
+            return self.cls2idx_kb[-1]
+        return self.cls2idx_kb[self.dataset[(head_cls, pid, tail_cls)]]
 
-    def get_schema_rels(
+    def get_schema_items(
         self, batch_size: int = 1, num_workers: int = None
     ) -> DataLoader:
         dataset = SchemaEdgeDataset(
-            dataset=self.idx2cls_kb, schema_edge_info=self.schema_edge_info
+            kb=self.idx2cls_kb, schema_edge_info=self.schema_edge_info
         )
         return DataLoader(
             dataset=dataset,
@@ -64,18 +65,21 @@ class ValTextEdgeDataset(TextEdgeDataset):
 
 
 class SchemaEdgeDataset(Dataset):
-    def __init__(self, dataset: dict, schema_edge_info: dict) -> None:
+    def __init__(self, kb: dict, schema_edge_info: dict) -> None:
         super().__init__()
-        self.dataset = dataset
+        self.kb = kb
         self.schema_edge_info = schema_edge_info
-        self.l = list(self.dataset.keys())
+        self.l = list(self.kb.keys())
 
     def __len__(self):
         return len(self.l)
 
     def _get_schema_rel(self, id: int) -> str:
-        pass
+        if id == -1:
+            return f"{TemplateKeys.LABEL} Prune Edge | {TemplateKeys.DESC} An edge which is out of domain and must be pruned."
+        return f"{TemplateKeys.LABEL} {self.schema_edge_info.get(id).get(BatchKeys.ITEM_LABEL, "Unknown Label")} | {TemplateKeys.DESC} {self.schema_edge_info.get(id).get(BatchKeys.ITEM_DESC, "Unknown Description")}"
 
     def __getitem__(self, index):
-        raw_id = self.dataset[self.l[index]]
-        schema_rel = self._get_schema_rel(self, raw_id)
+        raw_id = self.kb[self.l[index]]
+        schema_rel = self._get_schema_rel(raw_id)
+        return {BatchKeys.SCHEMA: schema_rel}
