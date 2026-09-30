@@ -2,8 +2,8 @@ from src.utils.strenum import StrEnum
 
 
 class BatchKeys(StrEnum):
-    INPUT_NODE = "input_node"
-    SCHEMA_NODE = "schema_node"
+    INPUT = "input"
+    SCHEMA = "schema"
     QID = "qid"
     CLS_IDX = "cls_idx"
     ITEM_LABEL = "itemLabel"
@@ -17,5 +17,3 @@ class BatchKeys(StrEnum):
     EDGE_TYPE = "edge_type"
     PID = "pid"
     COMPONENT_ID = "component_id"
-    INPUT_EDGE = "input_edge"
-    SCHEMA_EDGE = "schema_edge"

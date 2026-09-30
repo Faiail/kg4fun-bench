@@ -33,6 +33,6 @@ class TextNodeDataset(Dataset):
             target_class_str = f"{TemplateKeys.LABEL} {self.schema_info[target_class].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.schema_info[target_class].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
 
         return {
-            BatchKeys.INPUT_NODE: input_node_str,
-            BatchKeys.SCHEMA_NODE: target_class_str,
+            BatchKeys.INPUT: input_node_str,
+            BatchKeys.SCHEMA: target_class_str,
         }
