@@ -50,7 +50,7 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "args": ["experiment", "--parameters", "configs/experiment/text/dataset1/inductive/shared_node_modernbert.yaml", "--cls", "TextNodeRun"]
+            "args": ["experiment", "--parameters", "configs/experiment/text/dataset1/inductive/shared_node_modernbert.yaml", "--cls", "SharedTextSingleItemRun"]
         }
     ]
 }

@@ -9,7 +9,7 @@ from copy import deepcopy
 import torch
 
 
-class TextNodeRun(TrainingRun):
+class SharedTextSingleItemRun(TrainingRun):
     def init(self):
         super().init()
         print("Init Tokenizer...")
@@ -53,9 +53,9 @@ class TextNodeRun(TrainingRun):
         self.model.train()
         self.model_warmup(epoch=epoch)
         for ix, batch in bar:
-            input_node = batch[BatchKeys.INPUT_NODE]
-            schema_ref = batch[BatchKeys.SCHEMA_NODE]
-            input_tok = self.tokenize(input_node)
+            input_ref = batch[BatchKeys.INPUT]
+            schema_ref = batch[BatchKeys.SCHEMA]
+            input_tok = self.tokenize(input_ref)
             schema_tok = self.tokenize(schema_ref)
             output_dict = self.model(input_tok, schema_tok)
             input_emb, target_emb = (
@@ -79,20 +79,20 @@ class TextNodeRun(TrainingRun):
         )
 
     @torch.no_grad()
-    def get_schema_embeddings(self, schema_nodes: DataLoader) -> torch.Tensor:
-        schema_node_embeddings = torch.empty(
-            size=(len(schema_nodes.dataset), self.model.schema_hidden_size)
+    def get_schema_embeddings(self, schema_loader: DataLoader) -> torch.Tensor:
+        schema_item_embeddings = torch.empty(
+            size=(len(schema_loader.dataset), self.model.schema_hidden_size)
         )
-        bar = self.get_bar(loader=schema_nodes, desc="Get schema node embeddings")
-        batch_size = schema_nodes.batch_size
+        bar = self.get_bar(loader=schema_loader, desc="Get schema item embeddings")
+        batch_size = schema_loader.batch_size
         for ix, batch in bar:
-            schema_nodes = batch[BatchKeys.SCHEMA_NODE]
-            schema_tokens = self.tokenize(schema_nodes)
+            schema_ref = batch[BatchKeys.SCHEMA]
+            schema_tokens = self.tokenize(schema_ref)
             schema_embedds = self.model.encode(schema_tokens)
-            schema_node_embeddings[(ix * batch_size) : ((ix + 1) * batch_size)] = (
+            schema_item_embeddings[(ix * batch_size) : ((ix + 1) * batch_size)] = (
                 schema_embedds.cpu()
             )
-        return schema_node_embeddings
+        return schema_item_embeddings
 
     @torch.no_grad()
     def get_scores(
@@ -125,18 +125,18 @@ class TextNodeRun(TrainingRun):
         self.rebuild_metrics(self.val_loader.dataset.num_classes)
         self.model.eval()
 
-        schema_nodes = self.val_loader.dataset.get_schema_nodes(
+        schema_items = self.val_loader.dataset.get_schema_items(
             batch_size=self.val_loader.batch_size,
             num_workers=self.val_loader.num_workers,
         )
-        schema_node_embeddings = self.get_schema_embeddings(schema_nodes)
+        schema_item_embeddings = self.get_schema_embeddings(schema_items)
 
         for ix, batch in bar:
             gt = batch.pop(BatchKeys.GT)
-            input_text = batch[BatchKeys.INPUT_NODE]
+            input_text = batch[BatchKeys.INPUT]
             input_tok = self.tokenize(input_text)
             scores = self.get_scores(
-                input_tok, schema_node_embeddings, chunk_size=schema_nodes.batch_size
+                input_tok, schema_item_embeddings, chunk_size=schema_items.batch_size
             )
             self.metrics.update(scores, gt)
 
@@ -167,19 +167,19 @@ class TextNodeRun(TrainingRun):
         )
         self.rebuild_metrics(self.test_loader.dataset.num_classes)
         self.model.eval()
-        schema_nodes = self.test_loader.dataset.get_schema_nodes(
+        schema_items = self.test_loader.dataset.get_schema_items(
             batch_size=self.test_loader.batch_size,
             num_workers=self.test_loader.num_workers,
         )
-        schema_node_embeddings = self.get_schema_embeddings(schema_nodes)
+        schema_item_embeddings = self.get_schema_embeddings(schema_items)
         predictions = list()
         for ix, batch in bar:
             gt = batch[BatchKeys.GT]
             qids = batch[BatchKeys.QID]
-            input_text = batch[BatchKeys.INPUT_NODE]
+            input_text = batch[BatchKeys.INPUT]
             input_tok = self.tokenize(input_text)
             scores = self.get_scores(
-                input_tok, schema_node_embeddings, chunk_size=schema_nodes.batch_size
+                input_tok, schema_item_embeddings, chunk_size=schema_items.batch_size
             )
             batch_predictions = [
                 (qid, self.test_loader.dataset.idx2cls_kb[x])

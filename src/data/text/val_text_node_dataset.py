@@ -25,11 +25,11 @@ class TextNodeValDataset(TextNodeDataset):
 
         return {
             BatchKeys.QID: input_qid,
-            BatchKeys.INPUT_NODE: input_node_str,
+            BatchKeys.INPUT: input_node_str,
             BatchKeys.GT: gt,
         }
 
-    def get_schema_nodes(
+    def get_schema_items(
         self, batch_size: int = 1, num_workers: int = None
     ) -> DataLoader:
         dataset = SchemaNodeDataset(
@@ -60,4 +60,4 @@ class SchemaNodeDataset(Dataset):
         else:
             raw = self.schema_info[target_class]
             target_class_str = f"{TemplateKeys.LABEL} {raw.get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {raw.get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
-        return {BatchKeys.SCHEMA_NODE: target_class_str}
+        return {BatchKeys.SCHEMA: target_class_str}
