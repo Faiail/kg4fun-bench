@@ -1,0 +1,88 @@
+general:
+  out_dir: &out_dir models/text/edge/shared_bert/dataset2/hybrid
+  pbar: True
+  num_epochs: 150
+  warmup: 5
+  metric_mult: -1
+  metric_to_watch: f1
+  device: cuda
+  seed: 42
+data:
+  train:
+    name: TextEdgeDataset
+    config:
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/train/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/train/edge_types/summarization/qwen-8b/edge_type_info.json
+  val:
+    name: &val_cls ValTextEdgeDataset
+    config:
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/val/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/val/edge_types/summarization/qwen-8b/edge_type_info.json
+  test:
+    name: *val_cls
+    config:
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/test/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/test/edge_types/summarization/qwen-8b/edge_type_info.json
+loader:
+  batch_size: 128
+  shuffle: True
+  drop_last: False
+  num_workers: 8
+model:
+  name: SharedTextEncoder
+  config:
+    bbone_config:
+      pretrained_model_name_or_path: &model bert-base-uncased
+    bbone_hidden_size: 768
+    final_hidden_size: 512
+tokenizer:
+  config:
+    pretrained_model_name_or_path: *model
+  kwargs:
+    truncation: True
+    return_tensors: pt
+    padding: True
+criterion:
+  name: CrossEntropyLoss
+optimizer:
+  name: AdamW
+  params: 
+    lr: 1e-5
+early_stop:
+  name: EarlyStopping
+  config:
+    verbose: True
+    patience: 10
+    path: model.pt
+scheduler:
+  name: HuggingFaceCosineScheduler  
+  config: 
+    num_warmup_steps: 119
+metrics:
+  precision:
+    name: Precision
+    config:
+      average: &average macro
+      task: &task multiclass
+      num_classes: &num_classes 4304
+  recall:
+    name: Recall
+    config:
+      average: *average
+      task: *task
+      num_classes: *num_classes
+  f1:
+    name: F1Score
+    config:
+      average: *average
+      task: *task
+      num_classes: *num_classes

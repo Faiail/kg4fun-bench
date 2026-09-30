@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/text/node/shared_bert/dataset2/hybrid
+  out_dir: &out_dir models/text/edge/shared_bert/dataset1/hybrid
   pbar: True
   num_epochs: 150
   warmup: 5
@@ -9,23 +9,29 @@ general:
   seed: 42
 data:
   train:
-    name: TextNodeDataset
+    name: TextEdgeDataset
     config:
-      dataset: data/raw/kg4fun/dataset2/splits/hybrid/train/nodes.json
-      node_info: data/raw/kg4fun/dataset2/splits/hybrid/train/node_info.json
-      schema_info: data/raw/kg4fun/dataset2/splits/hybrid/train/node_types/summarization/qwen3-8b/node_type_info.json
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/partition
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/train/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/train/edge_types/summarization/qwen-8b/edge_type_info.json
   val:
-    name: &val_cls TextNodeValDataset
+    name: &val_cls ValTextEdgeDataset
     config:
-      dataset: data/raw/kg4fun/dataset2/splits/hybrid/val/nodes.json
-      node_info: data/raw/kg4fun/dataset2/splits/hybrid/val/node_info.json
-      schema_info: data/raw/kg4fun/dataset2/splits/hybrid/val/node_types/summarization/qwen3-8b/node_type_info.json
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/partition
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/val/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/val/edge_types/summarization/qwen-8b/edge_type_info.json
   test:
     name: *val_cls
     config:
-      dataset: data/raw/kg4fun/dataset2/splits/hybrid/test/nodes.json
-      node_info: data/raw/kg4fun/dataset2/splits/hybrid/test/node_info.json
-      schema_info: data/raw/kg4fun/dataset2/splits/hybrid/test/node_types/summarization/qwen3-8b/node_type_info.json
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/partition
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/test/node_info.json
+      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/test/edge_types/summarization/qwen-8b/edge_type_info.json
 loader:
   batch_size: 128
   shuffle: True
@@ -60,23 +66,23 @@ early_stop:
 scheduler:
   name: HuggingFaceCosineScheduler  
   config: 
-    num_warmup_steps: 460
+    num_warmup_steps: 2002
 metrics:
   precision:
     name: Precision
     config:
-      average: macro
+      average: &average macro
       task: &task multiclass
-      num_classes: 105
+      num_classes: &num_classes 29435
   recall:
     name: Recall
     config:
-      average: macro
+      average: *average
       task: *task
-      num_classes: 105
+      num_classes: *num_classes
   f1:
     name: F1Score
     config:
-      average: macro
+      average: *average
       task: *task
-      num_classes: 105
+      num_classes: *num_classes
