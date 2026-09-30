@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/shared_node_bge/dataset1/inductive
+  out_dir: &out_dir models/text/node/shared_bge/dataset1/inductive
   pbar: True
   num_epochs: 150
   warmup: 5

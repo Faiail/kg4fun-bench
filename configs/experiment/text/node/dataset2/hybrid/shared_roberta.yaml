@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/shared_node_roberta/dataset2/hybrid
+  out_dir: &out_dir models/text/node/shared_roberta/dataset2/hybrid
   pbar: True
   num_epochs: 150
   warmup: 5
