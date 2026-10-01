@@ -72,7 +72,6 @@ class SharedTextSingleItemRun(TrainingRun):
             cumulated_loss += batch_loss
             self.update_bar(bar=bar, loss=batch_loss)
             self.schedule(phase=ParameterKeys.TRAIN)
-            break
 
         cumulated_loss /= len(self.train_loader)
         self.print_stats(
