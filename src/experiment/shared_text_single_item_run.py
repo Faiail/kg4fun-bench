@@ -39,6 +39,10 @@ class SharedTextSingleItemRun(TrainingRun):
         for p in self.model.parameters():
             p.requires_grad = True
         for p in self.model.encoder.parameters():
+            p.requires_grad = False
+        for p in self.model.encoder.encoder.layer[-2:].parameters():
+            p.requires_grad = epoch > self.num_warmup_epochs
+        for p in self.model.encoder.pooler.parameters():
             p.requires_grad = epoch > self.num_warmup_epochs
 
     def tokenize(self, text: str | list[str]) -> dict:
