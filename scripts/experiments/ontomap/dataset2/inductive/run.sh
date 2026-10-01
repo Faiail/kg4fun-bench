@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p outs/experiments/ontomap/dataset2/inductive
 echo "ONTOMAP DATASET2 INDUCTIVE"
 condor_submit JobBatchName=ontomap_rag ./condor/launch ARGS="experiment --parameters configs/experiment/ontomap/dataset2/inductive/rag.yaml --cls OntomapRun --seed 42" OUT="outs/experiments/ontomap/dataset2/inductive/rag.out" ERR="outs/experiments/ontomap/dataset2/inductive/rag.out" LOG="outs/experiments/ontomap/dataset2/inductive/rag.log"
 

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-uv run accelerate launch main.py $@
+source .venv/bin/activate
+accelerate launch main.py $@

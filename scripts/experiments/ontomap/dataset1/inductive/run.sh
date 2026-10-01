@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "ONTOMAP DATASET1 INDUCTIVE"
+mkdir -p outs/experiments/ontomap/dataset1/inductive
 condor_submit JobBatchName=ontomap_rag ./condor/launch ARGS="experiment --parameters configs/experiment/ontomap/dataset1/inductive/rag.yaml --cls OntomapRun --seed 42" OUT="outs/experiments/ontomap/dataset1/inductive/rag.out" ERR="outs/experiments/ontomap/dataset1/inductive/rag.out" LOG="outs/experiments/ontomap/dataset1/inductive/rag.log"
 
 condor_submit JobBatchName=ontomap_naiv_conv_oaei ./condor/launch ARGS="experiment --parameters configs/experiment/ontomap/dataset1/inductive/naiv_conv_oaei.yaml --cls OntomapRun --seed 42" OUT="outs/experiments/ontomap/dataset1/inductive/naiv_conv_oaei.out" ERR="outs/experiments/ontomap/dataset1/inductive/naiv_conv_oaei.out" LOG="outs/experiments/ontomap/dataset1/inductive/naiv_conv_oaei.log"

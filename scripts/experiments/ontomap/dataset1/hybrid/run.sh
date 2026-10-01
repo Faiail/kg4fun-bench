@@ -1,5 +1,6 @@
 #!/bin/bash
 
+mkdir -p outs/experiments/ontomap/dataset1/hybrid
 echo "ONTOMAP DATASET1 HYBRID"
 condor_submit JobBatchName=ontomap_rag ./condor/launch ARGS="experiment --parameters configs/experiment/ontomap/dataset1/hybrid/rag.yaml --cls OntomapRun --seed 42" OUT="outs/experiments/ontomap/dataset1/hybrid/rag.out" ERR="outs/experiments/ontomap/dataset1/hybrid/rag.out" LOG="outs/experiments/ontomap/dataset1/hybrid/rag.log"
 
