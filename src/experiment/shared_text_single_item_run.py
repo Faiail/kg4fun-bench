@@ -69,6 +69,8 @@ class SharedTextSingleItemRun(TrainingRun):
             output_logits = input_emb @ target_emb.T
             labels = torch.arange(output_logits.size(0)).long().to(output_logits.device)
             loss = self.criterion(output_logits, labels)
+            
+            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
