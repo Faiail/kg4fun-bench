@@ -50,7 +50,15 @@
             "request": "launch",
             "program": "main.py",
             "console": "integratedTerminal",
-            "args": ["experiment", "--parameters", "configs/experiment/text/edge/dataset2/inductive/shared_bert.yaml", "--cls", "SharedTextSingleItemRun"]
+            "args": ["experiment", "--parameters", "configs/experiment/text/node/dataset1/hybrid/dedicated_bert.yaml", "--cls", "DedicatedTextSingleItemRun"]
+        },
+        {
+            "name": "Shared TextRun Experiment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/node/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextSingleItemRun"]
         }
     ]
 }
