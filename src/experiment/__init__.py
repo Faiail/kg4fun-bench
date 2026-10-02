@@ -4,6 +4,8 @@ from .logmap_run import LogmapRun
 from .run import Run
 from .utils import ParameterKeys
 from .shared_text_single_item_run import SharedTextSingleItemRun
+from .dedicated_text_single_item_run import DedicatedTextSingleItemRun
+
 
 def run_experiment(parameters: dict, cls: str, seed: int) -> None:
     parameters[ParameterKeys.SEED] = seed

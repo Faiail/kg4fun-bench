@@ -1,1 +1,2 @@
 from .shared_text_model import SharedTextEncoder
+from .dedicated_text_model import DedicatedTextEncoder
