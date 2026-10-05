@@ -3,6 +3,9 @@
 mkdir -p outs/experiments/text/test
 echo "LAUNCHING TEXT TEST HYPERPARAMETER EXPERIMENTS"
 
+# base
+condor_submit JobBatchName=test_base ./condor/launch ARGS="experiment --parameters=configs/experiment/text/test/base.yaml --cls SharedTextSingleItemRun" OUT="outs/experiments/text/test/base.out" ERR="outs/experiments/text/test/base.out" LOG="outs/experiments/text/test/base.log"
+
 # Temperature Sweeps
 condor_submit JobBatchName=test_temp_0.02 ./condor/launch ARGS="experiment --parameters=configs/experiment/text/test/temp_0.02.yaml --cls SharedTextSingleItemRun" OUT="outs/experiments/text/test/temp_0.02.out" ERR="outs/experiments/text/test/temp_0.02.out" LOG="outs/experiments/text/test/temp_0.02.log"
 
