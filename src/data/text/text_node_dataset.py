@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 from src.data.utils import BatchKeys
 from src.utils import load_json
 from .template_keys import TemplateKeys
+import torch
 
 
 class TextNodeDataset(Dataset):
@@ -20,6 +21,11 @@ class TextNodeDataset(Dataset):
     def __len__(self) -> int:
         return len(self.dataset)
 
+    def get_schema_str(self, idx: int) -> str:
+        if idx == -1:
+            return f"{TemplateKeys.LABEL} Prune Node | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
+        return f"{TemplateKeys.LABEL} {self.schema_info[idx].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.schema_info[idx].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
+
     def __getitem__(self, idx: int) -> dict:
         raw_data = self.dataset[idx]
         input_qid = raw_data[BatchKeys.QID]
@@ -27,12 +33,21 @@ class TextNodeDataset(Dataset):
 
         input_node_str = f"{TemplateKeys.LABEL} {self.node_info[input_qid].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.node_info[input_qid].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
 
-        if target_class == -1:
-            target_class_str = f"{TemplateKeys.LABEL} Prune Node | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
-        else:
-            target_class_str = f"{TemplateKeys.LABEL} {self.schema_info[target_class].get(BatchKeys.ITEM_LABEL, "UnknownLabel")} | {TemplateKeys.DESC} {self.schema_info[target_class].get(BatchKeys.ITEM_DESC, "UnknownDescription")}"
-
         return {
             BatchKeys.INPUT: input_node_str,
-            BatchKeys.SCHEMA: target_class_str,
+            BatchKeys.SCHEMA: target_class,
+        }
+
+    def collate_fn(self, batch: list) -> dict:
+        input_nodes_str = [item[BatchKeys.INPUT] for item in batch]
+        target_classes = [item[BatchKeys.SCHEMA] for item in batch]
+        unique_classes = list(set(target_classes))
+        class2batch = {v: k for k, v in enumerate(unique_classes)}
+
+        target_classes_str = [self.get_schema_str(idx) for idx in unique_classes]
+        gts = torch.as_tensor([class2batch[idx] for idx in target_classes], dtype=torch.long)
+        return {
+            BatchKeys.INPUT: input_nodes_str,
+            BatchKeys.SCHEMA: target_classes_str,
+            BatchKeys.GT: gts,
         }

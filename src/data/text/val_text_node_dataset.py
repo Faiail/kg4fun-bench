@@ -3,6 +3,7 @@ import torch
 from src.data.utils import BatchKeys
 from .template_keys import TemplateKeys
 from .text_node_dataset import TextNodeDataset
+from torch.utils.data import default_collate
 
 
 class TextNodeValDataset(TextNodeDataset):
@@ -28,6 +29,9 @@ class TextNodeValDataset(TextNodeDataset):
             BatchKeys.INPUT: input_node_str,
             BatchKeys.GT: gt,
         }
+
+    def collate_fn(self, batch: list) -> dict:
+        return default_collate(batch)
 
     def get_schema_items(
         self, batch_size: int = 1, num_workers: int = None

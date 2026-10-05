@@ -61,6 +61,7 @@ class SharedTextSingleItemRun(TrainingRun):
         for ix, batch in bar:
             input_ref = batch[BatchKeys.INPUT]
             schema_ref = batch[BatchKeys.SCHEMA]
+
             input_tok = self.tokenize(input_ref)
             schema_tok = self.tokenize(schema_ref)
             output_dict = self.model(input_tok, schema_tok)
@@ -69,9 +70,11 @@ class SharedTextSingleItemRun(TrainingRun):
                 output_dict[ReturnKeys.TARGET],
             )
             output_logits = input_emb @ target_emb.T
-            labels = torch.arange(output_logits.size(0)).long().to(output_logits.device)
+            labels = batch.get(
+                BatchKeys.GT, torch.arange(output_logits.size(0)).long()
+            ).to(self.device)
             loss = self.criterion(output_logits, labels)
-            
+
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()

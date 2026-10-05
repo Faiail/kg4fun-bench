@@ -71,12 +71,24 @@ class TrainingRun(Run):
             self._init_dataset(dataset_parameters.get(ParameterKeys.TEST, None)),
         )
         loader_parameters = self.parameters.get(ParameterKeys.LOADER, dict())
-        self.train_loader = DataLoader(dataset=train_dataset, **loader_parameters)
-        self.val_loader = DataLoader(dataset=val_dataset, **loader_parameters)
+        self.train_loader = DataLoader(
+            dataset=train_dataset,
+            collate_fn=getattr(train_dataset, "collate_fn", None),
+            **loader_parameters,
+        )
+        self.val_loader = DataLoader(
+            dataset=val_dataset,
+            collate_fn=getattr(val_dataset, "collate_fn", None),
+            **loader_parameters,
+        )
         self.test_loader = (
             None
             if test_dataset is None
-            else DataLoader(dataset=test_dataset, **loader_parameters)
+            else DataLoader(
+                dataset=test_dataset,
+                collate_fn=getattr(test_dataset, "collate_fn", None),
+                **loader_parameters,
+            )
         )
 
     def _init_model(self):
@@ -208,4 +220,3 @@ class TrainingRun(Run):
         test_metrics, inference = self.test()
         save_json(test_metrics, f"{self.out_dir}/test_metrics.json")
         save_json(inference, f"{self.out_dir}/inferece.json")
-        
