@@ -1,0 +1,85 @@
+general:
+  out_dir: &out_dir models/text/test/proj_256
+  pbar: True
+  num_epochs: 150
+  warmup: 5
+  metric_mult: -1
+  metric_to_watch: f1
+  device: cuda
+  seed: 42
+data:
+  train:
+    name: TextNodeDataset
+    config:
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/train/nodes.json
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/train/node_info.json
+      schema_info: data/raw/kg4fun/dataset1/splits/hybrid/train/node_types/summarization/qwen3-8b/node_type_info.json
+  val:
+    name: &val_cls TextNodeValDataset
+    config:
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/val/nodes.json
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/val/node_info.json
+      schema_info: data/raw/kg4fun/dataset1/splits/hybrid/val/node_types/summarization/qwen3-8b/node_type_info.json
+  test:
+    name: *val_cls
+    config:
+      dataset: data/raw/kg4fun/dataset1/splits/hybrid/test/nodes.json
+      node_info: data/raw/kg4fun/dataset1/splits/hybrid/test/node_info.json
+      schema_info: data/raw/kg4fun/dataset1/splits/hybrid/test/node_types/summarization/qwen3-8b/node_type_info.json
+loader:
+  batch_size: 512
+  shuffle: True
+  drop_last: False
+  num_workers: 8
+model:
+  name: SharedTextEncoder
+  config:
+    bbone_config:
+      pretrained_model_name_or_path: &model bert-base-uncased
+    bbone_hidden_size: 768
+    final_hidden_size: 256
+tokenizer:
+  config:
+    pretrained_model_name_or_path: *model
+  kwargs:
+    truncation: True
+    return_tensors: pt
+    padding: True
+criterion:
+  name: InfoNCELoss
+  config:
+    temperature: 0.07
+    learnable: True
+optimizer:
+  name: AdamW
+  params: 
+    lr: 1e-5
+early_stop:
+  name: EarlyStopping
+  config:
+    verbose: True
+    patience: 10
+    path: model.pt
+scheduler:
+  name: HuggingFaceCosineScheduler  
+  config: 
+    num_warmup_steps: 433
+metrics:
+  precision:
+    name: Precision
+    config:
+      average: macro
+      task: &task multiclass
+      num_classes: 440
+  recall:
+    name: Recall
+    config:
+      average: macro
+      task: *task
+      num_classes: 440
+  f1:
+    name: F1Score
+    config:
+      average: macro
+      task: *task
+      num_classes: 440

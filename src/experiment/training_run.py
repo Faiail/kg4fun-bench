@@ -27,17 +27,17 @@ class TrainingRun(Run):
         print("Init Model...")
         self._init_model()
         print("Done!")
-        print("Init Optimizer...")
-        self._init_optimizer()
-        print("Done!")
         print("Init early stop...")
         self._init_early_stop()
         print("Done!")
-        print("Init scheduler...")
-        self._init_scheduler()
-        print("Done!")
         print("Init Criterion...")
         self._init_criterion()
+        print("Done!")
+        print("Init Optimizer...")
+        self._init_optimizer()
+        print("Done!")
+        print("Init scheduler...")
+        self._init_scheduler()
         print("Done!")
         print("Init metrics...")
         self._init_metrics()
@@ -50,6 +50,7 @@ class TrainingRun(Run):
         self.pbar = general_parameters.get(ParameterKeys.PBAR, False)
         self.num_epochs = general_parameters.get(ParameterKeys.NUM_EPOCHS, 1)
         self.num_warmup_epochs = general_parameters.get(ParameterKeys.WARMUP, 0)
+        self.unfrozen_layers = general_parameters.get(ParameterKeys.UNFROZEN_LAYERS, 2)
         self.metric_mult = general_parameters.get(ParameterKeys.METRIC_MULT, 1)
         self.metric_to_watch = general_parameters.get(ParameterKeys.METRIC_TO_WATCH)
         self.device = general_parameters.get(ParameterKeys.DEVICE, "cpu")
@@ -107,6 +108,7 @@ class TrainingRun(Run):
         # get total steps
         total_steps = self.num_epochs * len(self.train_loader)
         params.update({"num_training_steps": total_steps})
+        params.update({"num_warmup_steps": self.num_warmup_epochs * len(self.train_loader)})
         return params
 
     def _init_scheduler(self):
@@ -129,7 +131,7 @@ class TrainingRun(Run):
         optimizer_name = optimizer_prameters.get(ParameterKeys.NAME)
         optimizer_cfg = optimizer_prameters.get(ParameterKeys.CFG, dict())
         self.optimizer = torch.optim.__dict__[optimizer_name](
-            params=self.model.parameters(), **optimizer_cfg
+            params=list(self.model.parameters()) + list(self.criterion.parameters()), **optimizer_cfg
         )
 
     def _init_early_stop(self):

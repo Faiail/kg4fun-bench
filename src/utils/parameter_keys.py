@@ -77,3 +77,4 @@ class ParameterKeys(StrEnum):
     METRIC_MULT = "metric_mult"
     METRIC_TO_WATCH = "metric_to_watch"
     BASE_PATH = "base_path"
+    UNFROZEN_LAYERS = "unfrozen_layers"

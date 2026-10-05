@@ -19,7 +19,7 @@ class SharedTextEncoder(torch.nn.Module):
     def encode(self, input_dict) -> torch.Tensor:
         output = self.encoder(**input_dict)
         cls_token = output.last_hidden_state[:, 0]
-        return self.layernorm(self.projector(cls_token))
+        return torch.nn.functional.normalize(self.layernorm(self.projector(cls_token)), p=2, dim=-1)
 
     def forward(self, input: dict, target: dict) -> dict[str, torch.Tensor]:
         input_emb = self.encode(input)
