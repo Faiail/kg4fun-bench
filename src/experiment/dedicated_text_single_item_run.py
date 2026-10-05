@@ -13,16 +13,16 @@ class DedicatedTextSingleItemRun(SharedTextSingleItemRun):
         for p in self.model.target_encoder.parameters():
             p.requires_grad = False
         if hasattr(self.model.input_encoder, "encoder"):
-            for p in self.model.input_encoder.encoder.layer[-2:].parameters():
+            for p in self.model.input_encoder.encoder.layer[-self.unfrozen_layers:].parameters():
                 p.requires_grad = epoch > self.num_warmup_epochs
         else:
-            for p in self.model.input_encoder.layers[-2:].parameters():
+            for p in self.model.input_encoder.layers[-self.unfrozen_layers:].parameters():
                 p.requires_grad = epoch > self.num_warmup_epochs
         if hasattr(self.model.target_encoder, "encoder"):
-            for p in self.model.target_encoder.encoder.layer[-2:].parameters():
+            for p in self.model.target_encoder.encoder.layer[-self.unfrozen_layers:].parameters():
                 p.requires_grad = epoch > self.num_warmup_epochs
         else:
-            for p in self.model.target_encoder.layers[-2:].parameters():
+            for p in self.model.target_encoder.layers[-self.unfrozen_layers:].parameters():
                 p.requires_grad = epoch > self.num_warmup_epochs
 
     @torch.no_grad()

@@ -22,12 +22,12 @@ class DedicatedTextEncoder(torch.nn.Module):
     def encode_input(self, input_dict) -> torch.Tensor:
         output = self.input_encoder(**input_dict)
         cls_token = output.last_hidden_state[:, 0]
-        return self.input_layernorm(self.input_projector(cls_token))
+        return torch.nn.functional.normalize(self.input_layernorm(self.input_projector(cls_token)), p=2, dim=-1)
 
     def encode_target(self, target_dict) -> torch.Tensor:
         output = self.target_encoder(**target_dict)
         cls_token = output.last_hidden_state[:, 0]
-        return self.target_layernorm(self.target_projector(cls_token))
+        return torch.nn.functional.normalize(self.target_layernorm(self.target_projector(cls_token)), p=2, dim=-1)
 
     def forward(self, input: dict, target: dict) -> dict[str, torch.Tensor]:
         input_emb = self.encode_input(input)
