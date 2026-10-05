@@ -2,6 +2,7 @@ from torch.utils.data import Dataset, DataLoader
 from src.data.utils import BatchKeys
 from .template_keys import TemplateKeys
 from .text_edge_dataset import TextEdgeDataset
+from torch.utils.data import default_collate
 
 
 class ValTextEdgeDataset(TextEdgeDataset):
@@ -42,6 +43,7 @@ class ValTextEdgeDataset(TextEdgeDataset):
         return {
             BatchKeys.INPUT: input_edge_str,
             BatchKeys.GT: gt,
+            BatchKeys.QID: -1 if head_cls == -1 or tail_cls == -1 else self.dataset[(head_cls, pid, tail_cls)],
         }
 
     def _get_gt(self, head_cls: int, tail_cls: int, pid: str) -> int:
@@ -63,6 +65,8 @@ class ValTextEdgeDataset(TextEdgeDataset):
             drop_last=False,
         )
 
+    def collate_fn(self, batch):
+        return default_collate(batch)
 
 class SchemaEdgeDataset(Dataset):
     def __init__(self, kb: dict, schema_edge_info: dict) -> None:

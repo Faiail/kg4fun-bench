@@ -194,7 +194,7 @@ class SharedTextSingleItemRun(TrainingRun):
             )
             batch_predictions = [
                 (qid, self.test_loader.dataset.idx2cls_kb[x])
-                for (qid, x) in zip(qids, scores.argmax(dim=1).tolist())
+                for (qid, x) in zip(qids.tolist() if isinstance(qids, torch.Tensor) else qids, scores.argmax(dim=1).tolist())
             ]
             predictions.extend(batch_predictions)
             self.metrics.update(scores, gt)

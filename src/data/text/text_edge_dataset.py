@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 from src.utils import load_json
 from .template_keys import TemplateKeys
 from src.data.utils import BatchKeys
+import torch
 import os
 
 
@@ -42,15 +43,10 @@ class TextEdgeDataset(Dataset):
         tail_str = self._get_node_label_desc(tail_qid)
         pid = raw_item[BatchKeys.EDGE_TYPE][BatchKeys.PID]
         rel_str = self._get_edge_label_desc(pid)
-        target_edge_str = self._get_schema_rel_label_desc(
-            head_cls=head_cls,
-            tail_cls=tail_cls,
-            pid=pid,
-        )
         input_edge_str = f"{TemplateKeys.HEAD} {head_str} | {TemplateKeys.TAIL} {tail_str} | {TemplateKeys.PID} {rel_str}"
         return {
             BatchKeys.INPUT: input_edge_str,
-            BatchKeys.SCHEMA: target_edge_str,
+            BatchKeys.SCHEMA: tuple((head_cls, pid, tail_cls)),
         }
 
     def _get_node_label_desc(self, qid: str) -> str:
@@ -64,3 +60,17 @@ class TextEdgeDataset(Dataset):
             return f"{TemplateKeys.LABEL} Prune Edge | {TemplateKeys.DESC} An edge which is out of domain and must be pruned."
         schema_rel_id = self.dataset[(head_cls, pid, tail_cls)]
         return f"{TemplateKeys.LABEL} {self.schema_edge_info.get(schema_rel_id).get(BatchKeys.ITEM_LABEL, "Unknown Label")} | {TemplateKeys.DESC} {self.schema_edge_info.get(schema_rel_id).get(BatchKeys.ITEM_DESC, "Unknown Description")}"
+
+    def collate_fn(self, batch):
+        input_edges_str = [item[BatchKeys.INPUT] for item in batch]
+        target_classes = [item[BatchKeys.SCHEMA] for item in batch]
+        unique_classes = list(set(target_classes))
+        class2batch = {v: k for k, v in enumerate(unique_classes)}
+
+        target_classes_str = [self._get_schema_rel_label_desc(head_cls=head, tail_cls=tail, pid=pid) for (head, pid, tail) in unique_classes]
+        gts = torch.as_tensor([class2batch[rep] for rep in target_classes], dtype=torch.long)
+        return {
+            BatchKeys.INPUT: input_edges_str,
+            BatchKeys.SCHEMA: target_classes_str,
+            BatchKeys.GT: gts,
+        }
