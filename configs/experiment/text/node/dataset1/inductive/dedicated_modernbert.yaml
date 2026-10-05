@@ -27,7 +27,7 @@ data:
       node_info: data/raw/kg4fun/dataset1/splits/inductive/test/node_info.json
       schema_info: data/raw/kg4fun/dataset1/splits/inductive/test/node_types/summarization/qwen3-8b/node_type_info.json
 loader:
-  batch_size: 128
+  batch_size: 1024
   shuffle: True
   drop_last: False
   num_workers: 8
@@ -46,7 +46,10 @@ tokenizer:
     return_tensors: pt
     padding: True
 criterion:
-  name: CrossEntropyLoss
+  name: InfoNCELoss
+  config:
+    temperature: 0.05
+    learnable: True
 optimizer:
   name: AdamW
   params: 

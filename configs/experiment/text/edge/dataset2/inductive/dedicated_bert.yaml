@@ -33,7 +33,7 @@ data:
       input_edge_info: data/raw/kg4fun/dataset2/splits/inductive/test/edges/edge_info.json
       schema_edge_info: data/raw/kg4fun/dataset2/splits/inductive/test/edge_types/summarization/qwen-8b/edge_type_info.json
 loader:
-  batch_size: 128
+  batch_size: 1024
   shuffle: True
   drop_last: False
   num_workers: 8
@@ -52,7 +52,10 @@ tokenizer:
     return_tensors: pt
     padding: True
 criterion:
-  name: CrossEntropyLoss
+  name: InfoNCELoss
+  config:
+    temperature: 0.05
+    learnable: True
 optimizer:
   name: AdamW
   params: 
