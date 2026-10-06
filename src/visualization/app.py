@@ -175,14 +175,31 @@ def main():
             st.error(f"❌ Config missing:\n`{config_path}`")
             return
 
+        # Explicit Cache Reset Button
+        if st.button("🔄 Reload Model & Reset Cache", use_container_width=True):
+            st.cache_resource.clear()
+            for k in list(st.session_state.keys()):
+                del st.session_state[k]
+            st.rerun()
+
+    # Track active run setting to reset sample state when switching runs
+    current_run_key = f"{task}_{dataset_name}_{split_mode}_{architecture}_{model_name}_{split}"
+    if st.session_state.get("active_run_key") != current_run_key:
+        st.session_state.active_run_key = current_run_key
+        st.session_state.current_sample_idx = 0
+        st.session_state.sample_id_input = ""
+
     # ==========================================
     # 2. Run Class Loading & Init (Requirements 1 & 3)
     # ==========================================
+    config_mtime = config_path.stat().st_mtime if config_path.exists() else 0.0
+
     try:
         run = load_and_init_run(
             config_path_str=str(config_path),
             run_class_name=run_class_name,
             device=device,
+            config_mtime=config_mtime,
         )
     except Exception as e:
         st.error(f"Error initializing run class `{run_class_name}`: {e}")
@@ -205,11 +222,18 @@ def main():
     dataset = loader.dataset
     total_samples = len(dataset)
 
+    # Ensure current sample index is within valid bounds for this dataset
+    if "current_sample_idx" not in st.session_state:
+        st.session_state.current_sample_idx = 0
+    else:
+        st.session_state.current_sample_idx = max(0, min(st.session_state.current_sample_idx, total_samples - 1))
+
     # ==========================================
     # 4. Gather Schema Item Embeddings (Requirement 4)
     # ==========================================
     try:
-        schema_embeddings = get_schema_embeddings(run, dataset, task=task)
+        # Schema embeddings are cached per run & split on run._schema_embeddings_cache
+        schema_embeddings = get_schema_embeddings(run, dataset, task=task, split=split)
     except Exception as e:
         st.error(f"Failed to gather schema item embeddings via runner: {e}")
         return
@@ -221,19 +245,17 @@ def main():
 
     col_id_search, col_idx_nav = st.columns([1.5, 2.5])
 
-    # Manage sample index in session state
-    if "current_sample_idx" not in st.session_state:
-        st.session_state.current_sample_idx = 0
-
     with col_id_search:
         sample_id_input = st.text_input(
             "Direct Sample ID / QID Lookup",
-            value="",
+            value=st.session_state.get("sample_id_input", ""),
             placeholder="e.g. Q1060131 or sample index...",
             help="Type an entity QID or numeric sample index to jump directly.",
+            key="sample_id_input_widget",
         ).strip()
 
-        if sample_id_input:
+        if sample_id_input and sample_id_input != st.session_state.get("sample_id_input", ""):
+            st.session_state.sample_id_input = sample_id_input
             found_idx = find_sample_index(dataset, sample_id_input, task=task)
             if found_idx is not None:
                 st.session_state.current_sample_idx = found_idx
@@ -256,7 +278,7 @@ def main():
         st.session_state.current_sample_idx = st.slider(
             f"Sample Index in `{split}` ({total_samples:,} total samples)",
             min_value=0,
-            max_value=total_samples - 1,
+            max_value=max(0, total_samples - 1),
             value=st.session_state.current_sample_idx,
         )
 

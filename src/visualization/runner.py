@@ -52,6 +52,8 @@ def load_and_init_run(
     config_path_str: str,
     run_class_name: str,
     device: str = "cpu",
+    config_mtime: float = 0.0,
+    checkpoint_mtime: float = 0.0,
 ):
     """Loads YAML config, instantiates and inits runner, and loads model weights from early_stop.path."""
     if not os.path.exists(config_path_str):
@@ -85,21 +87,31 @@ def load_and_init_run(
     run.model = run.model.to(device)
     run.model.eval()
 
+    # Initialize per-run embeddings cache
+    run._schema_embeddings_cache = {}
+
     return run
 
 
-@st.cache_resource(show_spinner="Encoding schema item candidate embeddings...")
-def get_schema_embeddings(_run, _dataset, task: str):
-    """Encodes all schema candidate embeddings using the runner model."""
-    _run.model.eval()
-    if task == "complete":
-        node_loader, edge_loader = _dataset.get_schema_items(batch_size=64, num_workers=0)
-        return _run.get_schema_embeddings(node_loader=node_loader, edge_loader=edge_loader)
+def get_schema_embeddings(run, dataset, task: str, split: str = "val", force_recompute: bool = False):
+    """Encodes and caches schema candidate embeddings directly on the runner instance for the given split.
+    Guarantees embeddings are recomputed whenever the run or split changes.
+    """
+    if not hasattr(run, "_schema_embeddings_cache") or force_recompute:
+        run._schema_embeddings_cache = {}
 
-    # For node and edge single item runs
-    schema_items = _dataset.get_schema_items(batch_size=64, num_workers=0)
-    schema_item_embeddings = _run.get_schema_embeddings(schema_items)
-    return schema_item_embeddings
+    if split not in run._schema_embeddings_cache or force_recompute:
+        run.model.eval()
+        with torch.no_grad():
+            if task == "complete":
+                node_loader, edge_loader = dataset.get_schema_items(batch_size=64, num_workers=0)
+                embs = run.get_schema_embeddings(node_loader=node_loader, edge_loader=edge_loader)
+            else:
+                schema_items = dataset.get_schema_items(batch_size=64, num_workers=0)
+                embs = run.get_schema_embeddings(schema_items)
+            run._schema_embeddings_cache[split] = embs
+
+    return run._schema_embeddings_cache[split]
 
 
 def find_sample_index(dataset, sample_identifier: Union[int, str], task: str = "node") -> Optional[int]:
