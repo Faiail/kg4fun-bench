@@ -201,3 +201,4 @@ scripts/cineca/
 
 /apis/
 logmap-log.out
+*.db
