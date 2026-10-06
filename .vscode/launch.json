@@ -59,6 +59,14 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["experiment", "--parameters", "configs/experiment/text/edge/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextSingleItemRun"]
+        },
+        {
+            "name": "Optuna",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["optimize", "--parameters", "configs/experiment/text/test/optimize.yaml", "--cls", "OptunaOptimizer"]
         }
     ]
 }

@@ -27,3 +27,14 @@ def experiment(parameters, cls, seed):
     params_dict = load_ruamel(parameters)
     params_dict["config_name"] = Path(parameters).stem
     run_experiment(params_dict, cls, seed)
+
+
+@main.command("optimize")
+@click.option("--parameters", help="Path to the experiment parameters YAML file", required=True)
+@click.option("--cls", help="Run class to use", show_default=True)
+def optimize(parameters, cls):
+    from src.optimize import run_optimization
+
+    params_dict = load_ruamel(parameters)
+    params_dict["config_name"] = Path(parameters).stem
+    run_optimization(params_dict, cls)

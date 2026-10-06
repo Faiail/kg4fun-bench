@@ -1,0 +1,42 @@
+general:
+  seed: 42
+  out_dir: models/test/optimize
+study:
+  name: node_bert_hybrid_tuning
+  n_trials: 20
+  config:
+    direction: minimize
+  space:
+    lr:
+      path: optimizer.params.lr
+      type: float
+      low: 0.000005
+      high: 0.0001
+      log: true
+    temperature:
+      path: criterion.config.temperature
+      type: float
+      low: 0.01
+      high: 0.15
+      log: true
+    learnable_temp:
+      path: criterion.config.learnable
+      type: categorical
+      choices: [true, false]
+    batch_size:
+      path: loader.batch_size
+      type: categorical
+      choices: [256, 512, 1024]
+    final_hidden_size:
+      path: model.config.final_hidden_size
+      type: categorical
+      choices: [128, 256, 512, 768]
+    warmup_epochs:
+      path: general.warmup
+      type: int
+      low: 2
+      high: 8
+      step: 1
+run:
+  name: SharedTextSingleItemRun
+  config: configs/experiment/text/node/dataset1/hybrid/shared_bert.yaml

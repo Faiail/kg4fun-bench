@@ -78,3 +78,7 @@ class ParameterKeys(StrEnum):
     METRIC_TO_WATCH = "metric_to_watch"
     BASE_PATH = "base_path"
     UNFROZEN_LAYERS = "unfrozen_layers"
+    STUDY = "study"
+    N_TRIALS = "n_trials"
+    SPACE = "space"
+    RUN = "run"
