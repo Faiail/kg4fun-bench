@@ -46,8 +46,8 @@ class ValTextCompleteDataset(TextCompleteDataset):
 
     def _get_rel_gt(self, head_cls: int, tail_cls: int, pid: str) -> int:
         if head_cls == -1 or tail_cls == -1:
-            return self.cls2idx_kb[-1]
-        return self.cls2idx_kb[self.dataset[(head_cls, pid, tail_cls)]]
+            return self.rel_cls2idx_kb[-1]
+        return self.rel_cls2idx_kb[self.dataset[(head_cls, pid, tail_cls)]]
 
     def _get_gt(self, head_cls: int, tail_cls: int, pid: str) -> int:
         return {
@@ -107,3 +107,7 @@ class ValTextCompleteDataset(TextCompleteDataset):
             drop_last=False,
         )
         return node_loader, rel_loader
+
+    def collate_fn(self, batch):
+        from torch.utils.data import default_collate
+        return default_collate(batch)
