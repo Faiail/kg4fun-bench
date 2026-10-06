@@ -8,7 +8,7 @@ study:
     direction: minimize
   space:
     lr:
-      path: optimizer.params.lr
+      path: optimizer.config.lr
       type: float
       low: 0.000005
       high: 0.0001
