@@ -67,6 +67,14 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["optimize", "--parameters", "configs/experiment/text/test/optimize.yaml", "--cls", "OptunaOptimizer"]
+        },
+        {
+            "name": "Complete Shared",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextCompleteRun"]
         }
     ]
 }

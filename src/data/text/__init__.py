@@ -2,3 +2,5 @@ from .text_node_dataset import TextNodeDataset
 from .val_text_node_dataset import TextNodeValDataset
 from .text_edge_dataset import TextEdgeDataset
 from .val_text_edge_dataset import ValTextEdgeDataset
+from .text_complete_dataset import TextCompleteDataset
+from .val_text_complete_dataset import ValTextCompleteDataset
