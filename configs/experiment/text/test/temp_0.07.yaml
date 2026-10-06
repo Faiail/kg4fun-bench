@@ -52,7 +52,7 @@ criterion:
     learnable: False
 optimizer:
   name: AdamW
-  params: 
+  config: 
     lr: 1e-5
 early_stop:
   name: EarlyStopping
