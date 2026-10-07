@@ -59,6 +59,7 @@ class SharedTextSingleItemRun(TrainingRun):
         self.model.train()
         self.model_warmup(epoch=epoch)
         for ix, batch in bar:
+            self.optimizer.zero_grad()
             input_ref = batch[BatchKeys.INPUT]
             schema_ref = batch[BatchKeys.SCHEMA]
 
@@ -75,7 +76,6 @@ class SharedTextSingleItemRun(TrainingRun):
             ).to(self.device)
             loss = self.criterion(output_logits, labels)
 
-            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
@@ -83,6 +83,7 @@ class SharedTextSingleItemRun(TrainingRun):
             cumulated_loss += batch_loss
             self.update_bar(bar=bar, loss=batch_loss)
             self.schedule(phase=ParameterKeys.TRAIN)
+            torch.cuda.empty_cache()
 
         cumulated_loss /= len(self.train_loader)
         self.print_stats(

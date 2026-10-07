@@ -30,7 +30,7 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
     def rebuild_metrics(self, num_node_classes: int, num_rel_classes: int) -> None:
         metric_parameters = deepcopy(self.parameters.get(ParameterKeys.METRICS, dict()))
         node_metric_parameters = metric_parameters.get(ParameterKeys.NODES, dict())
-        for metric in metric_parameters:
+        for metric in node_metric_parameters:
             if (
                 "num_classes"
                 in node_metric_parameters[metric].get(ParameterKeys.CFG, dict()).keys()
@@ -59,6 +59,7 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
         self.model.train()
         self.model_warmup(epoch=epoch)
         for ix, batch in bar:
+            self.optimizer.zero_grad()
             input_head_ref = batch[BatchKeys.INPUT_HEAD]
             input_tail_ref = batch[BatchKeys.INPUT_TAIL]
             input_rel_ref = batch[BatchKeys.INPUT_REL]
@@ -92,7 +93,6 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             labels = {k: v.to(self.device) for k, v in labels.items()}
             loss = self.criterion(input_emb, target_emb, labels)
 
-            self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
 
@@ -100,6 +100,9 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             cumulated_loss += batch_loss
             self.update_bar(bar=bar, loss=batch_loss)
             self.schedule(phase=ParameterKeys.TRAIN)
+            torch.cuda.empty_cache()
+            if ix == 10:
+                break
 
         cumulated_loss /= len(self.train_loader)
         self.print_stats(
@@ -138,7 +141,7 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
         cumulated_loss: float,
         phase: str,
         node_metrics: dict = None,
-        edege_metrics: dict = None,
+        edge_metrics: dict = None,
     ) -> None:
         if cumulated_loss is not None:
             print(
@@ -146,10 +149,10 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             )
         if node_metrics:
             for k, v in node_metrics.items():
-                print(f"Epoch {epoch}/{self.num_epochs}: {phase} {k}: {v:.4f}")
-        if self.edge_metrics:
-            for k, v in node_metrics.items():
-                print(f"Epoch {epoch}/{self.num_epochs}: {phase} {k}: {v:.4f}")
+                print(f"Epoch {epoch}/{self.num_epochs}: {phase} node {k}: {v:.4f}")
+        if edge_metrics:
+            for k, v in edge_metrics.items():
+                print(f"Epoch {epoch}/{self.num_epochs}: {phase} edge {k}: {v:.4f}")
 
     @torch.no_grad()
     def val_epoch(self, epoch):
@@ -293,7 +296,7 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
 
             rel_batch_predictions = set(
                 [
-                    (pid, self.test_loader.rel_idx2cls_kb[x])
+                    (pid, self.test_loader.dataset.rel_idx2cls_kb[x])
                     for (pid, x) in zip(
                         rel_pids.tolist(), rel_scores.argmax(dim=1).tolist()
                     )
@@ -310,5 +313,5 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             for k, v in self.edge_metrics.compute().items()
         }
         return dict(node=node_metrics, rel=edge_metrics), dict(
-            node=node_predictions, edge=rel_predictions
+            node=list(node_predictions), edge=list(rel_predictions)
         )
