@@ -101,8 +101,6 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             self.update_bar(bar=bar, loss=batch_loss)
             self.schedule(phase=ParameterKeys.TRAIN)
             torch.cuda.empty_cache()
-            if ix == 10:
-                break
 
         cumulated_loss /= len(self.train_loader)
         self.print_stats(
