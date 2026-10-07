@@ -5,7 +5,7 @@ study:
   name: node_bert_hybrid_tuning
   n_trials: 20
   config:
-    direction: minimize
+    direction: maximize
   space:
     lr:
       path: optimizer.config.lr
