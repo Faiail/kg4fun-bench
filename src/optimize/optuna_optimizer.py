@@ -39,7 +39,7 @@ class OptunaOptimizer(HPOptimizer):
         self.study_name = study_parameters.get(ParameterKeys.NAME)
         storage = f"sqlite:///{self.study_name}.db"
         study_config = study_parameters.get(ParameterKeys.CFG, dict())
-        self.n_trials = study_config.get(ParameterKeys.N_TRIALS)
+        self.n_trials = study_parameters.get(ParameterKeys.N_TRIALS)
         self.space = study_parameters.get(ParameterKeys.SPACE)
         self.study = optuna.create_study(
             study_name=self.study_name,
