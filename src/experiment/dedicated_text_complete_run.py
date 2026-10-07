@@ -1,17 +1,18 @@
-from .shared_text_single_item_run import SharedTextSingleItemRun
+from .shared_text_complete_run import SharedTextCompleteRun
 from src.data.utils import BatchKeys
 from torch.utils.data import DataLoader
 import torch
 
 
-class DedicatedTextSingleItemRun(SharedTextSingleItemRun):
-    @torch.no_grad()
-    def get_schema_embeddings(self, schema_loader: DataLoader) -> torch.Tensor:
+class DedicatedTextCompleteRun(SharedTextCompleteRun):
+
+    torch.no_grad()
+    def get_spec_schema_embeddings(self, loader: DataLoader, desc: str):
         schema_item_embeddings = torch.empty(
-            size=(len(schema_loader.dataset), self.model.schema_hidden_size)
+            size=(len(loader.dataset), self.model.schema_hidden_size)
         )
-        bar = self.get_bar(loader=schema_loader, desc="Get schema item embeddings")
-        batch_size = schema_loader.batch_size
+        bar = self.get_bar(loader=loader, desc=desc)
+        batch_size = loader.batch_size
         for ix, batch in bar:
             schema_ref = batch[BatchKeys.SCHEMA]
             schema_tokens = self.tokenize(schema_ref)
