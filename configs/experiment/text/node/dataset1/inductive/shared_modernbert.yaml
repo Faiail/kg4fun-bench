@@ -2,7 +2,7 @@ general:
   out_dir: &out_dir models/text/node/shared_modernbert/dataset1/inductive
   pbar: True
   num_epochs: 150
-  warmup: 5
+  warmup: 7
   metric_mult: -1
   metric_to_watch: f1
   device: cuda
@@ -27,7 +27,7 @@ data:
       node_info: data/raw/kg4fun/dataset1/splits/inductive/test/node_info.json
       schema_info: data/raw/kg4fun/dataset1/splits/inductive/test/node_types/summarization/qwen3-8b/node_type_info.json
 loader:
-  batch_size: 1024
+  batch_size: 512
   shuffle: True
   drop_last: False
   num_workers: 8
@@ -48,12 +48,12 @@ tokenizer:
 criterion:
   name: InfoNCELoss
   config:
-    temperature: 0.05
+    temperature: 0.045
     learnable: True
 optimizer:
   name: AdamW
   config: 
-    lr: 1e-5
+    lr: 5e-5
 early_stop:
   name: EarlyStopping
   config:
