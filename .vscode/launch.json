@@ -75,6 +75,14 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextCompleteRun"]
+        },
+        {
+            "name": "Complete Dedicated",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/dedicated_bert.yaml", "--cls", "DedicatedTextCompleteRun"]
         }
     ]
 }
