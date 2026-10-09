@@ -35,7 +35,7 @@ model:
   name: SharedTextEncoder
   config:
     bbone_config:
-      pretrained_model_name_or_path: &model answerdotai/roberta-base
+      pretrained_model_name_or_path: &model roberta-base
     bbone_hidden_size: 768
     final_hidden_size: 512
 tokenizer:
