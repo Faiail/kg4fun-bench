@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/text/complete/dedicated_bge/dataset1/hybrid
+  out_dir: &out_dir models/text/complete/dedicated_bge/dataset2/hybrid
   pbar: True
   num_epochs: 150
   warmup: 7
@@ -11,30 +11,30 @@ data:
   train:
     name: TextCompleteDataset
     config:
-      dataset: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/edge_component_mapping.json
-      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/partition
-      node_info: data/raw/kg4fun/dataset1/splits/hybrid/train/node_info.json
-      schema_node_info: data/raw/kg4fun/dataset1/splits/hybrid/train/node_types/summarization/qwen3-8b/node_type_info.json
-      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/train/edges/edge_info.json
-      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/train/edge_types/summarization/qwen-8b/edge_type_info.json
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/train/node_info.json
+      schema_node_info: data/raw/kg4fun/dataset2/splits/hybrid/train/node_types/summarization/qwen3-8b/node_type_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/train/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/train/edge_types/summarization/qwen-8b/edge_type_info.json
   val:
     name: &val_cls ValTextCompleteDataset
     config:
-      dataset: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/edge_component_mapping.json
-      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/partition
-      node_info: data/raw/kg4fun/dataset1/splits/hybrid/val/node_info.json
-      schema_node_info: data/raw/kg4fun/dataset1/splits/hybrid/val/node_types/summarization/qwen3-8b/node_type_info.json
-      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/val/edges/edge_info.json
-      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/val/edge_types/summarization/qwen-8b/edge_type_info.json
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/val/node_info.json
+      schema_node_info: data/raw/kg4fun/dataset2/splits/hybrid/val/node_types/summarization/qwen3-8b/node_type_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/val/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/val/edge_types/summarization/qwen-8b/edge_type_info.json
   test:
     name: *val_cls
     config:
-      dataset: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/edge_component_mapping.json
-      partition_dir: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/partition
-      node_info: data/raw/kg4fun/dataset1/splits/hybrid/test/node_info.json
-      schema_node_info: data/raw/kg4fun/dataset1/splits/hybrid/test/node_types/summarization/qwen3-8b/node_type_info.json
-      input_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/test/edges/edge_info.json
-      schema_edge_info: data/raw/kg4fun/dataset1/splits/hybrid/test/edge_types/summarization/qwen-8b/edge_type_info.json
+      dataset: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/edge_component_mapping.json
+      partition_dir: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/partition
+      node_info: data/raw/kg4fun/dataset2/splits/hybrid/test/node_info.json
+      schema_node_info: data/raw/kg4fun/dataset2/splits/hybrid/test/node_types/summarization/qwen3-8b/node_type_info.json
+      input_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/test/edges/edge_info.json
+      schema_edge_info: data/raw/kg4fun/dataset2/splits/hybrid/test/edge_types/summarization/qwen-8b/edge_type_info.json
 loader:
   batch_size: 512
   shuffle: True
