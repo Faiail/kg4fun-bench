@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/text/complete/shared_bge/dataset2/hybrid
+  out_dir: &out_dir models/text/complete/shared_modernbert/dataset2/hybrid
   pbar: True
   num_epochs: 150
   warmup: 7

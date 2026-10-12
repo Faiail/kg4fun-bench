@@ -5,7 +5,7 @@ general:
   warmup: 7
   metric_mult: -1
   metric_to_watch: f1
-  device: cuda:1
+  device: cuda
   seed: 42
 data:
   train:
