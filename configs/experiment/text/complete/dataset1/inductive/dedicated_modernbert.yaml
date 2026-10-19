@@ -58,10 +58,14 @@ criterion:
   name: CompleteLoss
   config:
     keys: [head, rel, tail]
-    base_loss_name: InfoNCELoss
+    base_loss_name: AdaptiveArcFaceLoss
     base_loss_kwargs:
-      temperature: 0.045
-      learnable: True
+      initial_s: 30.0
+      min_s: 1.0
+      max_s: 60.0
+      target_m: 0.35
+      warmup_steps: 5
+      schedule_type: linear
 optimizer:
   name: AdamW
   config:

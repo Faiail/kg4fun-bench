@@ -52,10 +52,14 @@ tokenizer:
     return_tensors: pt
     padding: True
 criterion:
-  name: InfoNCELoss
+  name: AdaptiveArcFaceLoss
   config:
-    temperature: 0.045
-    learnable: True
+    initial_s: 30.0
+    min_s: 1.0
+    max_s: 60.0
+    target_m: 0.35
+    warmup_steps: 5
+    schedule_type: linear
 optimizer:
   name: AdamW
   config: 
