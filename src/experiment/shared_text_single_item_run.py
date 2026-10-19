@@ -70,11 +70,10 @@ class SharedTextSingleItemRun(TrainingRun):
                 output_dict[ReturnKeys.INPUT],
                 output_dict[ReturnKeys.TARGET],
             )
-            output_logits = input_emb @ target_emb.T
             labels = batch.get(
-                BatchKeys.GT, torch.arange(output_logits.size(0)).long()
+                BatchKeys.GT, torch.arange(input_emb.size(0)).long()
             ).to(self.device)
-            loss = self.criterion(output_logits, labels)
+            loss = self.criterion(input_emb, target_emb, labels)
 
             loss.backward()
             self.optimizer.step()

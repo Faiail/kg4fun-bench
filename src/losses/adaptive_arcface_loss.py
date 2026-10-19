@@ -68,17 +68,21 @@ class AdaptiveArcFaceLoss(nn.Module):
 
     def forward(
         self,
-        logits: torch.Tensor,
-        labels: torch.Tensor,
+        input_or_logits: torch.Tensor,
+        target_or_labels: torch.Tensor,
+        labels: torch.Tensor = None,
     ) -> torch.Tensor:
         """
         Supports:
-          - forward(logits, labels): where logits is [B, C] cosine similarity
-          - forward(input_feats, class_feats, labels): where feats are [B, D] and [C, D]
+          - 3-arg mode: forward(input_embs, target_embs, labels)
+          - 2-arg mode: forward(logits, labels)
         """
-        # 2-arg mode: input is already the cosine matrix
-        cosine = logits.clamp(-1.0 + self.eps, 1.0 - self.eps)
-        target_labels = labels
+        if labels is None:
+            cosine = input_or_logits.clamp(-1.0 + self.eps, 1.0 - self.eps)
+            target_labels = target_or_labels
+        else:
+            cosine = (input_or_logits @ target_or_labels.T).clamp(-1.0 + self.eps, 1.0 - self.eps)
+            target_labels = labels
 
         # Ensure scale parameter matches input device
         s = torch.clamp(self.log_s.to(cosine.device).exp(), min=self.min_s, max=self.max_s)

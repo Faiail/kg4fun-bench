@@ -20,12 +20,24 @@ class InfoNCELoss(nn.Module):
             
         self.criterion = nn.CrossEntropyLoss()
 
-    def forward(self, logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        input_or_logits: torch.Tensor,
+        target_or_labels: torch.Tensor,
+        labels: torch.Tensor = None,
+    ) -> torch.Tensor:
         """
-        Args:
-            logits: The raw dot products (cosine similarities) between L2-normalized embeddings.
-            labels: The target indices.
+        Supports:
+          - 3-arg mode: forward(input_embs, target_embs, labels)
+          - 2-arg mode: forward(logits, labels)
         """
+        if labels is None:
+            logits = input_or_logits
+            target_labels = target_or_labels
+        else:
+            logits = input_or_logits @ target_or_labels.T
+            target_labels = labels
+
         # 1. Apply the temperature scale
         if self.learnable:
             # Clamp to prevent the scale from blowing up and causing NaN losses
@@ -33,6 +45,6 @@ class InfoNCELoss(nn.Module):
             scaled_logits = logits * scale
         else:
             scaled_logits = logits / self.temperature
-            
+
         # 2. Compute the standard cross-entropy loss
-        return self.criterion(scaled_logits, labels)
+        return self.criterion(scaled_logits, target_labels)
