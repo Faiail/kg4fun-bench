@@ -52,14 +52,12 @@ tokenizer:
     return_tensors: pt
     padding: True
 criterion:
-  name: AdaptiveArcFaceLoss
+  name: CosFaceLoss
   config:
-    initial_s: 30.0
-    min_s: 1.0
-    max_s: 60.0
-    target_m: 0.35
-    warmup_steps: 5
-    schedule_type: linear
+    s: 25.0
+    m: 0.10
+    queue_size: 4096
+    feat_dim: 512
 optimizer:
   name: AdamW
   config: 

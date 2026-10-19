@@ -58,14 +58,25 @@ criterion:
   name: CompleteLoss
   config:
     keys: [head, rel, tail]
-    base_loss_name: AdaptiveArcFaceLoss
+    base_loss_name: CosFaceLoss
     base_loss_kwargs:
-      initial_s: 30.0
-      min_s: 1.0
-      max_s: 60.0
-      target_m: 0.35
-      warmup_steps: 5
-      schedule_type: linear
+      head:
+        s: 25.0
+        m: 0.10
+        queue_size: 0
+      tail:
+        s: 25.0
+        m: 0.10
+        queue_size: 0
+      rel:
+        s: 25.0
+        m: 0.10
+        queue_size: 4096
+        feat_dim: 512
+    alphas:
+      head: 0.5
+      tail: 0.5
+      rel: 1.0
 optimizer:
   name: AdamW
   config:

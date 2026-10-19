@@ -25,6 +25,7 @@ class CosFaceLoss(nn.Module):
         learnable_s: bool = False,
         min_s: float = 1.0,
         max_s: float = 50.0,
+        warmup_steps: int = 0,
     ):
         super().__init__()
         self.s = float(s)
@@ -34,6 +35,9 @@ class CosFaceLoss(nn.Module):
         self.learnable_s = learnable_s
         self.min_s = float(min_s)
         self.max_s = float(max_s)
+        self.warmup_steps = int(warmup_steps) if warmup_steps is not None else 0
+        self.current_step = 0
+        self.current_m = 0.0 if self.warmup_steps > 0 else self.m
 
         if self.learnable_s:
             self.log_s = nn.Parameter(torch.tensor(math.log(s), dtype=torch.float32))
@@ -47,6 +51,15 @@ class CosFaceLoss(nn.Module):
                 F.normalize(torch.randn(self.queue_size, self.feat_dim), dim=-1),
             )
             self.register_buffer("queue_ptr", torch.zeros(1, dtype=torch.long))
+
+    def step_margin(self):
+        """Advances margin schedule if warmup_steps is configured."""
+        if self.warmup_steps > 0:
+            self.current_step += 1
+            if self.current_step >= self.warmup_steps:
+                self.current_m = self.m
+            else:
+                self.current_m = self.m * (self.current_step / self.warmup_steps)
 
     @property
     def current_s(self) -> float:
@@ -119,7 +132,7 @@ class CosFaceLoss(nn.Module):
             scale = self.s
 
         # Apply CosFace margin: subtract (m * scale) from positive target logits
-        diff = -self.m * scale
+        diff = -self.current_m * scale
         scaled_logits = logits * scale
         target_labels_idx = target_labels.unsqueeze(1)
         scaled_logits = scaled_logits.scatter_add(
