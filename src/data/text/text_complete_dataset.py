@@ -41,7 +41,8 @@ class TextCompleteDataset(TextEdgeDataset):
         tail_cls = raw_item[BatchKeys.EDGE_TYPE][BatchKeys.TAIL_CLS]
         input_tail_str = self._get_node_label_desc(tail_qid)
         pid = raw_item[BatchKeys.EDGE_TYPE][BatchKeys.PID]
-        input_rel_str = self._get_edge_label_desc(pid)
+        rel_str = self._get_edge_label_desc(pid)
+        input_rel_str = f"{TemplateKeys.HEAD} {input_head_str} | {TemplateKeys.TAIL} {input_tail_str} | {TemplateKeys.PID} {rel_str}"
 
         return {
             BatchKeys.INPUT_HEAD: input_head_str,

@@ -248,9 +248,9 @@ def predict_sample(
         tail_tok = run.tokenize(batch[BatchKeys.INPUT_TAIL])
         rel_tok = run.tokenize(batch[BatchKeys.INPUT_REL])
 
-        head_scores = run.get_scores(head_tok, schema_node_embs, chunk_size=64)[0].cpu()
-        tail_scores = run.get_scores(tail_tok, schema_node_embs, chunk_size=64)[0].cpu()
-        rel_scores = run.get_scores(rel_tok, schema_edge_embs, chunk_size=64)[0].cpu()
+        head_scores = run.get_scores(head_tok, schema_node_embs, chunk_size=64, task="node")[0].cpu()
+        tail_scores = run.get_scores(tail_tok, schema_node_embs, chunk_size=64, task="node")[0].cpu()
+        rel_scores = run.get_scores(rel_tok, schema_edge_embs, chunk_size=64, task="edge")[0].cpu()
 
         head_pred_id = dataset.node_idx2cls_kb[head_scores.argmax().item()]
         tail_pred_id = dataset.node_idx2cls_kb[tail_scores.argmax().item()]

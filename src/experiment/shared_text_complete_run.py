@@ -108,7 +108,9 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
         )
 
     @torch.no_grad()
-    def get_spec_schema_embeddings(self, loader: DataLoader, desc: str) -> torch.Tensor:
+    def get_spec_schema_embeddings(
+        self, loader: DataLoader, desc: str, task: str = "node"
+    ) -> torch.Tensor:
         schema_item_embeddings = torch.empty(
             size=(len(loader.dataset), self.model.schema_hidden_size)
         )
@@ -117,7 +119,7 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
         for ix, batch in bar:
             schema_ref = batch[BatchKeys.SCHEMA]
             schema_tokens = self.tokenize(schema_ref)
-            schema_embedds = self.model.encode(schema_tokens)
+            schema_embedds = self.model.encode(schema_tokens, task=task)
             schema_item_embeddings[(ix * batch_size) : ((ix + 1) * batch_size)] = (
                 schema_embedds.cpu()
             )
@@ -128,10 +130,33 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
         self, node_loader: DataLoader, edge_loader: DataLoader
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         return self.get_spec_schema_embeddings(
-            loader=node_loader, desc="Get node classes item embeddings"
+            loader=node_loader, desc="Get node classes item embeddings", task="node"
         ), self.get_spec_schema_embeddings(
-            loader=edge_loader, desc="Get edge rels item embeddings"
+            loader=edge_loader, desc="Get edge rels item embeddings", task="edge"
         )
+
+    @torch.no_grad()
+    def get_scores(
+        self,
+        input_tokens: dict,
+        schema_embeddings: torch.Tensor,
+        chunk_size: int = 1,
+        task: str = "node",
+    ) -> torch.Tensor:
+        len_schema_nodes = schema_embeddings.size(0)
+        input_embedds = self.model.encode(input_tokens, task=task)
+        scores = list()
+        for idx in range(0, (len_schema_nodes // chunk_size) + 1):
+            start_pos = idx * chunk_size
+            end_pos = (idx + 1) * chunk_size
+
+            chunk_schema_embeddings = schema_embeddings[start_pos:end_pos].to(
+                self.device
+            )
+            chunk_scores = input_embedds @ chunk_schema_embeddings.T
+            scores.append(chunk_scores.cpu())
+        scores = torch.cat(scores, dim=-1)
+        return scores
 
     def print_stats(
         self,
@@ -187,18 +212,21 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
                 input_tokens=input_head_tok,
                 schema_embeddings=schema_node_embeddings,
                 chunk_size=node_loader.batch_size,
+                task="node",
             )
             self.node_metrics.update(head_scores, gt[BatchKeys.HEAD])
             tail_scores = self.get_scores(
                 input_tokens=input_tail_tok,
                 schema_embeddings=schema_node_embeddings,
                 chunk_size=node_loader.batch_size,
+                task="node",
             )
             self.node_metrics.update(tail_scores, gt[BatchKeys.TAIL])
             rel_scores = self.get_scores(
                 input_tokens=input_rel_tok,
                 schema_embeddings=schema_edge_embeddings,
                 chunk_size=edge_loader.batch_size,
+                task="edge",
             )
             self.edge_metrics.update(rel_scores, gt[BatchKeys.REL])
 
@@ -217,10 +245,11 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
             node_metrics=node_metrics,
             edge_metrics=edge_metrics,
         )
+        n_val = max(node_metrics[self.metric_to_watch], 1e-6)
+        e_val = max(edge_metrics[self.metric_to_watch], 1e-6)
+        balanced_score = 2.0 * (n_val * e_val) / (n_val + e_val)
         self.trigger = self.early_stop_callback(
-            cumulated_loss=self.metric_mult
-            * (node_metrics[self.metric_to_watch] + edge_metrics[self.metric_to_watch])
-            / 2
+            cumulated_loss=self.metric_mult * balanced_score
         )
 
     @torch.no_grad()
@@ -263,18 +292,21 @@ class SharedTextCompleteRun(SharedTextSingleItemRun):
                 input_tokens=input_head_tok,
                 schema_embeddings=schema_node_embeddings,
                 chunk_size=node_loader.batch_size,
+                task="node",
             )
             self.node_metrics.update(head_scores, gt[BatchKeys.HEAD])
             tail_scores = self.get_scores(
                 input_tokens=input_tail_tok,
                 schema_embeddings=schema_node_embeddings,
                 chunk_size=node_loader.batch_size,
+                task="node",
             )
             self.node_metrics.update(tail_scores, gt[BatchKeys.TAIL])
             rel_scores = self.get_scores(
                 input_tokens=input_rel_tok,
                 schema_embeddings=schema_edge_embeddings,
                 chunk_size=edge_loader.batch_size,
+                task="edge",
             )
             self.edge_metrics.update(rel_scores, gt[BatchKeys.REL])
 
