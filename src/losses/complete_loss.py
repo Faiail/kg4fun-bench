@@ -28,3 +28,8 @@ class CompleteLoss(torch.nn.Module):
                 self.alphas[k] * v(input_emb_dict[k] @ target_emb_dict[k].T, labels[k])
             )
         return total_loss
+
+    def step_margin(self):
+        for criterion in self.criterions.values():
+            if hasattr(criterion, "step_margin"):
+                criterion.step_margin()

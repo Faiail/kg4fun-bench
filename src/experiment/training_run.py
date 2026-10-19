@@ -102,7 +102,7 @@ class TrainingRun(Run):
         criterion_parameters = self.parameters.get(ParameterKeys.CRITERION, None)
         criterion_name = criterion_parameters.get(ParameterKeys.NAME)
         criterion_cfg = criterion_parameters.get(ParameterKeys.CFG, {})
-        self.criterion = loss_pkg.__dict__[criterion_name](**criterion_cfg)
+        self.criterion = loss_pkg.__dict__[criterion_name](**criterion_cfg).to(self.device)
 
     def _init_cosine_scheduler_params(self, params) -> schedulers.LambdaLR:
         # get total steps
@@ -215,6 +215,8 @@ class TrainingRun(Run):
         self.model = self.model.to(self.device)
         for epoch in range(1, self.num_epochs + 1):
             self.train_epoch(epoch=epoch)
+            if hasattr(self.criterion, "step_margin"):
+                self.criterion.step_margin()
             self.val_epoch(epoch=epoch)
             if self.trigger:
                 print(f"Early stopping at epoch {epoch}/{self.num_epochs}")
