@@ -33,25 +33,31 @@ class DedicatedCompleteTextEncoder(torch.nn.Module):
         )
         self.schema_hidden_size = final_hidden_size
 
+    def _pool(self, output, input_dict: dict) -> torch.Tensor:
+        if "attention_mask" in input_dict:
+            mask = input_dict["attention_mask"].unsqueeze(-1).to(output.last_hidden_state.dtype)
+            return (output.last_hidden_state * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1e-9)
+        return output.last_hidden_state[:, 0]
+
     def encode_input(self, input_dict: dict, task: str = "node") -> torch.Tensor:
         output = self.encoder(**input_dict)
-        cls_token = output.last_hidden_state[:, 0]
+        pooled = self._pool(output, input_dict)
         proj = (
             self.edge_projector[ReturnKeys.INPUT]
             if task == "edge"
             else self.node_projector[ReturnKeys.INPUT]
         )
-        return torch.nn.functional.normalize(proj(cls_token), p=2, dim=-1)
+        return torch.nn.functional.normalize(proj(pooled), p=2, dim=-1)
 
     def encode_target(self, target_dict: dict, task: str = "node") -> torch.Tensor:
         output = self.encoder(**target_dict)
-        cls_token = output.last_hidden_state[:, 0]
+        pooled = self._pool(output, target_dict)
         proj = (
             self.edge_projector[ReturnKeys.TARGET]
             if task == "edge"
             else self.node_projector[ReturnKeys.TARGET]
         )
-        return torch.nn.functional.normalize(proj(cls_token), p=2, dim=-1)
+        return torch.nn.functional.normalize(proj(pooled), p=2, dim=-1)
 
     def forward(
         self,

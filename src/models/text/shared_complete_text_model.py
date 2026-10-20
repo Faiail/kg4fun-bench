@@ -18,15 +18,21 @@ class SharedCompleteTextEncoder(torch.nn.Module):
         self.edge_layernorm = torch.nn.LayerNorm(final_hidden_size)
         self.schema_hidden_size = final_hidden_size
 
+    def _pool(self, output, input_dict: dict) -> torch.Tensor:
+        if "attention_mask" in input_dict:
+            mask = input_dict["attention_mask"].unsqueeze(-1).to(output.last_hidden_state.dtype)
+            return (output.last_hidden_state * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1e-9)
+        return output.last_hidden_state[:, 0]
+
     def encode(self, input_dict: dict, task: str = "node") -> torch.Tensor:
         output = self.encoder(**input_dict)
-        cls_token = output.last_hidden_state[:, 0]
+        pooled = self._pool(output, input_dict)
         if task == "edge":
             return torch.nn.functional.normalize(
-                self.edge_layernorm(self.edge_projector(cls_token)), p=2, dim=-1
+                self.edge_layernorm(self.edge_projector(pooled)), p=2, dim=-1
             )
         return torch.nn.functional.normalize(
-            self.node_layernorm(self.node_projector(cls_token)), p=2, dim=-1
+            self.node_layernorm(self.node_projector(pooled)), p=2, dim=-1
         )
 
     def forward(

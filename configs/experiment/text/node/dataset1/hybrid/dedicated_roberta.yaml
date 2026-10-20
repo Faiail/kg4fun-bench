@@ -46,11 +46,10 @@ tokenizer:
     return_tensors: pt
     padding: True
 criterion:
-  name: CosFaceLoss
+  name: InfoNCELoss
   config:
-    s: 25.0
-    m: 0.10
-    queue_size: 0
+    temperature: 0.045
+    learnable: True
 optimizer:
   name: AdamW
   config: 

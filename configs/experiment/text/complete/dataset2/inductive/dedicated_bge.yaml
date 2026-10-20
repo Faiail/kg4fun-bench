@@ -58,21 +58,10 @@ criterion:
   name: CompleteLoss
   config:
     keys: [head, rel, tail]
-    base_loss_name: CosFaceLoss
+    base_loss_name: InfoNCELoss
     base_loss_kwargs:
-      head:
-        s: 25.0
-        m: 0.10
-        queue_size: 0
-      tail:
-        s: 25.0
-        m: 0.10
-        queue_size: 0
-      rel:
-        s: 25.0
-        m: 0.10
-        queue_size: 4096
-        feat_dim: 512
+      temperature: 0.045
+      learnable: True
     alphas:
       head: 0.5
       tail: 0.5
