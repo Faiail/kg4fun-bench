@@ -1,5 +1,5 @@
 general:
-  out_dir: &out_dir models/text/complete/shared_bge/dataset2/inductive
+  out_dir: &out_dir models/text/complete/shared_modernbert/dataset2/inductive
   pbar: True
   num_epochs: 150
   warmup: 7
@@ -105,7 +105,7 @@ metrics:
       name: Precision
       config:
         average: macro
-        task: &task multiclass
+        task: *task
         num_classes: 440
     recall:
       name: Recall
