@@ -15,6 +15,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 def infer_run_class_name(task: str, architecture: str) -> str:
     """Infers the experiment run class based on task and architecture."""
     if task == "complete":
+        if architecture == "dedicated":
+            return "DedicatedTextCompleteRun"
         return "SharedTextCompleteRun"
     if architecture == "dedicated":
         return "DedicatedTextSingleItemRun"
@@ -33,17 +35,29 @@ def get_config_path(
     return ROOT_DIR / "configs" / "experiment" / "text" / task / dataset / split_mode / filename
 
 
-def resolve_checkpoint_path(run) -> Optional[str]:
-    """Resolves checkpoint state dict path using run.early_stop.path with directory fallback."""
+def resolve_checkpoint_path(run, custom_checkpoint_path: Optional[str] = None) -> Optional[str]:
+    """Resolves checkpoint state dict path using custom path or run.early_stop.path with directory fallbacks."""
+    if custom_checkpoint_path:
+        custom_p = Path(custom_checkpoint_path)
+        if custom_p.exists() and custom_p.is_file():
+            return str(custom_p.resolve())
+        root_custom = ROOT_DIR / custom_checkpoint_path
+        if root_custom.exists() and root_custom.is_file():
+            return str(root_custom.resolve())
+
     ckpt_path = getattr(run.early_stop, "path", None)
     if not ckpt_path:
         return None
-    if os.path.exists(ckpt_path):
-        return ckpt_path
-    # Fallback if checkpoint was saved under models/text/text/...
-    alt_path = ckpt_path.replace("models/text/", "models/text/text/")
-    if os.path.exists(alt_path):
-        return alt_path
+
+    candidates = [
+        Path(ckpt_path),
+        ROOT_DIR / ckpt_path,
+        ROOT_DIR / ckpt_path.replace("models/text/", "models/text/text/"),
+        Path(ckpt_path.replace("models/text/", "models/text/text/")),
+    ]
+    for c in candidates:
+        if c.exists() and c.is_file():
+            return str(c.resolve())
     return None
 
 
@@ -54,8 +68,9 @@ def load_and_init_run(
     device: str = "cpu",
     config_mtime: float = 0.0,
     checkpoint_mtime: float = 0.0,
+    custom_checkpoint_path: Optional[str] = None,
 ):
-    """Loads YAML config, instantiates and inits runner, and loads model weights from early_stop.path."""
+    """Loads YAML config, instantiates and inits runner, and loads model weights."""
     if not os.path.exists(config_path_str):
         raise FileNotFoundError(f"Configuration file not found at: {config_path_str}")
 
@@ -74,8 +89,8 @@ def load_and_init_run(
     run = run_cls(cfg)
     run.init()
 
-    # Load state dict from run.early_stop.path
-    ckpt_path = resolve_checkpoint_path(run)
+    # Load state dict
+    ckpt_path = resolve_checkpoint_path(run, custom_checkpoint_path=custom_checkpoint_path)
     if ckpt_path and os.path.exists(ckpt_path):
         state_dict = torch.load(ckpt_path, map_location=device)
         run.model.load_state_dict(state_dict)
@@ -146,20 +161,22 @@ def find_sample_index(dataset, sample_identifier: Union[int, str], task: str = "
 
 
 def get_schema_string_for_node(dataset, kb_id: int) -> str:
-    """Gathers human-readable schema string from node dataset."""
-    if hasattr(dataset, "get_schema_str"):
-        return dataset.get_schema_str(kb_id)
+    """Gathers human-readable schema string from node or complete dataset."""
     if kb_id == -1:
         return f"{TemplateKeys.LABEL} Prune Node | {TemplateKeys.DESC} A node which is out of domain and must be pruned."
-    info = dataset.schema_info.get(kb_id, {})
+    if hasattr(dataset, "get_schema_str"):
+        return dataset.get_schema_str(kb_id)
+    info_dict = getattr(dataset, "schema_node_info", None) or getattr(dataset, "schema_info", {})
+    info = info_dict.get(kb_id, {})
     return f"{TemplateKeys.LABEL} {info.get(BatchKeys.ITEM_LABEL, 'UnknownLabel')} | {TemplateKeys.DESC} {info.get(BatchKeys.ITEM_DESC, 'UnknownDescription')}"
 
 
 def get_schema_string_for_edge(dataset, kb_id: int) -> str:
-    """Gathers human-readable schema string from edge dataset."""
+    """Gathers human-readable schema string from edge or complete dataset."""
     if kb_id == -1:
         return f"{TemplateKeys.LABEL} Prune Edge | {TemplateKeys.DESC} An edge which is out of domain and must be pruned."
-    info = dataset.schema_edge_info.get(kb_id, {})
+    info_dict = getattr(dataset, "schema_edge_info", {})
+    info = info_dict.get(kb_id, {})
     return f"{TemplateKeys.LABEL} {info.get(BatchKeys.ITEM_LABEL, 'UnknownLabel')} | {TemplateKeys.DESC} {info.get(BatchKeys.ITEM_DESC, 'UnknownDescription')}"
 
 
@@ -176,7 +193,7 @@ def predict_sample(
     """1. Loads raw item from dataset.
     2. Applies loader collate_fn.
     3. Runs model inference via run.get_scores.
-    4. Gathers strings to visualize directly using the dataset class.
+    4. Gathers strings and top-k candidate rankings.
     """
     run.model.eval()
     raw_item = dataset[sample_idx]
@@ -268,19 +285,100 @@ def predict_sample(
         rel_pred_str = get_schema_string_for_edge(dataset, rel_pred_id)
         rel_gt_str = get_schema_string_for_edge(dataset, rel_gt_id)
 
+        # Top-K candidate breakdown for Head
+        k_h = min(top_k, head_scores.size(0))
+        h_scores, h_indices = torch.topk(head_scores, k=k_h)
+        h_probs = torch.softmax(head_scores, dim=-1)[h_indices]
+        head_candidates = [
+            {
+                "rank": i + 1,
+                "kb_id": dataset.node_idx2cls_kb[h_indices[i].item()],
+                "schema_str": get_schema_string_for_node(dataset, dataset.node_idx2cls_kb[h_indices[i].item()]),
+                "score": float(h_scores[i].item()),
+                "prob": float(h_probs[i].item()),
+                "is_match": (dataset.node_idx2cls_kb[h_indices[i].item()] == head_gt_id),
+            }
+            for i in range(k_h)
+        ]
+
+        # Top-K candidate breakdown for Tail
+        k_t = min(top_k, tail_scores.size(0))
+        t_scores, t_indices = torch.topk(tail_scores, k=k_t)
+        t_probs = torch.softmax(tail_scores, dim=-1)[t_indices]
+        tail_candidates = [
+            {
+                "rank": i + 1,
+                "kb_id": dataset.node_idx2cls_kb[t_indices[i].item()],
+                "schema_str": get_schema_string_for_node(dataset, dataset.node_idx2cls_kb[t_indices[i].item()]),
+                "score": float(t_scores[i].item()),
+                "prob": float(t_probs[i].item()),
+                "is_match": (dataset.node_idx2cls_kb[t_indices[i].item()] == tail_gt_id),
+            }
+            for i in range(k_t)
+        ]
+
+        # Top-K candidate breakdown for Rel
+        k_r = min(top_k, rel_scores.size(0))
+        r_scores, r_indices = torch.topk(rel_scores, k=k_r)
+        r_probs = torch.softmax(rel_scores, dim=-1)[r_indices]
+        rel_candidates = [
+            {
+                "rank": i + 1,
+                "kb_id": dataset.rel_idx2cls_kb[r_indices[i].item()],
+                "schema_str": get_schema_string_for_edge(dataset, dataset.rel_idx2cls_kb[r_indices[i].item()]),
+                "score": float(r_scores[i].item()),
+                "prob": float(r_probs[i].item()),
+                "is_match": (dataset.rel_idx2cls_kb[r_indices[i].item()] == rel_gt_id),
+            }
+            for i in range(k_r)
+        ]
+
         sample_id = f"{batch[BatchKeys.HEAD_QID][0]} ──({batch[BatchKeys.PID][0]})──> {batch[BatchKeys.TAIL_QID][0]}"
+
+        head_match = (head_pred_id == head_gt_id)
+        tail_match = (tail_pred_id == tail_gt_id)
+        rel_match = (rel_pred_id == rel_gt_id)
+        match_count = sum([head_match, rel_match, tail_match])
 
         return {
             "task": "complete",
             "sample_idx": sample_idx,
             "sample_id": sample_id,
             "input_string": f"Head: {batch[BatchKeys.INPUT_HEAD][0]} | Tail: {batch[BatchKeys.INPUT_TAIL][0]} | Rel: {batch[BatchKeys.INPUT_REL][0]}",
-            "complete_preds": {
-                "head": {"pred_id": head_pred_id, "pred_str": head_pred_str, "gt_id": head_gt_id, "gt_str": head_gt_str, "match": head_pred_id == head_gt_id},
-                "tail": {"pred_id": tail_pred_id, "pred_str": tail_pred_str, "gt_id": tail_gt_id, "gt_str": tail_gt_str, "match": tail_pred_id == tail_gt_id},
-                "rel": {"pred_id": rel_pred_id, "pred_str": rel_pred_str, "gt_id": rel_gt_id, "gt_str": rel_gt_str, "match": rel_pred_id == rel_gt_id},
+            "input_components": {
+                "head": batch[BatchKeys.INPUT_HEAD][0],
+                "tail": batch[BatchKeys.INPUT_TAIL][0],
+                "rel": batch[BatchKeys.INPUT_REL][0],
+                "pid": batch[BatchKeys.PID][0],
             },
-            "is_match": (head_pred_id == head_gt_id and tail_pred_id == tail_gt_id and rel_pred_id == rel_gt_id),
+            "complete_preds": {
+                "head": {
+                    "pred_id": head_pred_id,
+                    "pred_str": head_pred_str,
+                    "gt_id": head_gt_id,
+                    "gt_str": head_gt_str,
+                    "match": head_match,
+                    "candidates": head_candidates,
+                },
+                "rel": {
+                    "pred_id": rel_pred_id,
+                    "pred_str": rel_pred_str,
+                    "gt_id": rel_gt_id,
+                    "gt_str": rel_gt_str,
+                    "match": rel_match,
+                    "candidates": rel_candidates,
+                },
+                "tail": {
+                    "pred_id": tail_pred_id,
+                    "pred_str": tail_pred_str,
+                    "gt_id": tail_gt_id,
+                    "gt_str": tail_gt_str,
+                    "match": tail_match,
+                    "candidates": tail_candidates,
+                },
+            },
+            "match_count": match_count,
+            "is_match": (match_count == 3),
             "raw_item": raw_item,
         }
 

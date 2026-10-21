@@ -1,7 +1,7 @@
 import random
+from pathlib import Path
 import streamlit as st
 import torch
-from pathlib import Path
 
 from src.visualization.runner import (
     infer_run_class_name,
@@ -70,9 +70,19 @@ def inject_custom_styles():
             background-color: #065f46;
             color: #34d399;
             font-weight: 700;
-            padding: 4px 14px;
+            padding: 5px 16px;
             border-radius: 9999px;
             border: 1px solid #059669;
+            font-size: 0.9rem;
+        }
+        .status-badge-partial {
+            display: inline-block;
+            background-color: #78350f;
+            color: #fcd34d;
+            font-weight: 700;
+            padding: 5px 16px;
+            border-radius: 9999px;
+            border: 1px solid #b45309;
             font-size: 0.9rem;
         }
         .status-badge-mismatch {
@@ -80,7 +90,7 @@ def inject_custom_styles():
             background-color: #881337;
             color: #fb7185;
             font-weight: 700;
-            padding: 4px 14px;
+            padding: 5px 16px;
             border-radius: 9999px;
             border: 1px solid #e11d48;
             font-size: 0.9rem;
@@ -94,10 +104,36 @@ def inject_custom_styles():
             font-size: 0.95rem;
             color: #e2e8f0;
         }
+        .component-tab-badge {
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 6px;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
+
+
+def render_candidates_table(candidates: list):
+    """Renders candidate predictions with probability bars and match indicator."""
+    if not candidates:
+        return
+    for c in candidates:
+        match_tag = " &nbsp;<span style='color: #34d399; font-weight: 700;'>🎯 (GROUND TRUTH)</span>" if c["is_match"] else ""
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown(
+                f"**#{c['rank']}** `ID: {c['kb_id']}`{match_tag}<br/>"
+                f"<span style='color: #cbd5e1; font-size: 0.88rem;'>{c['schema_str']}</span>",
+                unsafe_allow_html=True,
+            )
+        with col2:
+            st.markdown(f"Score: `{c['score']:.4f}` | Prob: `{c['prob'] * 100:.1f}%`")
+            st.progress(min(max(c['prob'], 0.0), 1.0))
+        st.markdown("<hr style='margin: 4px 0; border-color: rgba(255,255,255,0.06);'/>", unsafe_allow_html=True)
 
 
 def main():
@@ -140,7 +176,6 @@ def main():
         st.markdown("---")
         st.header("📂 Split & Hardware")
 
-        # Requirement 2: The only data splits usable are val/test
         split = st.selectbox(
             "Data Split",
             options=DATA_SPLITS,
@@ -156,7 +191,7 @@ def main():
             horizontal=True,
         )
 
-        # Requirement 1: Infer the right run class to load + init
+        # Infer run class and config path
         run_class_name = infer_run_class_name(task=task, architecture=architecture)
         config_path = get_config_path(
             task=task,
@@ -175,6 +210,23 @@ def main():
             st.error(f"❌ Config missing:\n`{config_path}`")
             return
 
+        # Checkpoint Override Option
+        st.markdown("---")
+        st.subheader("🧠 Model Checkpoint")
+        ckpt_source = st.radio(
+            "Checkpoint Source",
+            options=["Auto (Config Default)", "Custom Path"],
+            index=0,
+            horizontal=True,
+        )
+        custom_ckpt_path = None
+        if ckpt_source == "Custom Path":
+            custom_ckpt_path = st.text_input(
+                "Checkpoint `.pt` path",
+                value="",
+                placeholder="e.g. models_cosface/text/... or custom .pt file",
+            ).strip()
+
         # Explicit Cache Reset Button
         if st.button("🔄 Reload Model & Reset Cache", use_container_width=True):
             st.cache_resource.clear()
@@ -183,14 +235,14 @@ def main():
             st.rerun()
 
     # Track active run setting to reset sample state when switching runs
-    current_run_key = f"{task}_{dataset_name}_{split_mode}_{architecture}_{model_name}_{split}"
+    current_run_key = f"{task}_{dataset_name}_{split_mode}_{architecture}_{model_name}_{split}_{custom_ckpt_path}"
     if st.session_state.get("active_run_key") != current_run_key:
         st.session_state.active_run_key = current_run_key
         st.session_state.current_sample_idx = 0
         st.session_state.sample_id_input = ""
 
     # ==========================================
-    # 2. Run Class Loading & Init (Requirements 1 & 3)
+    # 2. Run Class Loading & Init
     # ==========================================
     config_mtime = config_path.stat().st_mtime if config_path.exists() else 0.0
 
@@ -200,19 +252,22 @@ def main():
             run_class_name=run_class_name,
             device=device,
             config_mtime=config_mtime,
+            custom_checkpoint_path=custom_ckpt_path if custom_ckpt_path else None,
         )
     except Exception as e:
         st.error(f"Error initializing run class `{run_class_name}`: {e}")
         return
 
-    # Status of state dict from run.early_stop.path
+    # Status of state dict from checkpoint
     if run.checkpoint_loaded_from:
-        st.sidebar.success(f"🧠 State dict loaded from:\n`{Path(run.checkpoint_loaded_from).name}`")
+        ckpt_p = Path(run.checkpoint_loaded_from)
+        size_mb = ckpt_p.stat().st_size / (1024 * 1024) if ckpt_p.exists() else 0.0
+        st.sidebar.success(f"🧠 Loaded Checkpoint:\n`{ckpt_p.name}` ({size_mb:.1f} MB)\n\n`{ckpt_p.parent}`")
     else:
-        st.sidebar.warning(f"⚠️ Checkpoint not found at `run.early_stop.path`:\n`{getattr(run.early_stop, 'path', '')}`")
+        st.sidebar.warning(f"⚠️ Checkpoint not found at `run.early_stop.path`:\n`{getattr(run.early_stop, 'path', '')}`\n\n(Running with initialized weights)")
 
     # ==========================================
-    # 3. Data Split Loader & Dataset (Requirement 2)
+    # 3. Data Split Loader & Dataset
     # ==========================================
     loader = run.val_loader if split == "val" else run.test_loader
     if loader is None or loader.dataset is None:
@@ -229,10 +284,9 @@ def main():
         st.session_state.current_sample_idx = max(0, min(st.session_state.current_sample_idx, total_samples - 1))
 
     # ==========================================
-    # 4. Gather Schema Item Embeddings (Requirement 4)
+    # 4. Gather Schema Item Embeddings
     # ==========================================
     try:
-        # Schema embeddings are cached per run & split on run._schema_embeddings_cache
         schema_embeddings = get_schema_embeddings(run, dataset, task=task, split=split)
     except Exception as e:
         st.error(f"Failed to gather schema item embeddings via runner: {e}")
@@ -247,10 +301,10 @@ def main():
 
     with col_id_search:
         sample_id_input = st.text_input(
-            "Direct Sample ID / QID Lookup",
+            "Direct Sample ID / QID / Triple Lookup",
             value=st.session_state.get("sample_id_input", ""),
             placeholder="e.g. Q1060131 or sample index...",
-            help="Type an entity QID or numeric sample index to jump directly.",
+            help="Type an entity QID, property PID, or numeric sample index to jump directly.",
             key="sample_id_input_widget",
         ).strip()
 
@@ -285,7 +339,7 @@ def main():
     current_idx = st.session_state.current_sample_idx
 
     # ==========================================
-    # 6. Predict & Gather Strings (Requirements 4 & 5)
+    # 6. Predict & Gather Strings
     # ==========================================
     with st.spinner("Running forward pass and scoring..."):
         result = predict_sample(
@@ -307,19 +361,26 @@ def main():
     with header_col1:
         st.markdown(f"### Sample `#{current_idx}`: `{result['sample_id']}`")
     with header_col2:
-        if result["is_match"]:
-            st.markdown("<div style='text-align: right;'><span class='status-badge-match'>🎯 MATCH (CORRECT)</span></div>", unsafe_allow_html=True)
-        else:
-            st.markdown("<div style='text-align: right;'><span class='status-badge-mismatch'>❌ MISMATCH (ERROR)</span></div>", unsafe_allow_html=True)
+        if task in ["node", "edge"]:
+            if result["is_match"]:
+                st.markdown("<div style='text-align: right;'><span class='status-badge-match'>🎯 MATCH (CORRECT)</span></div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='text-align: right;'><span class='status-badge-mismatch'>❌ MISMATCH (ERROR)</span></div>", unsafe_allow_html=True)
+        elif task == "complete":
+            match_cnt = result["match_count"]
+            if match_cnt == 3:
+                st.markdown("<div style='text-align: right;'><span class='status-badge-match'>🎯 FULL TRIPLE MATCH (3/3)</span></div>", unsafe_allow_html=True)
+            elif match_cnt > 0:
+                st.markdown(f"<div style='text-align: right;'><span class='status-badge-partial'>⚠️ PARTIAL MATCH ({match_cnt}/3)</span></div>", unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='text-align: right;'><span class='status-badge-mismatch'>❌ FULL MISMATCH (0/3)</span></div>", unsafe_allow_html=True)
 
-    # Input Formatted String
-    st.markdown("**Input Formatted String (passed into model tokenizer):**")
-    st.markdown(f"<div class='input-chip'><code>{result['input_string']}</code></div>", unsafe_allow_html=True)
-
-    # Single-item tasks (Node and Edge)
+    # Input Formatted Strings
     if task in ["node", "edge"]:
-        col_gt, col_pred = st.columns(2)
+        st.markdown("**Input Formatted String (passed into model tokenizer):**")
+        st.markdown(f"<div class='input-chip'><code>{result['input_string']}</code></div>", unsafe_allow_html=True)
 
+        col_gt, col_pred = st.columns(2)
         with col_gt:
             st.markdown(
                 f"""
@@ -350,28 +411,65 @@ def main():
         # Top-K candidate scores
         if "candidates" in result:
             st.markdown("#### 📊 Top Model Predictions & Scores")
-            for c in result["candidates"]:
-                match_tag = " &nbsp;<span style='color: #34d399; font-weight: 700;'>🎯 (GROUND TRUTH)</span>" if c["is_match"] else ""
-                col1, col2 = st.columns([3, 1])
-                with col1:
-                    st.markdown(f"**#{c['rank']}** `ID: {c['kb_id']}`{match_tag}<br/><span style='color: #cbd5e1; font-size: 0.88rem;'>{c['schema_str']}</span>", unsafe_allow_html=True)
-                with col2:
-                    st.markdown(f"Score: `{c['score']:.4f}` | Prob: `{c['prob'] * 100:.1f}%`")
-                    st.progress(min(max(c['prob'], 0.0), 1.0))
-                st.markdown("<hr style='margin: 4px 0; border-color: rgba(255,255,255,0.06);'/>", unsafe_allow_html=True)
+            render_candidates_table(result["candidates"])
 
-    # Complete task
     elif task == "complete":
+        inputs = result.get("input_components", {})
+        st.markdown("**Input Formatted Components:**")
+        col_in1, col_in2, col_in3 = st.columns(3)
+        with col_in1:
+            st.caption("👤 Head Entity Input:")
+            st.markdown(f"<div class='input-chip'><code>{inputs.get('head', '')}</code></div>", unsafe_allow_html=True)
+        with col_in2:
+            st.caption(f"🔗 Relation Context (PID: {inputs.get('pid', '')}):")
+            st.markdown(f"<div class='input-chip'><code>{inputs.get('rel', '')}</code></div>", unsafe_allow_html=True)
+        with col_in3:
+            st.caption("👤 Tail Entity Input:")
+            st.markdown(f"<div class='input-chip'><code>{inputs.get('tail', '')}</code></div>", unsafe_allow_html=True)
+
+        st.markdown("---")
+        st.markdown("#### 📊 Triple Component Breakdown")
+
         cp = result["complete_preds"]
-        for comp_name in ["head", "rel", "tail"]:
-            c_info = cp[comp_name]
-            st.markdown(f"#### 🔹 {comp_name.upper()} Prediction ({'✅ MATCH' if c_info['match'] else '❌ MISMATCH'})")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown(f"**Ground Truth (ID {c_info['gt_id']}):**\n`{c_info['gt_str']}`")
-            with col2:
-                st.markdown(f"**Predicted (ID {c_info['pred_id']}):**\n`{c_info['pred_str']}`")
-            st.markdown("---")
+        tab_head, tab_rel, tab_tail = st.tabs([
+            f"👤 Head Entity ({'✅ MATCH' if cp['head']['match'] else '❌ MISMATCH'})",
+            f"🔗 Relation ({'✅ MATCH' if cp['rel']['match'] else '❌ MISMATCH'})",
+            f"👤 Tail Entity ({'✅ MATCH' if cp['tail']['match'] else '❌ MISMATCH'})",
+        ])
+
+        for comp_name, tab in [("head", tab_head), ("rel", tab_rel), ("tail", tab_tail)]:
+            with tab:
+                c_info = cp[comp_name]
+                col_c_gt, col_c_pred = st.columns(2)
+                with col_c_gt:
+                    st.markdown(
+                        f"""
+                        <div class="result-box-match" style="border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.08);">
+                            <div class="card-header-gt">🏷️ Ground Truth {comp_name.upper()} (ID: {c_info['gt_id']})</div>
+                            <div class="card-desc" style="color: #e2e8f0; font-family: monospace; white-space: pre-wrap;">
+                                {c_info['gt_str']}
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                with col_c_pred:
+                    box_class = "result-box-match" if c_info["match"] else "result-box-mismatch"
+                    st.markdown(
+                        f"""
+                        <div class="{box_class}">
+                            <div class="card-header-pred">🔮 Predicted {comp_name.upper()} (ID: {c_info['pred_id']})</div>
+                            <div class="card-desc" style="color: #e2e8f0; font-family: monospace; white-space: pre-wrap;">
+                                {c_info['pred_str']}
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                if "candidates" in c_info:
+                    st.markdown(f"**Top Candidates for {comp_name.capitalize()}:**")
+                    render_candidates_table(c_info["candidates"])
 
     # Raw Object Expander
     with st.expander("🔍 Inspect Raw Dataset Item"):
