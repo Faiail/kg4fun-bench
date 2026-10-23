@@ -3,10 +3,11 @@ import random
 import shutil
 import networkx as nx
 from tqdm import tqdm
-
 from src.utils import load_json, save_json
 from src.utils import ParameterKeys
 from src.preprocess.ontomap.kg4fun_fields import ClassFields, RelFields
+from torch_geometric.seed import seed_everything
+
 
 class HybridSplitProcessor:
     def __init__(self, parameters: dict):
@@ -28,6 +29,9 @@ class HybridSplitProcessor:
         self.pbar = general_parameters.get(ParameterKeys.PBAR, True)
         self.train_ratio = general_parameters.get(ParameterKeys.TRAIN_RATIO, 0.7)
         self.val_ratio = general_parameters.get(ParameterKeys.VAL_RATIO, 0.1)
+        self.seed = general_parameters.get(ParameterKeys.SEED, 42)
+        seed_everything(self.seed)
+
 
     def _init_data(self):
         dataset_parameters = self.parameters.get(ParameterKeys.DATA, dict())
@@ -111,7 +115,9 @@ class HybridSplitProcessor:
             }
             target_schema_nodes = set(info[ParameterKeys.CLS_IDX] for info in self.global_node_types.values())
         else:
-            schema = self.filter_schema(target_schema_nodes)
+            schema = self.filter_schema(target_schema_nodes.union({-1}))
+            
+        target_schema_nodes.add(-1)
             
         valid_pids = {et[ParameterKeys.PID] for et in schema[ParameterKeys.EDGE_TYPES]}
         
@@ -224,12 +230,16 @@ class HybridSplitProcessor:
 
         print("Building undirected INSTANCE graph for partitioning...")
         instance_graph = nx.Graph()
+        valid_qids = set()
         for n in self.nodes:
-            instance_graph.add_node(n[ParameterKeys.QID], cls_idx=n[ParameterKeys.CLS_IDX])
+            if n[ParameterKeys.CLS_IDX] != -1:
+                instance_graph.add_node(n[ParameterKeys.QID], cls_idx=n[ParameterKeys.CLS_IDX])
+                valid_qids.add(n[ParameterKeys.QID])
         
         iter_edges2 = tqdm(self.all_edges, desc="Adding edges to instance graph") if self.pbar else self.all_edges
         for e in iter_edges2:
-            instance_graph.add_edge(e[ParameterKeys.HEAD_QID], e[ParameterKeys.TAIL_QID])
+            if e[ParameterKeys.HEAD_QID] in valid_qids and e[ParameterKeys.TAIL_QID] in valid_qids:
+                instance_graph.add_edge(e[ParameterKeys.HEAD_QID], e[ParameterKeys.TAIL_QID])
             
         total_instance_nodes = len(instance_graph.nodes())
         print(f"Total instance nodes: {total_instance_nodes}")
@@ -253,10 +263,22 @@ class HybridSplitProcessor:
         print("Assigning remaining to TEST instance island...")
         test_instance_qids = unassigned_instances
         
+        print("Stratifying purely -1 nodes...")
+        pure_m1_qids = list(set(n[ParameterKeys.QID] for n in self.nodes if n[ParameterKeys.QID] not in valid_qids and n[ParameterKeys.CLS_IDX] == -1))
+        random.shuffle(pure_m1_qids)
+        tm1 = len(pure_m1_qids)
+        train_pure = set(pure_m1_qids[:int(self.train_ratio * tm1)])
+        val_pure = set(pure_m1_qids[int(self.train_ratio * tm1):int((self.train_ratio + self.val_ratio) * tm1)])
+        test_pure = set(pure_m1_qids[int((self.train_ratio + self.val_ratio) * tm1):])
+        
+        train_instance_qids.update(train_pure)
+        val_instance_qids.update(val_pure)
+        test_instance_qids.update(test_pure)
+        
         print(f"Instance Nodes assigned - Train: {len(train_instance_qids)}, Val: {len(val_instance_qids)}, Test: {len(test_instance_qids)}")
         
-        print("Exporting train split (subset schema)...")
-        self._export_split("train", train_schema_nodes, train_instance_qids)
+        print("Exporting train split (global schema)...")
+        self._export_split("train", None, train_instance_qids)
         
         print("Exporting val split (global schema)...")
         self._export_split("val", None, val_instance_qids)

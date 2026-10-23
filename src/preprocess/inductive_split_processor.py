@@ -8,6 +8,7 @@ from tqdm import tqdm
 from src.utils import load_json, save_json
 from src.utils import ParameterKeys
 from src.preprocess.ontomap.kg4fun_fields import ClassFields, RelFields
+from torch_geometric.seed import seed_everything
 
 
 class InductiveSplitProcessor:
@@ -31,6 +32,8 @@ class InductiveSplitProcessor:
         # 70% train, 10% val, 20% test by default
         self.train_ratio = general_parameters.get(ParameterKeys.TRAIN_RATIO, 0.7)
         self.val_ratio = general_parameters.get(ParameterKeys.VAL_RATIO, 0.1)
+        self.seed = general_parameters.get(ParameterKeys.SEED, 42)
+        seed_everything(self.seed)
 
     def _init_data(self):
         dataset_parameters = self.parameters.get(ParameterKeys.DATA, dict())
@@ -96,19 +99,20 @@ class InductiveSplitProcessor:
             ParameterKeys.NODE_TYPES: filtered_node_types
         }
 
-    def _export_split(self, split_name, target_schema_nodes):
+    def _export_split(self, split_name, target_schema_nodes, target_minus_one_qids):
         split_dir = os.path.join(self.out_dir, split_name)
         edges_dir = os.path.join(split_dir, ParameterKeys.EDGES)
         partition_dir = os.path.join(edges_dir, ParameterKeys.PARTITION)
         os.makedirs(partition_dir, exist_ok=True)
         
         # 1. Filter Schema
-        schema = self.filter_schema(target_schema_nodes)
+        schema = self.filter_schema(target_schema_nodes.union({-1}))
         valid_pids = {et[ParameterKeys.PID] for et in schema[ParameterKeys.EDGE_TYPES]}
         
         # 2. Filter input graph
         # Nodes
         nodes_subset = [n for n in self.nodes if n[ParameterKeys.CLS_IDX] in target_schema_nodes]
+        nodes_subset.extend([n for n in self.nodes if n[ParameterKeys.CLS_IDX] == -1 and n[ParameterKeys.QID] in target_minus_one_qids])
         valid_qids = {n[ParameterKeys.QID] for n in nodes_subset}
         
         # Edges
@@ -203,13 +207,15 @@ class InductiveSplitProcessor:
         schema_graph = nx.Graph()
         
         for qid, info in self.global_node_types.items():
-            schema_graph.add_node(info[ParameterKeys.CLS_IDX])
+            if info[ParameterKeys.CLS_IDX] != -1:
+                schema_graph.add_node(info[ParameterKeys.CLS_IDX])
             
         for et in self.global_edge_types:
-            schema_graph.add_edge(et[ParameterKeys.HEAD_CLS], et[ParameterKeys.TAIL_CLS])
+            if et[ParameterKeys.HEAD_CLS] != -1 and et[ParameterKeys.TAIL_CLS] != -1:
+                schema_graph.add_edge(et[ParameterKeys.HEAD_CLS], et[ParameterKeys.TAIL_CLS])
             
         total_schema_nodes = len(schema_graph.nodes())
-        print(f"Total schema nodes: {total_schema_nodes}")
+        print(f"Total schema nodes (excluding -1): {total_schema_nodes}")
         
         unassigned = set(schema_graph.nodes())
         train_target = int(self.train_ratio * total_schema_nodes)
@@ -222,13 +228,21 @@ class InductiveSplitProcessor:
         
         print(f"Schema Nodes assigned - Train: {len(train_schema_nodes)}, Val: {len(val_schema_nodes)}, Test: {len(test_schema_nodes)}")
         
+        print("Stratifying -1 nodes...")
+        minus_one_qids = list(set(n[ParameterKeys.QID] for n in self.nodes if n[ParameterKeys.CLS_IDX] == -1))
+        random.shuffle(minus_one_qids)
+        total_m1 = len(minus_one_qids)
+        train_m1 = set(minus_one_qids[:int(self.train_ratio * total_m1)])
+        val_m1 = set(minus_one_qids[int(self.train_ratio * total_m1):int((self.train_ratio + self.val_ratio) * total_m1)])
+        test_m1 = set(minus_one_qids[int((self.train_ratio + self.val_ratio) * total_m1):])
+        
         print("Exporting train split...")
-        self._export_split("train", train_schema_nodes)
+        self._export_split("train", train_schema_nodes, train_m1)
         
         print("Exporting val split...")
-        self._export_split("val", val_schema_nodes)
+        self._export_split("val", val_schema_nodes, val_m1)
         
         print("Exporting test split...")
-        self._export_split("test", test_schema_nodes)
+        self._export_split("test", test_schema_nodes, test_m1)
         
         print("Done! Inductive splits generated from schema graph.")

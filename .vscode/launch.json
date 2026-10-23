@@ -43,6 +43,46 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["experiment", "--parameters", "configs/experiment/logmap/dataset1/inductive.yaml", "--cls", "LogmapRun"]
+        },
+        {
+            "name": "Dedicated TextRun Experiment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/node/dataset1/hybrid/dedicated_bert.yaml", "--cls", "DedicatedTextSingleItemRun"]
+        },
+        {
+            "name": "Shared TextRun Experiment",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/edge/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextSingleItemRun"]
+        },
+        {
+            "name": "Optuna",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["optimize", "--parameters", "configs/experiment/text/test/optimize.yaml", "--cls", "OptunaOptimizer"]
+        },
+        {
+            "name": "Complete Shared",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/shared_bert.yaml", "--cls", "SharedTextCompleteRun"]
+        },
+        {
+            "name": "Complete Dedicated",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/dedicated_bert.yaml", "--cls", "DedicatedTextCompleteRun"]
         }
     ]
 }
