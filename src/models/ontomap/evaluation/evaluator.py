@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from typing import Any, Dict, List
 
-from src.models.ontomap.evaluation.metrics import evaluation_report
+from src.models.ontomap.evaluation.metrics import (
+    compute_closed_world_macro_metrics,
+    evaluation_report,
+)
 from src.models.ontomap.postprocess import process
 
 
@@ -28,6 +31,13 @@ def evaluator_module(track: str, approach: str, predicts: List, references: Any,
     elif approach == "naiv-conv-oaei":
         predicts = process.postprocess_naiv_conv_oaei(predicts=predicts)
     results = evaluator(track=track, predicts=predicts, references=references, llm_confidence_th=llm_confidence_th)
+    if track == "kg4fun":
+        macro_metrics = compute_closed_world_macro_metrics(
+            predicts=predicts,
+            references=references,
+            confidence_th=llm_confidence_th,
+        )
+        results["macro_metrics"] = macro_metrics
     if approach in ["rag" , "icv", "fewshot"]:
         results = {**results, **configs}
     return results

@@ -25,4 +25,16 @@ class OntomapSchemaKG4FUNClassProcessor(OntomapStartingKG4FUNClassProcessor):
                 }
             }
             processed_ontology.append(class_processed_info)
+        prune_class_info = {
+            "cls_-1": {
+                OntologyFields.NAME: -1,
+                OntologyFields.IRI: "",
+                OntologyFields.LABEL: "PruneNode",
+                OntologyFields.COMMENT: "A node which is out of domain and must be pruned.",
+                OntologyFields.SYNONYMS: list(),
+                OntologyFields.CHILDRENS: list(),
+                OntologyFields.PARENTS: list(),
+            }
+        }
+        processed_ontology.append(prune_class_info)
         self.save(processed_ontology)

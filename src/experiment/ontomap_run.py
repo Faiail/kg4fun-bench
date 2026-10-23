@@ -163,6 +163,11 @@ class OntomapRun(Run):
         save_json(output_dict, str(output_file_path))
         print(f"\tSaved task output to {output_file_path}")
 
+        if eval_results and "macro_metrics" in eval_results:
+            test_metrics_path = task_out_dir / "test_metrics.json"
+            save_json(eval_results["macro_metrics"], str(test_metrics_path))
+            print(f"\tSaved closed-world test metrics to {test_metrics_path}")
+
         return output_dict
 
     def launch(self) -> Dict[str, Any]:

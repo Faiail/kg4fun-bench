@@ -171,6 +171,12 @@ class LogMapPreprocessor:
                 "comment": t_info.get("itemDescription", "")
             }
 
+        # Add PruneNode to target classes
+        target_classes["cls_-1"] = {
+            "label": "PruneNode",
+            "comment": "A node which is out of domain and must be pruned.",
+        }
+
         pid_to_rel = {}
         for idx, et in enumerate(edge_types_list):
             pid = et[ParameterKeys.PID]
@@ -182,6 +188,12 @@ class LogMapPreprocessor:
                 "label": t_info.get("itemLabel", ""),
                 "comment": t_info.get("itemDescription", "")
             }
+
+        # Add PruneEdge to target properties
+        target_properties["rel_-1"] = {
+            "label": "PruneEdge",
+            "comment": "An edge which is out of domain and must be pruned.",
+        }
 
         # Build Mappings (Ground Truth)
         mappings = []
@@ -197,8 +209,10 @@ class LogMapPreprocessor:
             src_pid = m[ParameterKeys.EDGE_TYPE][1]
             tgt_comp_id = m.get("component_id", None)
             
-            if tgt_comp_id is not None:
+            if tgt_comp_id is not None and tgt_comp_id != -1:
                 mappings.append((src_pid, f"rel_{tgt_comp_id}"))
+            else:
+                mappings.append((src_pid, "rel_-1"))
 
         # Generate XMLs
         source_base = "http://kg4fun.org/source"
