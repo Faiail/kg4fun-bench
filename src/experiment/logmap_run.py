@@ -9,6 +9,7 @@ import time
 from src.experiment.run import Run
 from src.experiment.utils import ParameterKeys
 from src.models.ontomap.evaluation import evaluator_module
+from src.models.ontomap.evaluation.metrics import compute_closed_world_macro_metrics
 from src.utils.general import load_json, save_json
 from torch_geometric.seed import seed_everything
 import torch
@@ -188,10 +189,19 @@ class LogmapRun(Run):
             references_raw = load_json(self.alignment)
         
         summary_metrics = self.compute_metrics(predicts, references_raw)
-        
         save_json(summary_metrics, os.path.join(self.out_dir, "summary_metrics.json"))
+
+        macro_metrics = compute_closed_world_macro_metrics(
+            predicts=predicts,
+            references=references_raw,
+            confidence_th=0.5,
+        )
+        save_json(macro_metrics, os.path.join(self.out_dir, "test_metrics.json"))
         print(
             f"\nExperiment complete. Summary metrics saved in {os.path.join(self.out_dir, 'summary_metrics.json')}"
+        )
+        print(
+            f"Closed-world test metrics saved in {os.path.join(self.out_dir, 'test_metrics.json')}"
         )
 
         return summary_metrics

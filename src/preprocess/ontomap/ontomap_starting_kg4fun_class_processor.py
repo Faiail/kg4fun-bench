@@ -28,6 +28,36 @@ class OntomapStartingKG4FUNClassProcessor:
         fname = dataset_parameters.get(ParameterKeys.NAME)
         self.dataset = load_json(fname)
 
+        split_dir = os.path.dirname(fname)
+        self.node_types_path = os.path.join(split_dir, "node_types.json")
+        self.node_info_path = os.path.join(split_dir, "node_info.json")
+        self.nodes_path = os.path.join(split_dir, "nodes.json")
+
+        self.additional_classes = {}
+        if os.path.exists(self.node_types_path):
+            node_types = load_json(self.node_types_path)
+            for root_qid, data in node_types.items():
+                for item in data.get("positive", []) + data.get("negative", []):
+                    qid = item.get("QID")
+                    if qid and qid not in self.dataset and qid not in self.additional_classes:
+                        self.additional_classes[qid] = {
+                            ClassFields.LABEL: item.get("label", ""),
+                            ClassFields.DESCRIPTION: "",
+                        }
+
+        if os.path.exists(self.nodes_path) and os.path.exists(self.node_info_path):
+            nodes = load_json(self.nodes_path)
+            node_info = load_json(self.node_info_path)
+            for n in nodes:
+                if n.get("cls_idx") == -1:
+                    qid = n.get("qid")
+                    if qid and qid not in self.dataset and qid not in self.additional_classes:
+                        info = node_info.get(qid, {})
+                        self.additional_classes[qid] = {
+                            ClassFields.LABEL: info.get("itemLabel", n.get("itemLabel", "")),
+                            ClassFields.DESCRIPTION: info.get("itemDescription", ""),
+                        }
+
     def get_pbar(self, population, **kwargs):
         return population if not self.pbar else tqdm(population, **kwargs)
 
@@ -36,9 +66,10 @@ class OntomapStartingKG4FUNClassProcessor:
         save_json(processed_ontology, output_file_path)
 
     def __call__(self):
+        combined = {**self.dataset, **self.additional_classes}
         pbar = self.get_pbar(
-            enumerate(self.dataset.items()),
-            total=len(self.dataset),
+            enumerate(combined.items()),
+            total=len(combined),
             desc="Processing classes",
         )
         processed_ontology = list()

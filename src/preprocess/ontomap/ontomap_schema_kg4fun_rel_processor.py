@@ -29,4 +29,16 @@ class OntomapSchemaKG4FUNRelProcessor(OntomapSchemaKG4FUNClassProcessor):
                 }
             }
             processed_ontology.append(rel_processed_info)
+        prune_rel_info = {
+            "rel_-1": {
+                OntologyFields.NAME: -1,
+                OntologyFields.IRI: "",
+                OntologyFields.LABEL: "PruneEdge",
+                OntologyFields.COMMENT: "An edge which is out of domain and must be pruned.",
+                OntologyFields.SYNONYMS: list(),
+                OntologyFields.CHILDRENS: list(),
+                OntologyFields.PARENTS: list(),
+            }
+        }
+        processed_ontology.append(prune_rel_info)
         self.save(processed_ontology)

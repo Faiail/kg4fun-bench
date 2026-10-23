@@ -33,7 +33,11 @@ class OntomapKG4FUNAlignmentProcessor:
 
     def _init_alignment(self):
         alignment_parameters = self.parameters.get(ParameterKeys.ALIGNMENT, dict())
-        self.node_types = load_json(alignment_parameters.get(ParameterKeys.NODE_TYPES))
+        node_types_path = alignment_parameters.get(ParameterKeys.NODE_TYPES)
+        self.node_types = load_json(node_types_path)
+        split_dir = os.path.dirname(node_types_path) if node_types_path else ""
+        nodes_path = os.path.join(split_dir, "nodes.json")
+        self.nodes_data = load_json(nodes_path) if os.path.exists(nodes_path) else []
         self.connected_components = load_json(
             alignment_parameters.get(ParameterKeys.CONNECTED_COMPONENTS)
         )
@@ -66,6 +70,10 @@ class OntomapKG4FUNAlignmentProcessor:
             for k, v in self.node_types.items()
             if v.get("cls_idx") == int(class_idx)
         }
+        if not target_dict:
+            if str(class_idx) == "-1":
+                return [n["qid"] for n in self.nodes_data if n.get("cls_idx") == -1]
+            return []
         root_qid = list(target_dict.keys())[0]
         return (
             [root_qid]
@@ -106,6 +114,9 @@ class OntomapKG4FUNAlignmentProcessor:
                 set(x["QID"] for x in v.get("positive", list()))
                 | set(x["QID"] for x in v.get("negative", list()))
             )
+        for n in self.nodes_data:
+            if n.get("cls_idx") == -1:
+                start_node_types.add(n["qid"])
         schema_node_types = set(
             map(
                 lambda x: x.split("cls_")[1],
