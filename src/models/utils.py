@@ -7,3 +7,6 @@ class ReturnKeys(StrEnum):
     HEAD = "head"
     REL = "rel"
     TAIL = "tail"
+    TOKEN = "token"
+    CLS = "cls"
+    MASK = "mask"
