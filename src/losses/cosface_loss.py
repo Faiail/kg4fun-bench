@@ -135,10 +135,11 @@ class CosFaceLoss(nn.Module):
         diff = -self.current_m * scale
         scaled_logits = logits * scale
         target_labels_idx = target_labels.unsqueeze(1)
+        diff_tensor = diff if isinstance(diff, torch.Tensor) else torch.tensor(diff, device=logits.device, dtype=logits.dtype)
         scaled_logits = scaled_logits.scatter_add(
             1,
             target_labels_idx,
-            torch.full_like(target_labels_idx, diff, dtype=scaled_logits.dtype),
+            diff_tensor.expand_as(target_labels_idx),
         )
 
         return F.cross_entropy(scaled_logits, target_labels)

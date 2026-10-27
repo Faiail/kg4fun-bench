@@ -4,6 +4,8 @@ import torch.nn.functional as F
 from transformers import AutoModel
 from src.models.utils import ReturnKeys
 from .text_cross_encoding_unit import TextCrossEncodingUnit
+from .tglu_cross_encoding_unit import TGLUCrossEncodingUnit
+from .colbert_cross_encoding_unit import ColBERTCrossEncodingUnit
 
 
 class SharedCrossEncodedTextModel(nn.Module):
@@ -13,16 +15,33 @@ class SharedCrossEncodedTextModel(nn.Module):
         bbone_hidden_size: int,
         final_hidden_size: int = 512,
         dropout: float = 0.1,
+        unit_type: str = "enhanced",
     ) -> None:
         super().__init__()
         self.encoder = AutoModel.from_pretrained(**bbone_config)
-        self.schema_hidden_size = final_hidden_size
+        self.schema_hidden_size = bbone_hidden_size
 
-        self.cross_encoder_unit = TextCrossEncodingUnit(
-            hidden_dim=bbone_hidden_size,
-            unit_hidden_dim=final_hidden_size,
-            dropout=dropout,
-        )
+        unit_key = unit_type.lower()
+        if unit_key == "tglu":
+            self.cross_encoder_unit = TGLUCrossEncodingUnit(
+                hidden_dim=bbone_hidden_size,
+                unit_hidden_dim=final_hidden_size,
+                dropout=dropout,
+            )
+        elif unit_key == "colbert":
+            self.cross_encoder_unit = ColBERTCrossEncodingUnit(
+                hidden_dim=bbone_hidden_size,
+                unit_hidden_dim=final_hidden_size,
+                dropout=dropout,
+            )
+        elif unit_key == "enhanced":
+            self.cross_encoder_unit = TextCrossEncodingUnit(
+                hidden_dim=bbone_hidden_size,
+                unit_hidden_dim=final_hidden_size,
+                dropout=dropout,
+            )
+        else:
+            raise ValueError(f"Unknown unit {unit_key}")
 
     def encode(self, input_dict: dict) -> dict[str, torch.Tensor]:
         """Independent encoding used at inference time to cache token representations."""
@@ -38,7 +57,6 @@ class SharedCrossEncodedTextModel(nn.Module):
         out_input = self.encode(input)
         out_target = self.encode(target)
 
-        
         input_tokens = out_input[ReturnKeys.TOKEN]
         target_tokens = out_target[ReturnKeys.TOKEN]
 
@@ -58,3 +76,17 @@ class SharedCrossEncodedTextModel(nn.Module):
         )
 
         return scores
+
+    def match(
+        self,
+        input_dict: dict[str, torch.Tensor],
+        target_dict: dict[str, torch.Tensor],
+    ) -> torch.Tensor:
+        return self.cross_encoder_unit(
+            input_cls=input_dict[ReturnKeys.CLS],
+            input_tokens=input_dict[ReturnKeys.TOKEN],
+            input_mask=input_dict[ReturnKeys.MASK],
+            target_cls=target_dict[ReturnKeys.CLS],
+            target_tokens=target_dict[ReturnKeys.TOKEN],
+            target_mask=target_dict[ReturnKeys.MASK],
+        )
