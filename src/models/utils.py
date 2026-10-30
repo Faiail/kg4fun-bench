@@ -10,3 +10,5 @@ class ReturnKeys(StrEnum):
     TOKEN = "token"
     CLS = "cls"
     MASK = "mask"
+    NODE = "node"
+    EDGE = "edge"

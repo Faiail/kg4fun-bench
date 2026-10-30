@@ -3,6 +3,4 @@ from .dedicated_text_model import DedicatedTextEncoder
 from .shared_complete_text_model import SharedCompleteTextEncoder
 from .dedicated_complete_text_model import DedicatedCompleteTextEncoder
 from .shared_cross_text_model import SharedCrossEncodedTextModel
-from .text_cross_encoding_unit import TextCrossEncodingUnit
-from .tglu_cross_encoding_unit import TGLUCrossEncodingUnit
-from .colbert_cross_encoding_unit import ColBERTCrossEncodingUnit
+from .shared_cross_complete_text_model import SharedCompleteCrossEncodedTextModel

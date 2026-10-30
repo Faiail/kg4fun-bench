@@ -3,9 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoModel
 from src.models.utils import ReturnKeys
-from .text_cross_encoding_unit import TextCrossEncodingUnit
-from .tglu_cross_encoding_unit import TGLUCrossEncodingUnit
-from .colbert_cross_encoding_unit import ColBERTCrossEncodingUnit
+import src.models.text.cross_units as cross_unit_pkg
 
 
 class SharedCrossEncodedTextModel(nn.Module):
@@ -15,33 +13,17 @@ class SharedCrossEncodedTextModel(nn.Module):
         bbone_hidden_size: int,
         final_hidden_size: int = 512,
         dropout: float = 0.1,
-        unit_type: str = "enhanced",
+        unit_type: str = "TextCrossEncodingUnit",
     ) -> None:
         super().__init__()
         self.encoder = AutoModel.from_pretrained(**bbone_config)
         self.schema_hidden_size = bbone_hidden_size
 
-        unit_key = unit_type.lower()
-        if unit_key == "tglu":
-            self.cross_encoder_unit = TGLUCrossEncodingUnit(
-                hidden_dim=bbone_hidden_size,
-                unit_hidden_dim=final_hidden_size,
-                dropout=dropout,
-            )
-        elif unit_key == "colbert":
-            self.cross_encoder_unit = ColBERTCrossEncodingUnit(
-                hidden_dim=bbone_hidden_size,
-                unit_hidden_dim=final_hidden_size,
-                dropout=dropout,
-            )
-        elif unit_key == "enhanced":
-            self.cross_encoder_unit = TextCrossEncodingUnit(
-                hidden_dim=bbone_hidden_size,
-                unit_hidden_dim=final_hidden_size,
-                dropout=dropout,
-            )
-        else:
-            raise ValueError(f"Unknown unit {unit_key}")
+        self.cross_encoder_unit = cross_unit_pkg.__dict__[unit_type](
+            hidden_dim=bbone_hidden_size,
+            unit_hidden_dim=final_hidden_size,
+            dropout=dropout,
+        )
 
     def encode(self, input_dict: dict) -> dict[str, torch.Tensor]:
         """Independent encoding used at inference time to cache token representations."""
