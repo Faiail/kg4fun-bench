@@ -44,7 +44,7 @@ model:
     bbone_config:
       pretrained_model_name_or_path: &model answerdotai/ModernBERT-base
     bbone_hidden_size: 768
-    final_hidden_size: 512
+    final_hidden_size: 384
 tokenizer:
   config:
     pretrained_model_name_or_path: *model
