@@ -1,0 +1,7 @@
+universe            = vanilla
+request_cpus        = 8
+request_memory      = 128GB
+request_gpus        = 1
+rank                = Memory
+queue
+

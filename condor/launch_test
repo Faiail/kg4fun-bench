@@ -1,0 +1,14 @@
+universe            = vanilla
+executable          = ./scripts/experiments/text/test_memory_all.sh
+
+request_cpus        = 8
+request_memory      = 128GB
+request_gpus        = 1
+
+output              = outs/profile_memory.out
+error               = outs/profile_memory.err
+log                 = outs/profile_memory.log
+
+rank                = Memory
+queue
+

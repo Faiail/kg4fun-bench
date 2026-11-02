@@ -1,0 +1,14 @@
+universe            = vanilla
+executable          = ./scripts/experiments/text/run_grid_profile.sh
+
+request_cpus        = 8
+request_memory      = 128GB
+request_gpus        = 1
+
+output              = outs/grid_profile.out
+error               = outs/grid_profile.err
+log                 = outs/grid_profile.log
+
+rank                = Memory
+queue
+

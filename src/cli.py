@@ -38,3 +38,26 @@ def optimize(parameters, cls):
     params_dict = load_ruamel(parameters)
     params_dict["config_name"] = Path(parameters).stem
     run_optimization(params_dict, cls)
+
+
+@main.command("profile")
+@click.option("--parameters", help="Path to the experiment parameters YAML file", required=True)
+@click.option("--cls", help="Run class to use (e.g. SharedCrossTextSingleItemRun)", required=True)
+@click.option("--batch-size", help="Override batch size", default=None, type=int)
+@click.option("--hidden-size", help="Override final hidden size", default=None, type=int)
+@click.option("--steps", help="Number of training batches to profile (default: 10)", default=10, type=int)
+@click.option("--full-epoch", help="Run a full epoch instead of fixed steps", is_flag=True, default=False)
+def profile(parameters, cls, batch_size, hidden_size, steps, full_epoch):
+    from src.experiment.profile_cross_memory import run_memory_profile
+
+    params_dict = load_ruamel(parameters)
+    params_dict["config_name"] = Path(parameters).stem
+    run_memory_profile(
+        parameters=params_dict,
+        cls=cls,
+        batch_size=batch_size,
+        hidden_size=hidden_size,
+        steps=steps,
+        full_epoch=full_epoch,
+    )
+
