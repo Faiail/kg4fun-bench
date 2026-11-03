@@ -101,14 +101,16 @@ class SharedCrossTextCompleteRun(SharedTextCompleteRun):
             ReturnKeys.CLS: torch.cat(all_cls, dim=0),
             ReturnKeys.TOKEN: torch.cat(padded_tokens, dim=0),
             ReturnKeys.MASK: torch.cat(padded_masks, dim=0),
-        }        
+        }
 
     @torch.no_grad()
     def get_schema_embeddings(self, node_loader, edge_loader):
         return self.get_spec_schema_embeddings(
-            loader=node_loader, desc="Get node classes item embeddings", task="node"
+            loader=node_loader,
+            desc="Get node classes item embeddings",
         ), self.get_spec_schema_embeddings(
-            loader=edge_loader, desc="Get edge rels item embeddings", task="edge"
+            loader=edge_loader,
+            desc="Get edge rels item embeddings",
         )
 
     @torch.no_grad()
@@ -128,7 +130,9 @@ class SharedCrossTextCompleteRun(SharedTextCompleteRun):
                 k: v[start_pos:end_pos].to(self.device)
                 for k, v in schema_embeddings.items()
             }
-            chunk_scores = self.model.match(input_embedds, chunk_schema_embeddings, unit=task)
+            chunk_scores = self.model.match(
+                input_embedds, chunk_schema_embeddings, unit=task
+            )
             scores.append(chunk_scores.cpu())
         scores = torch.cat(scores, dim=-1)
         return scores
