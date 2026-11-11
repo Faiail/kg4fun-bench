@@ -83,6 +83,30 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/dedicated_bert.yaml", "--cls", "DedicatedTextCompleteRun"]
+        },
+        {
+            "name": "Cross Node",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/node/dataset1/hybrid/cross_bert.yaml", "--cls", "SharedCrossTextSingleItemRun"]
+        },
+        {
+            "name": "Cross Edge",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/edge/dataset1/hybrid/cross_bert.yaml", "--cls", "SharedCrossTextSingleItemRun"]
+        },
+        {
+            "name": "Cross Complete",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "args": ["experiment", "--parameters", "configs/experiment/text/complete/dataset1/hybrid/cross_bert.yaml", "--cls", "SharedCrossTextCompleteRun"]
         }
     ]
 }

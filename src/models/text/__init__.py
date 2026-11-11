@@ -2,3 +2,5 @@ from .shared_text_model import SharedTextEncoder
 from .dedicated_text_model import DedicatedTextEncoder
 from .shared_complete_text_model import SharedCompleteTextEncoder
 from .dedicated_complete_text_model import DedicatedCompleteTextEncoder
+from .shared_cross_text_model import SharedCrossEncodedTextModel
+from .shared_cross_complete_text_model import SharedCompleteCrossEncodedTextModel
