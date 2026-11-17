@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Always run from the project root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+cd "${PROJECT_ROOT}"
+
 DATASETS=("dataset1" "dataset2")
 SETTINGS=("hybrid" "inductive")
 SPLITS=("train" "val" "test")

@@ -42,6 +42,8 @@ class SchemaConverter:
         node_type_info_path = self._get_node_type_info_path()
         print(f"Loading schema classes from {node_type_info_path}...")
         self.node_type_info = load_json(node_type_info_path)
+        node_types_path = os.path.join(self.data_dir, f"{ParameterKeys.NODE_TYPES}.json")
+        self.node_types = load_json(node_types_path) if os.path.exists(node_types_path) else {}
 
         # 2. Load edge_type_info (relations)
         edge_type_info_path = self._get_edge_type_info_path()
@@ -113,7 +115,22 @@ class SchemaConverter:
         raise ValueError(f"Unsupported data format: {type(raw_data)}")
 
     def process_classes(self) -> tuple[pd.DataFrame, dict[int, int], dict[str, dict]]:
-        items = self._normalize_items(self.node_type_info)
+        if isinstance(self.node_type_info, dict):
+            items = []
+            for k, v in self.node_type_info.items():
+                if isinstance(v, dict):
+                    if "idx" in v:
+                        cls_idx = v["idx"]
+                    elif k in self.node_types:
+                        cls_idx = self.node_types[k].get(ParameterKeys.CLS_IDX, k)
+                    else:
+                        cls_idx = int(k) if str(k).isdigit() else k
+                    items.append({"idx": int(cls_idx) if str(cls_idx).isdigit() else cls_idx, **v})
+                else:
+                    items.append({"idx": int(k) if str(k).isdigit() else k, "value": v})
+        else:
+            items = self._normalize_items(self.node_type_info)
+
         items_sorted = sorted(items, key=lambda x: int(x["idx"]) if str(x["idx"]).isdigit() else str(x["idx"]))
 
         class_rows = []
@@ -126,22 +143,29 @@ class SchemaConverter:
             cls2idx[cls_idx] = i
             cls2idx[str(cls_idx)] = i
             class_rows.append({"idx": i, "class": cls_idx})
-            class_properties[cls_id] = {
+            prop_data = {
                 "label": item.get("itemLabel", f"Class {cls_idx}"),
                 "description": item.get("itemDescription", "-"),
                 "cls_idx": cls_idx,
+                "idx": i,
             }
+            class_properties[cls_id] = prop_data
+            if str(cls_idx) != str(i):
+                class_properties[f"class_{i}"] = prop_data
 
         # Explicit Prune Node class
         prune_row_idx = len(items_sorted)
         cls2idx[-1] = prune_row_idx
         cls2idx["-1"] = prune_row_idx
         class_rows.append({"idx": prune_row_idx, "class": -1})
-        class_properties["class_-1"] = {
+        prune_prop = {
             "label": "Prune Node",
             "description": "A node which is out of domain and must be pruned.",
             "cls_idx": -1,
+            "idx": prune_row_idx,
         }
+        class_properties["class_-1"] = prune_prop
+        class_properties[f"class_{prune_row_idx}"] = prune_prop
 
         class_df = pd.DataFrame(class_rows)
         return class_df, cls2idx, class_properties
@@ -160,22 +184,29 @@ class SchemaConverter:
             rel2idx[comp_id] = i
             rel2idx[str(comp_id)] = i
             rel_rows.append({"idx": i, "relation": comp_id})
-            rel_properties[rel_id] = {
+            prop_data = {
                 "label": item.get("itemLabel", f"Relation {comp_id}"),
                 "description": item.get("itemDescription", "-"),
                 "component_id": comp_id,
+                "idx": i,
             }
+            rel_properties[rel_id] = prop_data
+            if str(comp_id) != str(i):
+                rel_properties[f"rel_{i}"] = prop_data
 
         # Explicit Prune Edge relation
         prune_row_idx = len(items_sorted)
         rel2idx[-1] = prune_row_idx
         rel2idx["-1"] = prune_row_idx
         rel_rows.append({"idx": prune_row_idx, "relation": -1})
-        rel_properties["rel_-1"] = {
+        prune_rel_prop = {
             "label": "Prune Edge",
             "description": "An edge which is out of domain and must be pruned.",
             "component_id": -1,
+            "idx": prune_row_idx,
         }
+        rel_properties["rel_-1"] = prune_rel_prop
+        rel_properties[f"rel_{prune_row_idx}"] = prune_rel_prop
 
         rel_df = pd.DataFrame(rel_rows)
         return rel_df, rel2idx, rel_properties
@@ -237,9 +268,10 @@ class SchemaConverter:
         if -1 in cls2idx and -1 in rel2idx:
             head_links.append({"h": cls2idx[-1], "t": rel2idx[-1]})
             tail_links.append({"h": rel2idx[-1], "t": cls2idx[-1]})
+            comp2tuple[-1] = [-1, -1]
 
-        head_df = pd.DataFrame(head_links) if head_links else pd.DataFrame(columns=["h", "t"])
-        tail_df = pd.DataFrame(tail_links) if tail_links else pd.DataFrame(columns=["h", "t"])
+        head_df = pd.DataFrame(head_links).drop_duplicates() if head_links else pd.DataFrame(columns=["h", "t"])
+        tail_df = pd.DataFrame(tail_links).drop_duplicates() if tail_links else pd.DataFrame(columns=["h", "t"])
 
         return head_df, tail_df, tuple2comp, comp2tuple
 

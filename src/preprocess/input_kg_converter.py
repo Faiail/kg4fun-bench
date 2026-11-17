@@ -244,13 +244,19 @@ class InputKGConverter:
                 continue
 
             node_idx = node2idx[qid]
-            if cls_idx == -1:
+            if cls_idx == -1 or str(cls_idx) == "-1":
                 target_cls = prune_cls_target
             else:
                 str_cls = str(cls_idx)
                 target_cls = int(self.cls2idx.get(str_cls, prune_cls_target))
 
             node_pairs.add((node_idx, target_cls))
+
+        # Ensure all nodes in node2idx have at least one annotation
+        annotated_nodes = {p[0] for p in node_pairs}
+        for n_idx in range(len(node2idx)):
+            if n_idx not in annotated_nodes:
+                node_pairs.add((n_idx, prune_cls_target))
 
         sorted_node_pairs = sorted(node_pairs, key=lambda x: (x[0], x[1]))
         node_annot_df = pd.DataFrame(
@@ -276,8 +282,8 @@ class InputKGConverter:
             if triple not in triple2edge_idx:
                 continue
 
-            e_idx = triple2edge_idx[triple]
-            if head_cls == -1 or tail_cls == -1:
+            edge_idx = triple2edge_idx[triple]
+            if head_cls == -1 or tail_cls == -1 or str(head_cls) == "-1" or str(tail_cls) == "-1":
                 target_rel = prune_rel_target
             else:
                 key = f"{head_cls}_{pid}_{tail_cls}"
@@ -289,6 +295,12 @@ class InputKGConverter:
                     target_rel = prune_rel_target
 
             edge_pairs.add((edge_idx, target_rel))
+
+        # Ensure all edges in triple2edge_idx have at least one annotation
+        annotated_edges = {p[0] for p in edge_pairs}
+        for e_idx in range(len(triple2edge_idx)):
+            if e_idx not in annotated_edges:
+                edge_pairs.add((e_idx, prune_rel_target))
 
         sorted_edge_pairs = sorted(edge_pairs, key=lambda x: (x[0], x[1]))
         edge_annot_df = pd.DataFrame(
