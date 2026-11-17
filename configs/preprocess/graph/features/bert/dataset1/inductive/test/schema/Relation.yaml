@@ -1,6 +1,6 @@
 general:
   device: cuda
-  out_dir: data/raw/kg4fun/dataset1/splits/inductive/test/graph/schema/features
+  out_dir: data/raw/kg4fun/dataset1/splits/inductive/test/graph/schema/bert_features
   node_info: Relation
   pbar: true
 data:

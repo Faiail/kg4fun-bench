@@ -1,6 +1,6 @@
 general:
   device: cuda
-  out_dir: data/raw/kg4fun/dataset2/splits/hybrid/val/graph/input_kg/features
+  out_dir: data/raw/kg4fun/dataset2/splits/hybrid/val/graph/input_kg/bge_features
   node_info: MetaEdge
   pbar: true
 data:
