@@ -1,0 +1,26 @@
+general:
+  device: cuda
+  out_dir: data/raw/kg4fun/dataset1/splits/hybrid/train/graph/input_kg/features
+  node_info: Edge
+  pbar: true
+data:
+  name: FeatureTextDataset
+  config:
+    node_factory: data/raw/kg4fun/dataset1/splits/hybrid/train/graph/input_kg/entities/Edge.csv
+    properties: data/raw/kg4fun/dataset1/splits/hybrid/train/graph/input_kg/entity_properties.json
+    qid_colname: edge
+loader:
+  batch_size: 512
+  num_workers: 4
+model:
+  name: HuggingfaceTextModel
+  config:
+    pretrained_model_name_or_path: &model answerdotai/ModernBERT-base
+tokenizer:
+  config:
+    pretrained_model_name_or_path: *model
+  kwargs:
+    padding: true
+    truncation: true
+    max_length: 512
+    return_tensors: pt

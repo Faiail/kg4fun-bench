@@ -1,0 +1,26 @@
+general:
+  device: cuda
+  out_dir: data/raw/kg4fun/dataset1/splits/hybrid/test/graph/input_kg/features
+  node_info: MetaEdge
+  pbar: true
+data:
+  name: FeatureTextDataset
+  config:
+    node_factory: data/raw/kg4fun/dataset1/splits/hybrid/test/graph/input_kg/entities/MetaEdge.csv
+    properties: data/raw/kg4fun/dataset1/splits/hybrid/test/graph/input_kg/entity_properties.json
+    qid_colname: pid
+loader:
+  batch_size: 512
+  num_workers: 4
+model:
+  name: HuggingfaceTextModel
+  config:
+    pretrained_model_name_or_path: &model bert-base-uncased
+tokenizer:
+  config:
+    pretrained_model_name_or_path: *model
+  kwargs:
+    padding: true
+    truncation: true
+    max_length: 512
+    return_tensors: pt

@@ -1,0 +1,26 @@
+general:
+  device: cuda
+  out_dir: data/raw/kg4fun/dataset2/splits/inductive/test/graph/input_kg/features
+  node_info: Node
+  pbar: true
+data:
+  name: FeatureTextDataset
+  config:
+    node_factory: data/raw/kg4fun/dataset2/splits/inductive/test/graph/input_kg/entities/Node.csv
+    properties: data/raw/kg4fun/dataset2/splits/inductive/test/graph/input_kg/entity_properties.json
+    qid_colname: qid
+loader:
+  batch_size: 512
+  num_workers: 4
+model:
+  name: HuggingfaceTextModel
+  config:
+    pretrained_model_name_or_path: &model BAAI/bge-base-en-v1.5
+tokenizer:
+  config:
+    pretrained_model_name_or_path: *model
+  kwargs:
+    padding: true
+    truncation: true
+    max_length: 512
+    return_tensors: pt

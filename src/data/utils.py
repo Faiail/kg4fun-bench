@@ -27,3 +27,6 @@ class BatchKeys(StrEnum):
     HEAD = "head"
     TAIL = "tail"
     REL = "rel"
+    LABEL = "label"
+    DESCRIPTION = "description"
+    FEATURES = "features"
