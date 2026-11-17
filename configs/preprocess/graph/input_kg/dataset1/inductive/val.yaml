@@ -1,0 +1,6 @@
+general:
+  out_dir: data/raw/kg4fun/dataset1/splits/inductive/val/graph/input_kg
+  pbar: true
+data:
+  data_dir: data/raw/kg4fun/dataset1/splits/inductive/val
+  schema_dir: data/raw/kg4fun/dataset1/splits/inductive/val/graph/schema

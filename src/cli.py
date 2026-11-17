@@ -61,3 +61,7 @@ def profile(parameters, cls, batch_size, hidden_size, steps, full_epoch):
         full_epoch=full_epoch,
     )
 
+
+if __name__ == "__main__":
+    main()
+
